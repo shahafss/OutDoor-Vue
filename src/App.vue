@@ -1,7 +1,7 @@
 <template>
   <div>
     <OutDoorHeader></OutDoorHeader>
-    <h1>OutDoor!</h1>
+    <router-view />
   </div>
 </template>
 
@@ -10,6 +10,9 @@ import Header from "./components/Header";
 export default {
   components: {
     OutDoorHeader: Header
+  },
+  created() {
+    this.$store.dispatch("initRooms");
   }
 };
 </script>

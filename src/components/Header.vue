@@ -11,8 +11,6 @@
         >
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="#">Profile</a></li>
-
         <li class="dropdown">
           <a
             href="#"
@@ -28,6 +26,7 @@
             <li><a href="#">Load Data</a></li>
           </ul>
         </li>
+        <router-link to="/profile" tag="li"><a>Profile</a></router-link>
       </ul>
     </div>
   </nav>
