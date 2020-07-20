@@ -10,6 +10,9 @@ export default {
   components: {
     Room
   },
+  created() {
+    this.$store.dispatch("fetchRooms");
+  },
   computed: {
     getRooms() {
       return this.$store.getters.getRooms;

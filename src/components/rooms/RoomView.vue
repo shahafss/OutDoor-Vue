@@ -15,12 +15,17 @@ export default {
     };
   },
   created() {
+    this.$store.dispatch("fetchRooms");
+  },
+  beforeMount() {
     this.rooms = this.$store.getters.getRooms;
-    // console.log(this.rooms);
   },
   computed: {
+    getRooms() {
+      return this.$store.getters.getRooms;
+    },
     currentRoom() {
-      return this.rooms.find(room => room.id == this.id);
+      return this.getRooms.find(room => room.id == this.id);
     }
   }
 };
