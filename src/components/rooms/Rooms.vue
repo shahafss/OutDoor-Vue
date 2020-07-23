@@ -1,6 +1,11 @@
 <template>
-  <div>
-    <room v-for="room in getRooms" :key="room.id" :room="room"></room>
+  <div class="container-fluid">
+    <router-link to="/new-room" class="create-btn btn btn-primary" tag="button"
+      >Create</router-link
+    >
+    <div class="rooms-container">
+      <room v-for="room in getRooms" :key="room.id" :room="room"></room>
+    </div>
   </div>
 </template>
 
@@ -21,4 +26,16 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.rooms-container {
+  margin-top: 2rem;
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+.container-fluid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+</style>

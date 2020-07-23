@@ -1,8 +1,12 @@
 <template>
   <div>
-    <h1>{{ currentRoom.title }}</h1>
-    <h2>{{ currentRoom.description }}</h2>
-    <h2>Participants: {{ currentRoom.participants }}</h2>
+    <div v-if="isActive">
+      <h1>{{ currentRoom.title }}</h1>
+      <h2>{{ currentRoom.description }}</h2>
+      <h2>Participants: {{ currentRoom.participants }}</h2>
+      <hr />
+      <button @click="deleteRoom(currentRoom.id)">Delete Room</button>
+    </div>
   </div>
 </template>
 
@@ -11,7 +15,8 @@ export default {
   data() {
     return {
       id: this.$route.params.id,
-      rooms: []
+      rooms: [],
+      isActive: true
     };
   },
   created() {
@@ -26,6 +31,16 @@ export default {
     },
     currentRoom() {
       return this.getRooms.find(room => room.id == this.id);
+    }
+  },
+  methods: {
+    deleteRoom(id) {
+      this.isActive = false;
+      this.$store.dispatch("deleteRoom", id).then(
+        setTimeout(() => {
+          this.$router.push("/rooms");
+        }, 1000)
+      );
     }
   }
 };

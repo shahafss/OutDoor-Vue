@@ -5,6 +5,18 @@ const state = {
 };
 
 const mutations = {
+  CREATE_ROOM(state, room) {
+    state.rooms.push({
+      id: room.id,
+      title: room.title,
+      description: room.description,
+      participants: room.participants
+    });
+  },
+  DELETE_ROOM(state, id) {
+    const index = state.rooms.findIndex(room => room.id == id);
+    if (index >= 0) state.rooms.splice(index, 1);
+  },
   FETCH_ROOMS(state, rooms) {
     state.rooms = rooms;
   }
@@ -23,9 +35,33 @@ const actions = {
             description: doc.data().description,
             participants: doc.data().participants
           };
-          tempRooms.push(roomData);
+          if (roomData.title !== undefined) tempRooms.push(roomData);
         });
         commit("FETCH_ROOMS", tempRooms);
+      });
+  },
+  createRoom: (context, room) => {
+    db.collection("rooms")
+      .add({
+        title: room.title,
+        description: room.description,
+        participants: room.participants
+      })
+      .then(docRef => {
+        context.commit("CREATE_ROOM", {
+          id: docRef.id,
+          title: docRef.title,
+          description: docRef.description,
+          participants: docRef.participants
+        });
+      });
+  },
+  deleteRoom: (context, id) => {
+    db.collection("rooms")
+      .doc(id)
+      .delete()
+      .then(() => {
+        context.commit("DELETE_ROOM", id);
       });
   }
 };
