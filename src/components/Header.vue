@@ -11,21 +11,8 @@
         >
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li class="dropdown">
-          <a
-            href="#"
-            class="dropdown-toggle"
-            data-toggle="dropdown"
-            role="button"
-            aria-haspopup="true"
-            aria-expanded="flase"
-            >Save & Load <span class="caret"></span
-          ></a>
-          <ul class="dropdown-menu">
-            <li><a href="#">Save Data</a></li>
-            <li><a href="#">Load Data</a></li>
-          </ul>
-        </li>
+        <router-link to="/login" tag="li"><a>Login</a></router-link>
+        <router-link to="/signup" tag="li"><a>Sign-Up</a></router-link>
         <router-link to="/profile" tag="li"><a>Profile</a></router-link>
       </ul>
     </div>
