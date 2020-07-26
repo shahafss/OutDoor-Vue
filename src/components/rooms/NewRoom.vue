@@ -2,7 +2,7 @@
   <div class="container-fluid">
     <h1>New Room</h1>
     <div class="new-room-form">
-      <form @submit.prevent="onSubmit">
+      <form @submit.prevent="createRoom">
         <div class="input">
           <label for="title">Room Title</label>
           <input v-model="roomTitle" type="text" placeholder="Title" />
@@ -24,7 +24,7 @@
           />
         </div>
         <div class="submit">
-          <button type="submit" @click="createRoom()">Create</button>
+          <button type="submit">Create</button>
         </div>
       </form>
     </div>

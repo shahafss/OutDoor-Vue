@@ -34,18 +34,10 @@ export default {
         email: this.email,
         password: this.password
       };
-      console.log(formData);
-      axios
-        .post(
-          "accounts:signInWithPassword?key=AIzaSyCdTx55AnwVv8tw_jqoWEDyiVMX7pahn4Y",
-          {
-            email: formData.email,
-            password: formData.password,
-            returnSecureToken: true
-          }
-        )
-        .then(res => console.log(res))
-        .catch(err => console.log(err));
+      this.$store.dispatch("login", {
+        email: formData.email,
+        password: formData.password
+      });
     }
   }
 };

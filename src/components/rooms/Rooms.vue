@@ -1,10 +1,16 @@
 <template>
   <div class="container-fluid">
-    <router-link to="/new-room" class="create-btn btn btn-primary" tag="button"
-      >Create</router-link
-    >
-    <div class="rooms-container">
-      <room v-for="room in getRooms" :key="room.id" :room="room"></room>
+    <div>
+      <p v-if="email">Your email address: {{ email }}</p>
+      <router-link
+        to="/new-room"
+        class="create-btn btn btn-primary"
+        tag="button"
+        >Create</router-link
+      >
+      <div class="rooms-container">
+        <room v-for="room in getRooms" :key="room.id" :room="room"></room>
+      </div>
     </div>
   </div>
 </template>
@@ -16,9 +22,15 @@ export default {
     Room
   },
   created() {
+    this.$store.dispatch("fetchUser");
     this.$store.dispatch("fetchRooms");
   },
   computed: {
+    email() {
+      return !this.$store.getters.getUser
+        ? false
+        : this.$store.getters.getUser.email;
+    },
     getRooms() {
       return this.$store.getters.getRooms;
     }
