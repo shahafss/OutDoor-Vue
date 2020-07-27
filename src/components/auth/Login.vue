@@ -38,6 +38,7 @@ export default {
         email: formData.email,
         password: formData.password
       });
+      // .then(this.$router.push("/"));
     }
   }
 };

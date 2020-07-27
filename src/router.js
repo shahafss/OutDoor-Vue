@@ -28,7 +28,17 @@ export const routes = [
       }
     }
   },
-  { path: "/profile", component: Profile },
+  {
+    path: "/profile",
+    component: Profile,
+    beforeEnter(to, from, next) {
+      if (store.state.auth.idToken) {
+        next();
+      } else {
+        next("/login");
+      }
+    }
+  },
   { path: "/room/:id", component: RoomView, name: "room" },
   { path: "/new-room", component: NewRoom }
 ];

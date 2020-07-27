@@ -11,16 +11,28 @@
         >
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <router-link to="/login" tag="li"><a>Login</a></router-link>
-        <router-link to="/signup" tag="li"><a>Sign-Up</a></router-link>
-        <router-link to="/profile" tag="li"><a>Profile</a></router-link>
+        <li>
+          <router-link v-if="!auth" to="/login"><a>Login</a></router-link>
+        </li>
+        <li>
+          <router-link v-if="!auth" to="/signup"><a>Sign-Up</a></router-link>
+        </li>
+        <li>
+          <router-link v-if="auth" to="/profile"><a>Profile</a></router-link>
+        </li>
       </ul>
     </div>
   </nav>
 </template>
 
 <script>
-export default {};
+export default {
+  computed: {
+    auth() {
+      return this.$store.getters.isAuthenticated;
+    }
+  }
+};
 </script>
 
 <style lang="scss" scoped></style>
