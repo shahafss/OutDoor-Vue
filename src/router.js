@@ -15,17 +15,22 @@ Vue.use(VueRouter);
 
 export const routes = [
   { path: "/", component: Home },
-  { path: "/login", component: Login },
+  {
+    path: "/login",
+    component: Login
+  },
   { path: "/signup", component: Signup },
   {
     path: "/rooms",
     component: Rooms,
     beforeEnter(to, from, next) {
-      if (store.state.auth.idToken) {
-        next();
-      } else {
-        next("/login");
-      }
+      setTimeout(() => {
+        if (store.state.auth.idToken) {
+          next();
+        } else {
+          next("/login");
+        }
+      }, 10);
     }
   },
   {

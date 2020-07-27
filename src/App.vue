@@ -8,6 +8,9 @@
 <script>
 import Header from "./components/Header";
 export default {
+  created() {
+    this.$store.dispatch("tryAutoLogin");
+  },
   components: {
     OutDoorHeader: Header
   }
