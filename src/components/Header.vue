@@ -11,22 +11,14 @@
         >
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="#">Profile</a></li>
-
-        <li class="dropdown">
-          <a
-            href="#"
-            class="dropdown-toggle"
-            data-toggle="dropdown"
-            role="button"
-            aria-haspopup="true"
-            aria-expanded="flase"
-            >Save & Load <span class="caret"></span
-          ></a>
-          <ul class="dropdown-menu">
-            <li><a href="#">Save Data</a></li>
-            <li><a href="#">Load Data</a></li>
-          </ul>
+        <li>
+          <router-link v-if="!auth" to="/login"><a>Login</a></router-link>
+        </li>
+        <li>
+          <router-link v-if="!auth" to="/signup"><a>Sign-Up</a></router-link>
+        </li>
+        <li>
+          <router-link v-if="auth" to="/profile"><a>Profile</a></router-link>
         </li>
       </ul>
     </div>
@@ -34,7 +26,13 @@
 </template>
 
 <script>
-export default {};
+export default {
+  computed: {
+    auth() {
+      return this.$store.getters.isAuthenticated;
+    }
+  }
+};
 </script>
 
 <style lang="scss" scoped></style>

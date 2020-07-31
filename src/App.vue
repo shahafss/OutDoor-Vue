@@ -1,13 +1,16 @@
 <template>
   <div>
     <OutDoorHeader></OutDoorHeader>
-    <h1>OutDoor!</h1>
+    <router-view />
   </div>
 </template>
 
 <script>
 import Header from "./components/Header";
 export default {
+  created() {
+    this.$store.dispatch("tryAutoLogin");
+  },
   components: {
     OutDoorHeader: Header
   }
