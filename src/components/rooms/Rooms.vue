@@ -17,7 +17,7 @@ export default {
     Room
   },
   created() {
-    this.$store.dispatch("fetchUser");
+    this.$store.dispatch("fetchUsers");
     this.$store.dispatch("fetchRooms");
   },
   computed: {
