@@ -1,16 +1,11 @@
 <template>
   <div class="container-fluid">
-    <div>
-      <p v-if="email">Your email address: {{ email }}</p>
-      <router-link
-        to="/new-room"
-        class="create-btn btn btn-primary"
-        tag="button"
-        >Create</router-link
-      >
-      <div class="rooms-container">
-        <room v-for="room in getRooms" :key="room.id" :room="room"></room>
-      </div>
+    <p v-if="email">Your email address: {{ email }}</p>
+    <router-link to="/new-room" class="create-btn btn btn-primary" tag="button"
+      >Create</router-link
+    >
+    <div class="rooms-container">
+      <room v-for="room in getRooms" :key="room.id" :room="room"></room>
     </div>
   </div>
 </template>

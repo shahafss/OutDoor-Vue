@@ -1,6 +1,7 @@
 <template>
   <div>
     <h1>Profile page</h1>
+    <h2>{{ email }}</h2>
     <hr />
     <button @click="onLogout" class="btn btn-danger">Logout</button>
   </div>
@@ -8,6 +9,16 @@
 
 <script>
 export default {
+  created() {
+    this.$store.dispatch("fetchUser");
+  },
+  computed: {
+    email() {
+      return !this.$store.getters.getUser
+        ? false
+        : this.$store.getters.getUser.email;
+    }
+  },
   methods: {
     onLogout() {
       this.$store.dispatch("logout");

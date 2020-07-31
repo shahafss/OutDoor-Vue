@@ -20,6 +20,7 @@ const mutations = {
   CLEAR_AUTH(state) {
     state.idToken = null;
     state.userId = null;
+    state.user = null;
   }
 };
 
@@ -47,8 +48,10 @@ const actions = {
         const expirationDate = new Date(
           now.getTime() + res.data.expiresIn * 1000
         );
+
         localStorage.setItem("token", res.data.idToken);
         localStorage.setItem("userId", res.data.localId);
+        localStorage.setItem("username", res.data.email);
         localStorage.setItem("expirationDate", expirationDate);
 
         dispatch("storeUser", authData);
@@ -66,8 +69,6 @@ const actions = {
         }
       )
       .then(res => {
-        console.log(res);
-
         const now = new Date();
         const expirationDate = new Date(
           now.getTime() + res.data.expiresIn * 1000
@@ -75,6 +76,7 @@ const actions = {
 
         localStorage.setItem("token", res.data.idToken);
         localStorage.setItem("userId", res.data.localId);
+        localStorage.setItem("username", res.data.email);
         localStorage.setItem("expirationDate", expirationDate);
 
         commit("AUTH_USER", {
@@ -127,15 +129,20 @@ const actions = {
         "https://outdoor-vue.firebaseio.com/users.json?auth=" + state.idToken
       )
       .then(res => {
-        console.log(res);
         const data = res.data;
         const users = [];
+
         for (let key in data) {
           const user = data[key];
           user.id = key;
           users.push(user);
         }
-        commit("STORE_USER", users[0]);
+
+        const loggedInUsername = localStorage.getItem("username");
+        commit(
+          "STORE_USER",
+          users.find(user => user.email == loggedInUsername)
+        );
       })
       .catch(error => console.log(error));
   }

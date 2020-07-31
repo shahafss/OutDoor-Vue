@@ -1,11 +1,22 @@
 <template>
   <div>
-    <div v-if="isActive">
+    <div v-if="loggedInUser && isActive && currentRoom">
       <h1>{{ currentRoom.title }}</h1>
       <h2>{{ currentRoom.description }}</h2>
       <h2>Participants: {{ currentRoom.participants }}</h2>
       <hr />
-      <button @click="deleteRoom(currentRoom.id)">Delete Room</button>
+      {{ currentRoom.joinedUsers }}
+      <hr />
+      {{ isAdmin }}
+      <hr />
+      <button
+        v-if="isAdmin"
+        class="btn btn-danger"
+        @click="deleteRoom(currentRoom.id)"
+      >
+        Delete Room
+      </button>
+      <button class="btn btn-success" @click="joinRoom()">Join</button>
     </div>
   </div>
 </template>
@@ -14,23 +25,27 @@
 export default {
   data() {
     return {
-      id: this.$route.params.id,
-      rooms: [],
+      roomId: this.$route.params.id,
       isActive: true
     };
   },
   created() {
     this.$store.dispatch("fetchRooms");
-  },
-  beforeMount() {
-    this.rooms = this.$store.getters.getRooms;
+    this.$store.dispatch("fetchUser");
   },
   computed: {
-    getRooms() {
+    //TODO move computed props to getters(if possible)
+    rooms() {
       return this.$store.getters.getRooms;
     },
     currentRoom() {
-      return this.getRooms.find(room => room.id == this.id);
+      return this.rooms.find(room => room.id == this.roomId);
+    },
+    isAdmin() {
+      return this.loggedInUser.id == this.currentRoom.admin;
+    },
+    loggedInUser() {
+      return this.$store.state.auth.user; // getUser getter?
     }
   },
   methods: {
@@ -41,6 +56,13 @@ export default {
           this.$router.push("/rooms");
         }, 1000)
       );
+    },
+    getUserById(id) {},
+    joinRoom() {
+      this.$store.dispatch("joinUser", {
+        roomId: this.currentRoom.id,
+        userId: this.loggedInUser.id
+      });
     }
   }
 };

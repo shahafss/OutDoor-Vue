@@ -25,6 +25,7 @@ export const routes = [
     component: Rooms,
     beforeEnter(to, from, next) {
       setTimeout(() => {
+        // store not initialized at this point
         if (store.state.auth.idToken) {
           next();
         } else {

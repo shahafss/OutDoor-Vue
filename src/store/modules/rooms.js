@@ -1,4 +1,5 @@
 import db from "../../firebase";
+import globalStore from "../store";
 
 const state = {
   rooms: []
@@ -10,7 +11,9 @@ const mutations = {
       id: room.id,
       title: room.title,
       description: room.description,
-      participants: room.participants
+      participants: room.participants,
+      admin: room.admin,
+      joinedUsers: room.joinedUsers
     });
   },
   DELETE_ROOM(state, id) {
@@ -19,7 +22,8 @@ const mutations = {
   },
   FETCH_ROOMS(state, rooms) {
     state.rooms = rooms;
-  }
+  },
+  JOIN_USER(state, room, user) {}
 };
 
 const actions = {
@@ -33,7 +37,9 @@ const actions = {
             id: doc.id,
             title: doc.data().title,
             description: doc.data().description,
-            participants: doc.data().participants
+            participants: doc.data().participants,
+            admin: doc.data().admin,
+            joinedUsers: doc.data().joinedUsers
           };
           if (roomData.title !== undefined) tempRooms.push(roomData);
         });
@@ -45,14 +51,18 @@ const actions = {
       .add({
         title: room.title,
         description: room.description,
-        participants: room.participants
+        participants: room.participants,
+        admin: globalStore.state.auth.user.id,
+        joinedUsers: [globalStore.state.auth.user.id]
       })
       .then(docRef => {
         context.commit("CREATE_ROOM", {
           id: docRef.id,
           title: docRef.title,
           description: docRef.description,
-          participants: docRef.participants
+          participants: docRef.participants,
+          admin: globalStore.state.auth.user.id,
+          joinedUsers: [globalStore.state.auth.user.id]
         });
       });
   },
@@ -63,6 +73,16 @@ const actions = {
       .then(() => {
         context.commit("DELETE_ROOM", id);
       });
+  },
+  joinUser: ({ commit }, joinData) => {
+    const currentRoom = state.rooms.find(room => room.id == joinData.roomId);
+    const joinedUsers = currentRoom.joinedUsers;
+    joinedUsers.push(joinData.userId);
+    // commit("JOIN_USER", joinedUsers)
+
+    db.collection("rooms")
+      .doc(joinData.roomId)
+      .update({ joinedUsers: joinedUsers });
   }
 };
 
