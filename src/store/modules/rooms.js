@@ -2,7 +2,8 @@ import db from "../../firebase";
 import globalStore from "../store";
 
 const state = {
-  rooms: []
+  rooms: [],
+  currentRoom: {}
 };
 
 const mutations = {
@@ -82,6 +83,16 @@ const actions = {
 
     db.collection("rooms")
       .doc(joinData.roomId)
+      .update({ joinedUsers: joinedUsers });
+  },
+  leaveUser: ({ commit }, leaveData) => {
+    const currentRoom = state.rooms.find(room => room.id == leaveData.roomId);
+    const joinedUsers = currentRoom.joinedUsers;
+    const index = joinedUsers.indexOf(leaveData.userId);
+    joinedUsers.splice(index, 1);
+
+    db.collection("rooms")
+      .doc(leaveData.roomId)
       .update({ joinedUsers: joinedUsers });
   }
 };

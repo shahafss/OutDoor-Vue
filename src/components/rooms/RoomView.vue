@@ -5,18 +5,36 @@
       <h2>{{ currentRoom.description }}</h2>
       <h2>Participants: {{ currentRoom.participants }}</h2>
       <hr />
-      {{ currentRoom.joinedUsers }}
+      <div v-for="user in joinedUsers" :key="user">
+        {{ user }}
+      </div>
       <hr />
-      {{ isAdmin }}
+      is admin: {{ isAdmin }}
+      <div>is joined: {{ isJoinedUser }}</div>
       <hr />
-      <button
-        v-if="isAdmin"
-        class="btn btn-danger"
-        @click="deleteRoom(currentRoom.id)"
-      >
-        Delete Room
-      </button>
-      <button class="btn btn-success" @click="joinRoom()">Join</button>
+      <div class="buttons">
+        <button
+          v-if="!isJoinedUser"
+          class="btn btn-success"
+          @click="joinRoom()"
+        >
+          Join
+        </button>
+        <button
+          v-else-if="!isAdmin"
+          class="btn btn-default"
+          @click="leaveRoom()"
+        >
+          Leave
+        </button>
+        <button
+          v-if="isAdmin"
+          class="btn btn-danger"
+          @click="deleteRoom(currentRoom.id)"
+        >
+          Delete Room
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -31,7 +49,10 @@ export default {
   },
   created() {
     this.$store.dispatch("fetchRooms");
-    this.$store.dispatch("fetchUser");
+    this.$store.dispatch("fetchUsers");
+  },
+  mounted() {
+    this.user = this.$store.getters.getUser;
   },
   computed: {
     //TODO move computed props to getters(if possible)
@@ -44,8 +65,18 @@ export default {
     isAdmin() {
       return this.loggedInUser.id == this.currentRoom.admin;
     },
+    isJoinedUser() {
+      return this.joinedUsers.includes(this.$store.getters.getUser.email);
+    },
     loggedInUser() {
-      return this.$store.state.auth.user; // getUser getter?
+      return this.$store.getters.getUser;
+    },
+    joinedUsers() {
+      const joinedUsers = [];
+      this.currentRoom.joinedUsers.forEach(userId => {
+        joinedUsers.push(this.$store.state.auth.allUsers[userId].email);
+      });
+      return joinedUsers;
     }
   },
   methods: {
@@ -57,9 +88,14 @@ export default {
         }, 1000)
       );
     },
-    getUserById(id) {},
     joinRoom() {
       this.$store.dispatch("joinUser", {
+        roomId: this.currentRoom.id,
+        userId: this.loggedInUser.id
+      });
+    },
+    leaveRoom() {
+      this.$store.dispatch("leaveUser", {
         roomId: this.currentRoom.id,
         userId: this.loggedInUser.id
       });

@@ -6,7 +6,8 @@ import router from "../../router";
 const state = {
   idToken: null,
   userId: null,
-  user: null
+  user: null,
+  allUsers: null
 };
 
 const mutations = {
@@ -16,6 +17,9 @@ const mutations = {
   },
   STORE_USER(state, user) {
     state.user = user;
+  },
+  STORE_ALL_USERS(state, users) {
+    state.allUsers = users;
   },
   CLEAR_AUTH(state) {
     state.idToken = null;
@@ -69,6 +73,7 @@ const actions = {
         }
       )
       .then(res => {
+        console.log("login res ", res);
         const now = new Date();
         const expirationDate = new Date(
           now.getTime() + res.data.expiresIn * 1000
@@ -122,7 +127,7 @@ const actions = {
       .then(res => console.log(res))
       .catch(err => console.log(err));
   },
-  fetchUser({ commit, state }) {
+  fetchUsers({ commit, state }) {
     if (!state.idToken) return;
     globalAxios
       .get(
@@ -137,6 +142,7 @@ const actions = {
           user.id = key;
           users.push(user);
         }
+        commit("STORE_ALL_USERS", data);
 
         const loggedInUsername = localStorage.getItem("username");
         commit(
@@ -150,6 +156,9 @@ const actions = {
 const getters = {
   getUser(state) {
     return state.user;
+  },
+  getUserById(id) {
+    return state.allUsers[id];
   },
   isAuthenticated(state) {
     return state.idToken !== null;
