@@ -2,8 +2,7 @@ import db from "../../firebase";
 import globalStore from "../store";
 
 const state = {
-  rooms: [],
-  currentRoom: {}
+  rooms: []
 };
 
 const mutations = {
@@ -24,7 +23,10 @@ const mutations = {
   FETCH_ROOMS(state, rooms) {
     state.rooms = rooms;
   },
-  JOIN_USER(state, room, user) {}
+  UPDATE_JOINED_USERS(state, joinedUsersData) {
+    const index = state.rooms.indexOf(joinedUsersData.currentRoom);
+    state.rooms[index].joinedUsers = joinedUsersData.joinedUsers;
+  }
 };
 
 const actions = {
@@ -79,11 +81,22 @@ const actions = {
     const currentRoom = state.rooms.find(room => room.id == joinData.roomId);
     const joinedUsers = currentRoom.joinedUsers;
     joinedUsers.push(joinData.userId);
-    // commit("JOIN_USER", joinedUsers)
 
     db.collection("rooms")
       .doc(joinData.roomId)
       .update({ joinedUsers: joinedUsers });
+
+    commit("UPDATE_JOINED_USERS", {
+      currentRoom: currentRoom,
+      joinedUsers: joinedUsers
+    });
+
+    // listen to data change on firestore // TODO
+    // db.collection("rooms")
+    //   .doc(joinData.roomId)
+    //   .onSnapshot(doc => {
+
+    //   });
   },
   leaveUser: ({ commit }, leaveData) => {
     const currentRoom = state.rooms.find(room => room.id == leaveData.roomId);
@@ -94,6 +107,16 @@ const actions = {
     db.collection("rooms")
       .doc(leaveData.roomId)
       .update({ joinedUsers: joinedUsers });
+
+    commit("UPDATE_JOINED_USERS", {
+      currentRoom: currentRoom,
+      joinedUsers: joinedUsers
+    });
+
+    // listen to data change on firestore //TODO
+    // db.collection("rooms")
+    //   .doc(leaveData.roomId)
+    //   .onSnapshot(doc => {});
   }
 };
 
