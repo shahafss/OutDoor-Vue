@@ -113,6 +113,7 @@ const actions = {
     localStorage.removeItem("expirationDate");
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
+    localStorage.removeItem("username");
     router.replace("/login");
   },
   storeUser({ commit, state }, userData) {

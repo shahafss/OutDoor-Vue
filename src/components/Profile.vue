@@ -9,6 +9,9 @@
 
 <script>
 export default {
+  created() {
+    this.$store.dispatch("fetchUsers");
+  },
   computed: {
     email() {
       return !this.$store.getters.getUser

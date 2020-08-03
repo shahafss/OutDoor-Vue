@@ -3,7 +3,11 @@
     <div v-if="loggedInUser && isActive && currentRoom">
       <h1>{{ currentRoom.title }}</h1>
       <h2>{{ currentRoom.description }}</h2>
-      <h2>Participants: {{ currentRoom.participants }}</h2>
+      <h2>
+        Participants: {{ currentRoom.joinedUsers.length }}/{{
+          currentRoom.participants
+        }}
+      </h2>
       <hr />
       <div v-for="user in joinedUsers" :key="user">
         {{ user }}

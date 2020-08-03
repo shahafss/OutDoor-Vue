@@ -31,22 +31,26 @@ export const routes = [
     path: "/rooms",
     component: Rooms,
     beforeEnter(to, from, next) {
-      if (store.state.auth.idToken) {
-        next();
-      } else {
-        next("/login");
-      }
+      setTimeout(() => {
+        if (store.state.auth.idToken) {
+          next();
+        } else {
+          next("/login");
+        }
+      }, 10);
     }
   },
   {
     path: "/profile",
     component: Profile,
     beforeEnter(to, from, next) {
-      if (store.state.auth.idToken) {
-        next();
-      } else {
-        next("/login");
-      }
+      setTimeout(() => {
+        if (store.state.auth.idToken) {
+          next();
+        } else {
+          next("/login");
+        }
+      }, 10);
     }
   },
   { path: "/room/:id", component: RoomView, name: "room" },
