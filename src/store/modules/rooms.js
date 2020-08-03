@@ -80,16 +80,18 @@ const actions = {
   joinUser: ({ commit }, joinData) => {
     const currentRoom = state.rooms.find(room => room.id == joinData.roomId);
     const joinedUsers = currentRoom.joinedUsers;
-    joinedUsers.push(joinData.userId);
+    if (currentRoom.participants > currentRoom.joinedUsers.length) {
+      joinedUsers.push(joinData.userId);
 
-    db.collection("rooms")
-      .doc(joinData.roomId)
-      .update({ joinedUsers: joinedUsers });
+      db.collection("rooms")
+        .doc(joinData.roomId)
+        .update({ joinedUsers: joinedUsers });
 
-    commit("UPDATE_JOINED_USERS", {
-      currentRoom: currentRoom,
-      joinedUsers: joinedUsers
-    });
+      commit("UPDATE_JOINED_USERS", {
+        currentRoom: currentRoom,
+        joinedUsers: joinedUsers
+      });
+    }
 
     // listen to data change on firestore // TODO
     // db.collection("rooms")

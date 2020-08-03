@@ -11,17 +11,18 @@
       <hr />
       is admin: {{ isAdmin }}
       <div>is joined: {{ isJoinedUser }}</div>
+      <div>is full: {{ isFull }}</div>
       <hr />
       <div class="buttons">
         <button
-          v-if="!isJoinedUser"
+          v-if="!isJoinedUser && !isFull"
           class="btn btn-success"
           @click="joinRoom()"
         >
           Join
         </button>
         <button
-          v-else-if="!isAdmin"
+          v-else-if="!isAdmin && isJoinedUser"
           class="btn btn-default"
           @click="leaveRoom()"
         >
@@ -35,6 +36,9 @@
           Delete Room
         </button>
       </div>
+    </div>
+    <div v-else>
+      <h1>Loading..</h1>
     </div>
   </div>
 </template>
@@ -77,6 +81,11 @@ export default {
         joinedUsers.push(this.$store.state.auth.allUsers[userId].email);
       });
       return joinedUsers;
+    },
+    isFull() {
+      return (
+        this.currentRoom.participants == this.currentRoom.joinedUsers.length
+      );
     }
   },
   methods: {

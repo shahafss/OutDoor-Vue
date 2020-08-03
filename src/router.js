@@ -17,21 +17,25 @@ export const routes = [
   { path: "/", component: Home },
   {
     path: "/login",
-    component: Login
+    component: Login,
+    beforeEnter(to, from, next) {
+      if (!store.state.auth.idToken) {
+        next();
+      } else {
+        next("/rooms");
+      }
+    }
   },
   { path: "/signup", component: Signup },
   {
     path: "/rooms",
     component: Rooms,
     beforeEnter(to, from, next) {
-      setTimeout(() => {
-        // store not initialized at this point
-        if (store.state.auth.idToken) {
-          next();
-        } else {
-          next("/login");
-        }
-      }, 10);
+      if (store.state.auth.idToken) {
+        next();
+      } else {
+        next("/login");
+      }
     }
   },
   {
