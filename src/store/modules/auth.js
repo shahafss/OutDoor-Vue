@@ -59,6 +59,7 @@ const actions = {
         localStorage.setItem("expirationDate", expirationDate);
 
         dispatch("storeUser", authData);
+        dispatch("setLogoutTimer", res.data.expiresIn);
       })
       .catch(err => console.log(err));
   },
@@ -94,13 +95,17 @@ const actions = {
       })
       .catch(err => console.log(err));
   },
-  tryAutoLogin({ commit }) {
+  tryAutoLogin({ commit, dispatch }) {
     const token = localStorage.getItem("token");
     if (!token) return;
 
-    const expirationDate = localStorage.getItem("expirationDate");
-    const now = new Date();
-    if (now >= expirationDate) return;
+    const expirationDateString = localStorage.getItem("expirationDate");
+    const expirationDate = new Date(expirationDateString);
+    const nowDate = new Date();
+    if (nowDate >= expirationDate) {
+      dispatch("logout");
+      return;
+    }
 
     const userId = localStorage.getItem("userId");
     commit("AUTH_USER", {
