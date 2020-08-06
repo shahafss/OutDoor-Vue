@@ -6,14 +6,15 @@ const state = {
 };
 
 const mutations = {
-  CREATE_ROOM(state, room) {
+  ADD_ROOM(state, room) {
     state.rooms.push({
       id: room.id,
       title: room.title,
       description: room.description,
       participants: room.participants,
+      joinedUsers: room.joinedUsers,
       admin: room.admin,
-      joinedUsers: room.joinedUsers
+      timestamp: new Date()
     });
   },
   DELETE_ROOM(state, id) {
@@ -24,8 +25,14 @@ const mutations = {
     state.rooms = rooms;
   },
   UPDATE_JOINED_USERS(state, joinedUsersData) {
-    const index = state.rooms.indexOf(joinedUsersData.currentRoom);
-    state.rooms[index].joinedUsers = joinedUsersData.joinedUsers;
+    // const index = state.rooms.indexOf(joinedUsersData.roomId);
+    if (joinedUsersData.roomIndex >= 0) {
+      state.rooms.push(joinedUsersData.room);
+      state.rooms.splice(joinedUsersData.roomIndex, 1);
+    }
+    // if (index >= 0) {
+    //   state.rooms[index] = joinedUsersData.room;
+    // }
   }
 };
 
@@ -33,29 +40,37 @@ const actions = {
   initRealtimeListeners(context) {
     db.collection("rooms").onSnapshot(snapshot => {
       snapshot.docChanges().forEach(change => {
-        // console.log("change!!>> ", snapshot.docChanges());
         if (change.type === "added") {
           const source = change.doc.metadata.hasPendingWrites
             ? "Local"
             : "Server";
 
           if (source === "Server") {
-            context.commit("addTodo", {
-              id: change.doc.id,
-              title: change.doc.data().title,
-              completed: false
-            });
+            if (!state.rooms.some(room => room.id == change.doc.id)) {
+              context.commit("ADD_ROOM", {
+                id: change.doc.id,
+                title: change.doc.data().title,
+                description: change.doc.data().description,
+                participants: change.doc.data().participants,
+                joinedUsers: change.doc.data().joinedUsers,
+                admin: change.doc.data().admin
+              });
+            }
           }
         }
+
         if (change.type === "modified") {
-          context.commit("updateTodo", {
-            id: change.doc.id,
-            title: change.doc.data().title,
-            completed: change.doc.data().completed
+          const room = state.rooms.find(room => room.id == change.doc.id);
+          const roomIndex = state.rooms.indexOf(room);
+          console.log("yay", roomIndex);
+
+          context.commit("UPDATE_JOINED_USERS", {
+            roomIndex: roomIndex,
+            room: change.doc.data()
           });
         }
         if (change.type === "removed") {
-          context.commit("deleteTodo", change.doc.id);
+          context.commit("DELETE_ROOM", change.doc.id);
         }
       });
     });
@@ -79,17 +94,18 @@ const actions = {
         commit("FETCH_ROOMS", tempRooms);
       });
   },
-  createRoom: (context, room) => {
+  addRoom: (context, room) => {
     db.collection("rooms")
       .add({
         title: room.title,
         description: room.description,
         participants: room.participants,
         admin: globalStore.state.auth.user.id,
-        joinedUsers: [globalStore.state.auth.user.id]
+        joinedUsers: [globalStore.state.auth.user.id],
+        timestamp: new Date()
       })
       .then(docRef => {
-        context.commit("CREATE_ROOM", {
+        context.commit("ADD_ROOM", {
           id: docRef.id,
           title: docRef.title,
           description: docRef.description,
@@ -116,11 +132,6 @@ const actions = {
       db.collection("rooms")
         .doc(joinData.roomId)
         .update({ joinedUsers: joinedUsers });
-
-      commit("UPDATE_JOINED_USERS", {
-        currentRoom: currentRoom,
-        joinedUsers: joinedUsers
-      });
     }
   },
   leaveUser: ({ commit }, leaveData) => {
@@ -132,11 +143,6 @@ const actions = {
     db.collection("rooms")
       .doc(leaveData.roomId)
       .update({ joinedUsers: joinedUsers });
-
-    commit("UPDATE_JOINED_USERS", {
-      currentRoom: currentRoom,
-      joinedUsers: joinedUsers
-    });
   }
 };
 

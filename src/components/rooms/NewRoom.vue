@@ -43,7 +43,7 @@ export default {
   methods: {
     createRoom() {
       this.$store
-        .dispatch("createRoom", {
+        .dispatch("addRoom", {
           title: this.roomTitle,
           description: this.roomDescription,
           participants: this.roomParticipants
