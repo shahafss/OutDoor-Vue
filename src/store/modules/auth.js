@@ -60,6 +60,7 @@ const actions = {
 
         dispatch("storeUser", authData);
         dispatch("setLogoutTimer", res.data.expiresIn);
+        router.push("/rooms");
       })
       .catch(err => console.log(err));
   },

@@ -30,6 +30,36 @@ const mutations = {
 };
 
 const actions = {
+  initRealtimeListeners(context) {
+    db.collection("rooms").onSnapshot(snapshot => {
+      snapshot.docChanges().forEach(change => {
+        // console.log("change!!>> ", snapshot.docChanges());
+        if (change.type === "added") {
+          const source = change.doc.metadata.hasPendingWrites
+            ? "Local"
+            : "Server";
+
+          if (source === "Server") {
+            context.commit("addTodo", {
+              id: change.doc.id,
+              title: change.doc.data().title,
+              completed: false
+            });
+          }
+        }
+        if (change.type === "modified") {
+          context.commit("updateTodo", {
+            id: change.doc.id,
+            title: change.doc.data().title,
+            completed: change.doc.data().completed
+          });
+        }
+        if (change.type === "removed") {
+          context.commit("deleteTodo", change.doc.id);
+        }
+      });
+    });
+  },
   fetchRooms: ({ commit }) => {
     db.collection("rooms")
       .get()
@@ -92,13 +122,6 @@ const actions = {
         joinedUsers: joinedUsers
       });
     }
-
-    // listen to data change on firestore // TODO
-    // db.collection("rooms")
-    //   .doc(joinData.roomId)
-    //   .onSnapshot(doc => {
-
-    //   });
   },
   leaveUser: ({ commit }, leaveData) => {
     const currentRoom = state.rooms.find(room => room.id == leaveData.roomId);
@@ -114,11 +137,6 @@ const actions = {
       currentRoom: currentRoom,
       joinedUsers: joinedUsers
     });
-
-    // listen to data change on firestore //TODO
-    // db.collection("rooms")
-    //   .doc(leaveData.roomId)
-    //   .onSnapshot(doc => {});
   }
 };
 
