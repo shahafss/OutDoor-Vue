@@ -6,7 +6,8 @@ import router from "../../router";
 const state = {
   idToken: null,
   userId: null,
-  user: null
+  user: null,
+  allUsers: null
 };
 
 const mutations = {
@@ -16,6 +17,9 @@ const mutations = {
   },
   STORE_USER(state, user) {
     state.user = user;
+  },
+  STORE_ALL_USERS(state, users) {
+    state.allUsers = users;
   },
   CLEAR_AUTH(state) {
     state.idToken = null;
@@ -38,7 +42,6 @@ const actions = {
         returnSecureToken: true
       })
       .then(res => {
-        console.log(res);
         commit("AUTH_USER", {
           token: res.data.idToken,
           userId: res.data.localId
@@ -55,6 +58,8 @@ const actions = {
         localStorage.setItem("expirationDate", expirationDate);
 
         dispatch("storeUser", authData);
+        dispatch("setLogoutTimer", res.data.expiresIn);
+        router.push("/rooms");
       })
       .catch(err => console.log(err));
   },
@@ -89,13 +94,17 @@ const actions = {
       })
       .catch(err => console.log(err));
   },
-  tryAutoLogin({ commit }) {
+  tryAutoLogin({ commit, dispatch }) {
     const token = localStorage.getItem("token");
     if (!token) return;
 
-    const expirationDate = localStorage.getItem("expirationDate");
-    const now = new Date();
-    if (now >= expirationDate) return;
+    const expirationDateString = localStorage.getItem("expirationDate");
+    const expirationDate = new Date(expirationDateString);
+    const nowDate = new Date();
+    if (nowDate >= expirationDate) {
+      dispatch("logout");
+      return;
+    }
 
     const userId = localStorage.getItem("userId");
     commit("AUTH_USER", {
@@ -108,11 +117,11 @@ const actions = {
     localStorage.removeItem("expirationDate");
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
-    router.replace("/");
+    localStorage.removeItem("username");
+    router.replace("/login");
   },
   storeUser({ commit, state }, userData) {
     if (!state.idToken) return;
-    console.log("userData", userData);
 
     globalAxios
       .post(
@@ -122,7 +131,7 @@ const actions = {
       .then(res => console.log(res))
       .catch(err => console.log(err));
   },
-  fetchUser({ commit, state }) {
+  fetchUsers({ commit, state }) {
     if (!state.idToken) return;
     globalAxios
       .get(
@@ -137,6 +146,7 @@ const actions = {
           user.id = key;
           users.push(user);
         }
+        commit("STORE_ALL_USERS", data);
 
         const loggedInUsername = localStorage.getItem("username");
         commit(
@@ -150,6 +160,9 @@ const actions = {
 const getters = {
   getUser(state) {
     return state.user;
+  },
+  getUserById(id) {
+    return state.allUsers[id];
   },
   isAuthenticated(state) {
     return state.idToken !== null;

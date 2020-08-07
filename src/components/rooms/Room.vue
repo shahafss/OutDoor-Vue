@@ -8,7 +8,9 @@
         <div>
           {{ room.description }}
         </div>
-        <div>Participants: {{ room.participants }}</div>
+        <div>
+          Participants: {{ room.joinedUsers.length }}/{{ room.participants }}
+        </div>
         <div class="pull-right">
           <router-link
             :to="'/room/' + room.id"

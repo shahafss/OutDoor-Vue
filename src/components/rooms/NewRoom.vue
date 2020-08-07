@@ -43,7 +43,7 @@ export default {
   methods: {
     createRoom() {
       this.$store
-        .dispatch("createRoom", {
+        .dispatch("addRoom", {
           title: this.roomTitle,
           description: this.roomDescription,
           participants: this.roomParticipants
@@ -54,7 +54,6 @@ export default {
             const newRoom = this.getRooms.find(
               room => room.description == this.roomDescription
             );
-            console.log(newRoom.id);
             if (newRoom !== undefined) {
               this.$router.push("/room/" + newRoom.id);
             }

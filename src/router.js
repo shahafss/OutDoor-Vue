@@ -17,7 +17,14 @@ export const routes = [
   { path: "/", component: Home },
   {
     path: "/login",
-    component: Login
+    component: Login,
+    beforeEnter(to, from, next) {
+      if (!store.state.auth.idToken) {
+        next();
+      } else {
+        next("/rooms");
+      }
+    }
   },
   { path: "/signup", component: Signup },
   {
@@ -25,7 +32,6 @@ export const routes = [
     component: Rooms,
     beforeEnter(to, from, next) {
       setTimeout(() => {
-        // store not initialized at this point
         if (store.state.auth.idToken) {
           next();
         } else {
@@ -38,11 +44,13 @@ export const routes = [
     path: "/profile",
     component: Profile,
     beforeEnter(to, from, next) {
-      if (store.state.auth.idToken) {
-        next();
-      } else {
-        next("/login");
-      }
+      setTimeout(() => {
+        if (store.state.auth.idToken) {
+          next();
+        } else {
+          next("/login");
+        }
+      }, 10);
     }
   },
   { path: "/room/:id", component: RoomView, name: "room" },
