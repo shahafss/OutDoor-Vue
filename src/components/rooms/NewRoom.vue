@@ -54,7 +54,6 @@ export default {
             const newRoom = this.getRooms.find(
               room => room.description == this.roomDescription
             );
-            console.log(newRoom.id);
             if (newRoom !== undefined) {
               this.$router.push("/room/" + newRoom.id);
             }

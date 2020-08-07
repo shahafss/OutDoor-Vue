@@ -42,7 +42,6 @@ const actions = {
         returnSecureToken: true
       })
       .then(res => {
-        console.log(res);
         commit("AUTH_USER", {
           token: res.data.idToken,
           userId: res.data.localId
@@ -75,7 +74,6 @@ const actions = {
         }
       )
       .then(res => {
-        console.log("login res ", res);
         const now = new Date();
         const expirationDate = new Date(
           now.getTime() + res.data.expiresIn * 1000
@@ -124,7 +122,6 @@ const actions = {
   },
   storeUser({ commit, state }, userData) {
     if (!state.idToken) return;
-    console.log("userData", userData);
 
     globalAxios
       .post(

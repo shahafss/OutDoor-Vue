@@ -25,14 +25,10 @@ const mutations = {
     state.rooms = rooms;
   },
   UPDATE_JOINED_USERS(state, joinedUsersData) {
-    // const index = state.rooms.indexOf(joinedUsersData.roomId);
     if (joinedUsersData.roomIndex >= 0) {
-      state.rooms.push(joinedUsersData.room);
       state.rooms.splice(joinedUsersData.roomIndex, 1);
+      state.rooms.splice(joinedUsersData.roomIndex, 0, joinedUsersData.room);
     }
-    // if (index >= 0) {
-    //   state.rooms[index] = joinedUsersData.room;
-    // }
   }
 };
 
@@ -62,12 +58,14 @@ const actions = {
         if (change.type === "modified") {
           const room = state.rooms.find(room => room.id == change.doc.id);
           const roomIndex = state.rooms.indexOf(room);
-          console.log("yay", roomIndex);
 
-          context.commit("UPDATE_JOINED_USERS", {
+          const joinedUsersData = {
             roomIndex: roomIndex,
             room: change.doc.data()
-          });
+          };
+          joinedUsersData.room.id = change.doc.id;
+
+          context.commit("UPDATE_JOINED_USERS", joinedUsersData);
         }
         if (change.type === "removed") {
           context.commit("DELETE_ROOM", change.doc.id);
@@ -87,10 +85,13 @@ const actions = {
             description: doc.data().description,
             participants: doc.data().participants,
             admin: doc.data().admin,
-            joinedUsers: doc.data().joinedUsers
+            joinedUsers: doc.data().joinedUsers,
+            timestamp: doc.data().timestamp
           };
           if (roomData.title !== undefined) tempRooms.push(roomData);
         });
+
+        tempRooms.sort((a, b) => new Date(a.timestamp - b.timestamp)).reverse();
         commit("FETCH_ROOMS", tempRooms);
       });
   },
