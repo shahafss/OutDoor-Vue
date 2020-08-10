@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Profile page</h1>
+    <h1>{{ name }} ({{ userName }})</h1>
     <h2>{{ email }}</h2>
     <hr />
     <button @click="onLogout" class="btn btn-danger">Logout</button>
@@ -13,6 +13,17 @@ export default {
     this.$store.dispatch("fetchUsers");
   },
   computed: {
+    user() {
+      return !this.$store.getters.getUser ? false : this.$store.getters.getUser;
+    },
+    userName() {
+      return !this.user ? false : this.user.username;
+    },
+    name() {
+      return !this.user
+        ? false
+        : this.user.firstName + " " + this.user.lastName;
+    },
     email() {
       return !this.$store.getters.getUser
         ? false

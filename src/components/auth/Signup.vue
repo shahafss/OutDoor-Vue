@@ -4,12 +4,52 @@
       <h1>Sign-Up!</h1>
       <form @submit.prevent="onSubmit">
         <div class="input">
-          <label for="email">E-Mail</label>
-          <input type="email" id="email" v-model="email" />
+          <label for="user-name">User Name</label>
+          <input v-model="username" type="text" id="user-name" />
+        </div>
+        <div class="input">
+          <label for="first-name">First Name</label>
+          <input v-model="firstName" type="text" id="first-name" />
+        </div>
+        <div class="input">
+          <label for="last-name">Last Name</label>
+          <input v-model="lastName" type="text" id="last-name" />
+        </div>
+        <div class="gender-inputs">
+          <div class="form-check">
+            <input
+              v-model="gender"
+              class="form-check-input"
+              type="radio"
+              name="gender"
+              id="male"
+              value="m"
+            />
+            <label class="form-check-label" for="male">
+              Male
+            </label>
+          </div>
+          <div class="form-check" style="margin-left:1rem">
+            <input
+              v-model="gender"
+              class="form-check-input"
+              type="radio"
+              name="gender"
+              id="female"
+              value="f"
+            />
+            <label class="form-check-label" for="female">
+              Female
+            </label>
+          </div>
         </div>
         <div class="input">
           <label for="age">Your Age</label>
-          <input type="number" id="age" v-model.number="age" />
+          <input type="date" id="birthday" v-model="birthday" />
+        </div>
+        <div class="input">
+          <label for="email">E-Mail</label>
+          <input type="email" id="email" v-model="email" />
         </div>
         <div class="input">
           <label for="password">Password</label>
@@ -39,8 +79,12 @@
 export default {
   data() {
     return {
+      username: "",
+      firstName: "",
+      lastName: "",
       email: "",
-      age: null,
+      birthday: "",
+      gender: null,
       password: "",
       confirmPassword: "",
       terms: false
@@ -49,12 +93,17 @@ export default {
   methods: {
     onSubmit() {
       const formData = {
+        username: this.username,
+        firstName: this.firstName,
+        lastName: this.lastName,
+        gender: this.gender,
+        birthday: new Date(this.birthday),
         email: this.email,
-        age: this.age,
         password: this.password,
-        confirmPassword: this.confirmPassword,
         terms: this.terms
       };
+
+      console.log(formData);
 
       this.$store.dispatch("signup", formData);
     }
@@ -69,6 +118,10 @@ export default {
   border: 1px solid #eee;
   padding: 20px;
   box-shadow: 0 2px 3px #ccc;
+}
+
+.gender-inputs {
+  display: flex;
 }
 
 .input {
