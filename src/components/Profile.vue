@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container-fluid">
     <h1>{{ name }} ({{ userName }})</h1>
     <h2>{{ email }}</h2>
     <hr />

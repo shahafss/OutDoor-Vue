@@ -116,13 +116,16 @@ const actions = {
         });
       });
   },
-  deleteRoom: (context, id) => {
+  deleteRoom: ({ commit }, id) => {
     db.collection("rooms")
       .doc(id)
       .delete()
       .then(() => {
-        context.commit("DELETE_ROOM", id);
+        commit("DELETE_ROOM", id);
       });
+  },
+  updateRoom: ({ commit }, roomData) => {
+    const currentRoom = state.rooms.find(room => room.id == roomData.roomId);
   },
   joinUser: ({ commit }, joinData) => {
     const currentRoom = state.rooms.find(room => room.id == joinData.roomId);
