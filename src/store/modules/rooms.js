@@ -24,16 +24,16 @@ const mutations = {
   FETCH_ROOMS(state, rooms) {
     state.rooms = rooms;
   },
-  UPDATE_JOINED_USERS(state, joinedUsersData) {
-    if (joinedUsersData.roomIndex >= 0) {
-      state.rooms.splice(joinedUsersData.roomIndex, 1);
-      state.rooms.splice(joinedUsersData.roomIndex, 0, joinedUsersData.room);
+  UPDATE_ROOM(state, roomData) {
+    if (roomData.roomIndex >= 0) {
+      state.rooms.splice(roomData.roomIndex, 1);
+      state.rooms.splice(roomData.roomIndex, 0, roomData.room);
     }
   }
 };
 
 const actions = {
-  initRealtimeListeners(context) {
+  initRealtimeListeners({ commit }) {
     db.collection("rooms").onSnapshot(snapshot => {
       snapshot.docChanges().forEach(change => {
         if (change.type === "added") {
@@ -43,7 +43,7 @@ const actions = {
 
           if (source === "Server") {
             if (!state.rooms.some(room => room.id == change.doc.id)) {
-              context.commit("ADD_ROOM", {
+              commit("ADD_ROOM", {
                 id: change.doc.id,
                 title: change.doc.data().title,
                 description: change.doc.data().description,
@@ -59,16 +59,17 @@ const actions = {
           const room = state.rooms.find(room => room.id == change.doc.id);
           const roomIndex = state.rooms.indexOf(room);
 
-          const joinedUsersData = {
+          const roomData = {
             roomIndex: roomIndex,
             room: change.doc.data()
           };
-          joinedUsersData.room.id = change.doc.id;
+          roomData.room.id = change.doc.id;
 
-          context.commit("UPDATE_JOINED_USERS", joinedUsersData);
+          commit("UPDATE_ROOM", roomData);
         }
+
         if (change.type === "removed") {
-          context.commit("DELETE_ROOM", change.doc.id);
+          commit("DELETE_ROOM", change.doc.id);
         }
       });
     });
@@ -95,7 +96,7 @@ const actions = {
         commit("FETCH_ROOMS", tempRooms);
       });
   },
-  addRoom: (context, room) => {
+  addRoom: ({ commit }, room) => {
     db.collection("rooms")
       .add({
         title: room.title,
@@ -106,7 +107,7 @@ const actions = {
         timestamp: new Date()
       })
       .then(docRef => {
-        context.commit("ADD_ROOM", {
+        commit("ADD_ROOM", {
           id: docRef.id,
           title: docRef.title,
           description: docRef.description,
@@ -116,15 +117,22 @@ const actions = {
         });
       });
   },
-  deleteRoom: (context, id) => {
+  deleteRoom: ({ commit }, id) => {
     db.collection("rooms")
       .doc(id)
       .delete()
       .then(() => {
-        context.commit("DELETE_ROOM", id);
+        commit("DELETE_ROOM", id);
       });
   },
-  joinUser: ({ commit }, joinData) => {
+  updateRoom: (context, updatedRoom) => {
+    const currentRoomId = state.rooms.find(room => room.id == updatedRoom.id)
+      .id;
+    db.collection("rooms")
+      .doc(currentRoomId)
+      .update(updatedRoom);
+  },
+  joinUser: (context, joinData) => {
     const currentRoom = state.rooms.find(room => room.id == joinData.roomId);
     const joinedUsers = currentRoom.joinedUsers;
     if (currentRoom.participants > currentRoom.joinedUsers.length) {
@@ -135,7 +143,7 @@ const actions = {
         .update({ joinedUsers: joinedUsers });
     }
   },
-  leaveUser: ({ commit }, leaveData) => {
+  leaveUser: (context, leaveData) => {
     const currentRoom = state.rooms.find(room => room.id == leaveData.roomId);
     const joinedUsers = currentRoom.joinedUsers;
     const index = joinedUsers.indexOf(leaveData.userId);
