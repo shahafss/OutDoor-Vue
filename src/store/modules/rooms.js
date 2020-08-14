@@ -24,10 +24,10 @@ const mutations = {
   FETCH_ROOMS(state, rooms) {
     state.rooms = rooms;
   },
-  UPDATE_JOINED_USERS(state, joinedUsersData) {
-    if (joinedUsersData.roomIndex >= 0) {
-      state.rooms.splice(joinedUsersData.roomIndex, 1);
-      state.rooms.splice(joinedUsersData.roomIndex, 0, joinedUsersData.room);
+  UPDATE_ROOM(state, roomData) {
+    if (roomData.roomIndex >= 0) {
+      state.rooms.splice(roomData.roomIndex, 1);
+      state.rooms.splice(roomData.roomIndex, 0, roomData.room);
     }
   }
 };
@@ -59,14 +59,15 @@ const actions = {
           const room = state.rooms.find(room => room.id == change.doc.id);
           const roomIndex = state.rooms.indexOf(room);
 
-          const joinedUsersData = {
+          const roomData = {
             roomIndex: roomIndex,
             room: change.doc.data()
           };
-          joinedUsersData.room.id = change.doc.id;
+          roomData.room.id = change.doc.id;
 
-          context.commit("UPDATE_JOINED_USERS", joinedUsersData);
+          context.commit("UPDATE_ROOM", roomData);
         }
+
         if (change.type === "removed") {
           context.commit("DELETE_ROOM", change.doc.id);
         }
@@ -124,8 +125,13 @@ const actions = {
         commit("DELETE_ROOM", id);
       });
   },
-  updateRoom: ({ commit }, roomData) => {
-    const currentRoom = state.rooms.find(room => room.id == roomData.roomId);
+  updateRoom: (context, updatedRoom) => {
+    const currentRoomId = state.rooms.find(room => room.id == updatedRoom.id)
+      .id;
+    console.log("currentRoom>>", currentRoomId);
+    db.collection("rooms")
+      .doc(currentRoomId)
+      .update(updatedRoom);
   },
   joinUser: ({ commit }, joinData) => {
     const currentRoom = state.rooms.find(room => room.id == joinData.roomId);

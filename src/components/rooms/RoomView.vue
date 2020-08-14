@@ -5,9 +5,16 @@
       v-if="loggedInUser && isActive && currentRoom"
       @submit.prevent="saveRoom"
     >
-      <input v-model="title" class="title" type="text" :disabled="!editMode" />
+      <input
+        :value="title"
+        ref="title"
+        class="title"
+        type="text"
+        :disabled="!editMode"
+      />
       <textarea
-        v-model="description"
+        :value="description"
+        ref="description"
         class="description"
         type="text"
         :disabled="!editMode"
@@ -17,7 +24,8 @@
           >Participants: {{ currentRoom.joinedUsers.length }}/</label
         >
         <input
-          v-model="participants"
+          :value="participants"
+          ref="participants"
           id="participants"
           type="number"
           class="participants"
@@ -54,10 +62,14 @@
         >
           Delete Room
         </button>
-        <button v-if="!editMode" type="button" @click="editMode = !editMode">
+        <button
+          v-if="isAdmin && !editMode"
+          type="button"
+          @click.prevent="editMode = !editMode"
+        >
           Edit
         </button>
-        <button type="submit">save</button>
+        <button v-if="editMode" type="submit">Save</button>
       </div>
     </form>
     <div v-else>
@@ -85,11 +97,6 @@ export default {
   },
   mounted() {
     this.user = this.$store.getters.getUser;
-  },
-  watch: {
-    editMode(val) {
-      console.log(val);
-    }
   },
   computed: {
     //TODO move computed props to getters(if possible)
@@ -132,9 +139,13 @@ export default {
   },
   methods: {
     saveRoom() {
-      const updatedRoom = {};
-      this.$store.dispatch("updateRoom");
-      console.log("update room");
+      const editedData = {
+        title: this.$refs.title.value,
+        description: this.$refs.description.value,
+        participants: this.$refs.participants.value
+      };
+      const updatedRoom = { ...this.currentRoom, ...editedData };
+      this.$store.dispatch("updateRoom", updatedRoom);
       this.editMode = false;
     },
     deleteRoom(id) {
