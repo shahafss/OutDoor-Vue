@@ -83,9 +83,6 @@ export default {
   data() {
     return {
       roomId: this.$route.params.id,
-      tempTitle: "",
-      tempDescription: "",
-      tempParticipants: null,
       isActive: true,
       editMode: false
     };

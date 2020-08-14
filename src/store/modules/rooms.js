@@ -33,7 +33,7 @@ const mutations = {
 };
 
 const actions = {
-  initRealtimeListeners(context) {
+  initRealtimeListeners({ commit }) {
     db.collection("rooms").onSnapshot(snapshot => {
       snapshot.docChanges().forEach(change => {
         if (change.type === "added") {
@@ -43,7 +43,7 @@ const actions = {
 
           if (source === "Server") {
             if (!state.rooms.some(room => room.id == change.doc.id)) {
-              context.commit("ADD_ROOM", {
+              commit("ADD_ROOM", {
                 id: change.doc.id,
                 title: change.doc.data().title,
                 description: change.doc.data().description,
@@ -65,11 +65,11 @@ const actions = {
           };
           roomData.room.id = change.doc.id;
 
-          context.commit("UPDATE_ROOM", roomData);
+          commit("UPDATE_ROOM", roomData);
         }
 
         if (change.type === "removed") {
-          context.commit("DELETE_ROOM", change.doc.id);
+          commit("DELETE_ROOM", change.doc.id);
         }
       });
     });
@@ -96,7 +96,7 @@ const actions = {
         commit("FETCH_ROOMS", tempRooms);
       });
   },
-  addRoom: (context, room) => {
+  addRoom: ({ commit }, room) => {
     db.collection("rooms")
       .add({
         title: room.title,
@@ -107,7 +107,7 @@ const actions = {
         timestamp: new Date()
       })
       .then(docRef => {
-        context.commit("ADD_ROOM", {
+        commit("ADD_ROOM", {
           id: docRef.id,
           title: docRef.title,
           description: docRef.description,
@@ -128,12 +128,11 @@ const actions = {
   updateRoom: (context, updatedRoom) => {
     const currentRoomId = state.rooms.find(room => room.id == updatedRoom.id)
       .id;
-    console.log("currentRoom>>", currentRoomId);
     db.collection("rooms")
       .doc(currentRoomId)
       .update(updatedRoom);
   },
-  joinUser: ({ commit }, joinData) => {
+  joinUser: (context, joinData) => {
     const currentRoom = state.rooms.find(room => room.id == joinData.roomId);
     const joinedUsers = currentRoom.joinedUsers;
     if (currentRoom.participants > currentRoom.joinedUsers.length) {
@@ -144,7 +143,7 @@ const actions = {
         .update({ joinedUsers: joinedUsers });
     }
   },
-  leaveUser: ({ commit }, leaveData) => {
+  leaveUser: (context, leaveData) => {
     const currentRoom = state.rooms.find(room => room.id == leaveData.roomId);
     const joinedUsers = currentRoom.joinedUsers;
     const index = joinedUsers.indexOf(leaveData.userId);
