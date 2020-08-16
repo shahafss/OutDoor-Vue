@@ -37,6 +37,15 @@
           {{ user }}
         </div>
       </div>
+      <div class="chat">
+        <ul>
+          <li v-for="message in messages" :key="message.id">
+            {{ message.text }}
+          </li>
+        </ul>
+        <input v-model="message" type="text" placeholder="message.." />
+        <button @click="sendMessage(message)">Send</button>
+      </div>
       <div class="buttons">
         <button
           v-if="!isJoinedUser && !isFull"
@@ -84,7 +93,13 @@ export default {
     return {
       roomId: this.$route.params.id,
       isActive: true,
-      editMode: false
+      editMode: false,
+      messages: [
+        { text: "hey!", id: "1" },
+        { text: "hi!", id: "2" },
+        { text: "hello!", id: "3" }
+      ],
+      message: ""
     };
   },
   created() {
@@ -135,6 +150,11 @@ export default {
     }
   },
   methods: {
+    sendMessage(message) {
+      const messageObj = {
+        text: message
+      };
+    },
     saveRoom() {
       const editedData = {
         title: this.$refs.title.value,
@@ -200,6 +220,9 @@ label {
   border: 1px solid black;
   width: 22rem;
   height: 10rem;
+}
+.chat {
+  border: 1px solid black;
 }
 .buttons {
   margin-top: 2rem;
