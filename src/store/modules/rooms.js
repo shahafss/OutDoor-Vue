@@ -13,6 +13,7 @@ const mutations = {
       description: room.description,
       participants: room.participants,
       joinedUsers: room.joinedUsers,
+      messages: room.messages,
       admin: room.admin,
       timestamp: new Date()
     });
@@ -49,6 +50,7 @@ const actions = {
                 description: change.doc.data().description,
                 participants: change.doc.data().participants,
                 joinedUsers: change.doc.data().joinedUsers,
+                messages: change.doc.data().messages,
                 admin: change.doc.data().admin
               });
             }
@@ -87,6 +89,7 @@ const actions = {
             participants: doc.data().participants,
             admin: doc.data().admin,
             joinedUsers: doc.data().joinedUsers,
+            messages: doc.data().messages,
             timestamp: doc.data().timestamp
           };
           if (roomData.title !== undefined) tempRooms.push(roomData);
@@ -104,6 +107,7 @@ const actions = {
         participants: room.participants,
         admin: globalStore.state.auth.user.id,
         joinedUsers: [globalStore.state.auth.user.id],
+        messages: [],
         timestamp: new Date()
       })
       .then(docRef => {
@@ -113,7 +117,8 @@ const actions = {
           description: docRef.description,
           participants: docRef.participants,
           admin: globalStore.state.auth.user.id,
-          joinedUsers: [globalStore.state.auth.user.id]
+          joinedUsers: [globalStore.state.auth.user.id],
+          messages: []
         });
       });
   },
@@ -152,6 +157,16 @@ const actions = {
     db.collection("rooms")
       .doc(leaveData.roomId)
       .update({ joinedUsers: joinedUsers });
+  },
+  postMessage: ({ commit }, messageData) => {
+    const currentRoom = state.rooms.find(room => room.id == messageData.roomId);
+    console.log("currentRoom>", currentRoom.messages);
+    const messages = currentRoom.messages;
+    messages.push(messageData);
+
+    db.collection("rooms")
+      .doc(messageData.roomId)
+      .update({ messages: messages });
   }
 };
 

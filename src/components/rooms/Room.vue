@@ -11,22 +11,14 @@
         <h3 class="panel-title">{{ room.title }}</h3>
       </div>
       <div class="panel-body">
-        <div>
+        <div class="description">
           {{ room.description }}
         </div>
-        <div>
+        <div class="participants">
           Participants: {{ room.joinedUsers.length }}/{{ room.participants }}
         </div>
         <div class="pull-right">
-          <router-link
-            v-if="!isFull"
-            :to="'/room/' + room.id"
-            class="btn btn-success"
-            tag="button"
-          >
-            Join
-          </router-link>
-          <button v-else class="btn btn-default" disabled>Full</button>
+          <div v-if="isFull" class="full-label btn btn-default">Full</div>
         </div>
       </div>
     </router-link>
@@ -50,6 +42,35 @@ export default {
 
 <style lang="scss" scoped>
 .panel {
+  height: 20rem;
   cursor: pointer;
+
+  .panel-body {
+    height: 100%;
+    .description {
+      min-height: 2rem;
+      max-height: 9rem;
+      overflow-y: scroll;
+      border: 1px solid rgba(0, 128, 0, 0.342);
+      border-radius: 4px;
+      padding: 3px;
+    }
+
+    .participants {
+      position: absolute;
+      bottom: 31px;
+      margin-top: 2rem;
+      width: fit-content;
+      border: 1px solid rgba(0, 128, 0, 0.342);
+      border-radius: 4px;
+      padding: 3px;
+    }
+
+    .full-label {
+      position: absolute;
+      bottom: 31px;
+      right: 31px;
+    }
+  }
 }
 </style>

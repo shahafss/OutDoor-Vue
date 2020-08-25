@@ -1,5 +1,6 @@
 <template>
   <div class="container-fluid">
+    hey scroll: {{ scrollPosition }}
     <form
       class="room-form"
       v-if="loggedInUser && isActive && currentRoom"
@@ -38,13 +39,18 @@
         </div>
       </div>
       <div class="chat">
-        <ul>
-          <li v-for="message in messages" :key="message.id">
-            {{ message.text }}
-          </li>
-        </ul>
-        <input v-model="message" type="text" placeholder="message.." />
-        <button @click="sendMessage(message)">Send</button>
+        <div class="messages-container" ref="messages">
+          <u class="messages">
+            <li class="message" v-for="message in messages" :key="message.id">
+              {{ message.username }}: {{ message.text }}
+              <span>{{ message.timestamp }}</span>
+            </li>
+          </u>
+        </div>
+        <div class="user-input">
+          <input v-model="message" type="text" placeholder="message.." />
+          <button @click="sendMessage(message)">Send</button>
+        </div>
       </div>
       <div class="buttons">
         <button
@@ -94,12 +100,8 @@ export default {
       roomId: this.$route.params.id,
       isActive: true,
       editMode: false,
-      messages: [
-        { text: "hey!", id: "1" },
-        { text: "hi!", id: "2" },
-        { text: "hello!", id: "3" }
-      ],
-      message: ""
+      message: "",
+      scrollPosition: null
     };
   },
   created() {
@@ -109,6 +111,7 @@ export default {
   },
   mounted() {
     this.user = this.$store.getters.getUser;
+    window.addEventListener("scroll", this.updateScroll);
   },
   computed: {
     //TODO move computed props to getters(if possible)
@@ -147,13 +150,25 @@ export default {
       return (
         this.currentRoom.participants == this.currentRoom.joinedUsers.length
       );
+    },
+    messages() {
+      return this.currentRoom ? this.currentRoom.messages : false;
     }
   },
   methods: {
+    updateScroll() {
+      // console.log("refs>", this.$refs);
+      this.scrollPosition = window.scrollY;
+    },
     sendMessage(message) {
-      const messageObj = {
-        text: message
+      const messageData = {
+        text: message,
+        username: this.$store.getters.getUser.username,
+        timestamp: new Date(),
+        roomId: this.currentRoom.id
       };
+      this.$store.dispatch("postMessage", messageData);
+      this.message = "";
     },
     saveRoom() {
       const editedData = {
@@ -222,8 +237,33 @@ label {
   height: 10rem;
 }
 .chat {
+  margin-top: 1rem;
+  padding: 10px;
   border: 1px solid black;
+
+  .messages-container {
+    border: 1px solid green;
+    padding: 10px;
+    overflow: auto;
+    max-height: 15rem;
+    .messages {
+      list-style-type: none;
+      text-decoration: none;
+
+      .message {
+        padding: 2px;
+        margin: 2px 0;
+        border: 1px solid rgba(128, 128, 128, 0.288);
+        border-radius: 4px;
+        background-color: lightcyan;
+      }
+    }
+  }
+  .user-input {
+    margin-top: 1rem;
+  }
 }
+
 .buttons {
   margin-top: 2rem;
 }

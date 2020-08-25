@@ -22,6 +22,9 @@
 import axios from "../../axios-auth";
 
 export default {
+  created() {
+    console.log("env>>", process.env.VUE_APP_FIREBASE);
+  },
   data() {
     return {
       email: "",
