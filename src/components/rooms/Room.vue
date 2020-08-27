@@ -43,6 +43,8 @@ export default {
 <style lang="scss" scoped>
 .panel {
   height: 20rem;
+  box-shadow: 0 2px 3px #ccc;
+
   cursor: pointer;
 
   .panel-body {

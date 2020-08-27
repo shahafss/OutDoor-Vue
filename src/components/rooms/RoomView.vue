@@ -1,6 +1,5 @@
 <template>
   <div class="container-fluid">
-    hey scroll: {{ scrollPosition }}
     <form
       class="room-form"
       v-if="loggedInUser && isActive && currentRoom"
@@ -42,14 +41,28 @@
         <div class="messages-container" ref="messages">
           <u class="messages">
             <li class="message" v-for="message in messages" :key="message.id">
-              {{ message.username }}: {{ message.text }}
-              <span>{{ message.timestamp }}</span>
+              <div class="msg-time">{{ message.timestamp }}</div>
+              <div class="msg-text">
+                <span :style="{ color: randomColor }">
+                  {{ message.username }}:
+                </span>
+                <span>
+                  {{ message.text }}
+                </span>
+              </div>
             </li>
           </u>
         </div>
         <div class="user-input">
-          <input v-model="message" type="text" placeholder="message.." />
-          <button @click="sendMessage(message)">Send</button>
+          <input
+            class="msg-input"
+            v-model="message"
+            type="text"
+            placeholder="message.."
+          />
+          <button class="btn btn-success" @click="sendMessage(message)">
+            Send
+          </button>
         </div>
       </div>
       <div class="buttons">
@@ -70,7 +83,7 @@
           Leave
         </button>
         <button
-          v-if="isAdmin"
+          v-if="isAdmin && editMode"
           type="button"
           class="btn btn-danger"
           @click="deleteRoom(currentRoom.id)"
@@ -78,13 +91,23 @@
           Delete Room
         </button>
         <button
+          class="btn btn-primary"
           v-if="isAdmin && !editMode"
           type="button"
           @click.prevent="editMode = !editMode"
         >
           Edit
         </button>
-        <button v-if="editMode" type="submit">Save</button>
+        <button class="btn btn-success" v-if="editMode" type="submit">
+          Save
+        </button>
+        <button
+          v-if="editMode"
+          class="btn btn-default"
+          @click="editMode = false"
+        >
+          Cancel
+        </button>
       </div>
     </form>
     <div v-else>
@@ -101,7 +124,8 @@ export default {
       isActive: true,
       editMode: false,
       message: "",
-      scrollPosition: null
+      scrollPosition: null,
+      randomColor: "#" + Math.floor(Math.random() * 16777215).toString(16)
     };
   },
   created() {
@@ -111,7 +135,7 @@ export default {
   },
   mounted() {
     this.user = this.$store.getters.getUser;
-    window.addEventListener("scroll", this.updateScroll);
+    this.scrollToBottom();
   },
   computed: {
     //TODO move computed props to getters(if possible)
@@ -156,15 +180,15 @@ export default {
     }
   },
   methods: {
-    updateScroll() {
-      // console.log("refs>", this.$refs);
-      this.scrollPosition = window.scrollY;
-    },
     sendMessage(message) {
+      if (message == "") return;
+      this.scrollToBottom();
+
+      const date = new Date();
       const messageData = {
         text: message,
         username: this.$store.getters.getUser.username,
-        timestamp: new Date(),
+        timestamp: date.toLocaleTimeString(),
         roomId: this.currentRoom.id
       };
       this.$store.dispatch("postMessage", messageData);
@@ -199,6 +223,17 @@ export default {
         roomId: this.currentRoom.id,
         userId: this.loggedInUser.id
       });
+    },
+    getMessageTime(timestamp) {
+      const messageTime = new Date(timestamp);
+      // const date = new Date();
+      console.log("timestamp", timestamp);
+      // console.log("messageTime", date.toLocaleString());
+      return messageTime;
+    },
+    scrollToBottom() {
+      if (!this.$refs.messages) return;
+      this.$refs.messages.scrollTop = this.$refs.messages.scrollHeight;
     }
   }
 };
@@ -235,32 +270,57 @@ label {
   border: 1px solid black;
   width: 22rem;
   height: 10rem;
+  box-shadow: 0 2px 3px #1a191971;
 }
 .chat {
   margin-top: 1rem;
   padding: 10px;
   border: 1px solid black;
+  background-color: #cef3ff85;
+  box-shadow: 0 2px 3px #1a191971;
 
   .messages-container {
+    display: flex;
+    flex-direction: column-reverse;
     border: 1px solid green;
     padding: 10px;
     overflow: auto;
-    max-height: 15rem;
+    height: 15rem;
     .messages {
       list-style-type: none;
       text-decoration: none;
 
       .message {
-        padding: 2px;
+        width: fit-content;
+        max-width: 100%;
+        overflow-wrap: break-word;
         margin: 2px 0;
         border: 1px solid rgba(128, 128, 128, 0.288);
         border-radius: 4px;
-        background-color: lightcyan;
+        background-color: #fff;
+
+        .msg-time {
+          width: 100%;
+          background-color: #90ee903b;
+          text-align: right;
+          font-size: 12px;
+        }
+
+        .msg-text {
+          margin: 4px;
+        }
       }
     }
   }
   .user-input {
     margin-top: 1rem;
+
+    .msg-input {
+      width: 92%;
+      height: 4rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
   }
 }
 

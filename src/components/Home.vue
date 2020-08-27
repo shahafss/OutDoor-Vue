@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Home page</h1>
+    <h1>Welcome to OutDoor !</h1>
   </div>
 </template>
 

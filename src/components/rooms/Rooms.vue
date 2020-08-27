@@ -1,6 +1,5 @@
 <template>
   <div class="container-fluid">
-    <p v-if="email">Your email address: {{ email }}</p>
     <router-link to="/new-room" class="create-btn btn btn-primary" tag="button"
       >Create</router-link
     >

@@ -35,4 +35,8 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.navbar {
+  box-shadow: 0 2px 3px #ccc;
+}
+</style>
