@@ -5,11 +5,19 @@
       <form @submit.prevent="createRoom">
         <div class="input">
           <label for="title">Room Title</label>
-          <input v-model="roomTitle" type="text" placeholder="Title" />
+          <input
+            id="title"
+            v-model="roomTitle"
+            class="form-control"
+            type="text"
+            placeholder="Title"
+          />
         </div>
         <div class="input">
           <label for="description">Room Description</label>
           <input
+            id="description"
+            class="form-control"
             v-model="roomDescription"
             type="text"
             placeholder="Description"
@@ -18,10 +26,24 @@
         <div class="input">
           <label for="participants">Participants</label>
           <input
+            id="participants"
             v-model="roomParticipants"
             type="number"
-            placeholder="Participants"
+            placeholder="0"
+            class="form-control"
           />
+        </div>
+        <div class="input">
+          <label for="map">Address</label>
+          <vue-google-autocomplete
+            v-model="address"
+            id="map"
+            classname="form-control"
+            placeholder="Address"
+            v-on:placechanged="getAddressData"
+            country="il"
+          >
+          </vue-google-autocomplete>
         </div>
         <div class="submit">
           <button type="submit">Create</button>
@@ -32,21 +54,29 @@
 </template>
 
 <script>
+import VueGoogleAutocomplete from "vue-google-autocomplete";
+
 export default {
   data() {
     return {
       roomTitle: "",
       roomDescription: "",
-      roomParticipants: 0
+      roomParticipants: null,
+      address: ""
     };
   },
+  components: { VueGoogleAutocomplete },
   methods: {
+    getAddressData(addressData, placeResultData, id) {
+      this.address = addressData;
+    },
     createRoom() {
       this.$store
         .dispatch("addRoom", {
           title: this.roomTitle,
           description: this.roomDescription,
-          participants: this.roomParticipants
+          participants: this.roomParticipants,
+          address: this.getAddressString(this.address)
         })
         .then(
           this.$store.dispatch("fetchRooms"),
@@ -59,6 +89,11 @@ export default {
             }
           }, 1000)
         );
+    },
+    getAddressString(address) {
+      const addressString =
+        address.route + " " + address.street_number + ", " + address.locality;
+      return addressString;
     }
   },
   computed: {
@@ -89,20 +124,6 @@ export default {
   display: block;
   color: #4e4e4e;
   margin-bottom: 6px;
-}
-
-.input input {
-  font: inherit;
-  width: 100%;
-  padding: 6px 12px;
-  box-sizing: border-box;
-  border: 1px solid #ccc;
-}
-
-.input input:focus {
-  outline: none;
-  border: 1px solid #521751;
-  background-color: #eee;
 }
 
 .submit button {

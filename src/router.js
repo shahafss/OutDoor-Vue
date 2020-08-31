@@ -53,7 +53,20 @@ export const routes = [
       }, 10);
     }
   },
-  { path: "/room/:id", component: RoomView, name: "room" },
+  {
+    path: "/room/:id",
+    component: RoomView,
+    name: "room",
+    beforeEnter(to, from, next) {
+      setTimeout(() => {
+        if (store.state.auth.idToken) {
+          next();
+        } else {
+          next("/login");
+        }
+      }, 10);
+    }
+  },
   { path: "/new-room", component: NewRoom }
 ];
 

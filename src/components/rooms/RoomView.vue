@@ -8,18 +8,30 @@
       <input
         :value="title"
         ref="title"
-        class="title"
+        class="title form-control"
         type="text"
         :disabled="!editMode"
       />
       <textarea
         :value="description"
         ref="description"
-        class="description"
+        class="description form-control"
         type="text"
         :disabled="!editMode"
       />
       <div>
+        <vue-google-autocomplete
+          v-model="address"
+          id="map"
+          classname="form-control"
+          placeholder="Address"
+          v-on:placechanged="getAddressData"
+          country="il"
+          :disabled="!editMode"
+        >
+        </vue-google-autocomplete>
+      </div>
+      <div style="display:flex">
         <label for="participants"
           >Participants: {{ currentRoom.joinedUsers.length }}/</label
         >
@@ -28,43 +40,48 @@
           ref="participants"
           id="participants"
           type="number"
-          class="participants"
+          class="participants form-control"
           :disabled="!editMode"
         />
       </div>
-      <div class="joined-users">
-        <div v-for="user in joinedUsers" :key="user">
-          {{ user }}
+      <section v-if="!editMode">
+        <div class="joined-users">
+          <div v-for="user in joinedUsers" :key="user" class="joined-user">
+            {{ user }}
+          </div>
         </div>
-      </div>
-      <div class="chat">
-        <div class="messages-container" ref="messages">
-          <u class="messages">
-            <li class="message" v-for="message in messages" :key="message.id">
-              <div class="msg-time">{{ message.timestamp }}</div>
-              <div class="msg-text">
-                <span :style="{ color: randomColor }">
-                  {{ message.username }}:
-                </span>
-                <span>
-                  {{ message.text }}
-                </span>
-              </div>
-            </li>
-          </u>
+        <div class="chat">
+          <div class="messages-container" ref="messages">
+            <u class="messages">
+              <li class="message" v-for="message in messages" :key="message.id">
+                <div class="msg-time">{{ message.timestamp }}</div>
+                <div class="msg-text">
+                  <span :style="{ color: randomColor }">
+                    {{ message.username }}:
+                  </span>
+                  <span>
+                    {{ message.text }}
+                  </span>
+                </div>
+              </li>
+            </u>
+          </div>
+          <div class="user-input">
+            <input
+              class="msg-input"
+              v-model="message"
+              type="text"
+              placeholder="message.."
+            />
+            <button
+              class="btn btn-success btn-send"
+              @click="sendMessage(message)"
+            >
+              Send
+            </button>
+          </div>
         </div>
-        <div class="user-input">
-          <input
-            class="msg-input"
-            v-model="message"
-            type="text"
-            placeholder="message.."
-          />
-          <button class="btn btn-success" @click="sendMessage(message)">
-            Send
-          </button>
-        </div>
-      </div>
+      </section>
       <div class="buttons">
         <button
           v-if="!isJoinedUser && !isFull"
@@ -83,6 +100,16 @@
           Leave
         </button>
         <button
+          v-if="editMode"
+          class="btn btn-default"
+          @click="editMode = false"
+        >
+          Cancel
+        </button>
+        <button class="btn btn-success" v-if="editMode" type="submit">
+          Save
+        </button>
+        <button
           v-if="isAdmin && editMode"
           type="button"
           class="btn btn-danger"
@@ -90,23 +117,15 @@
         >
           Delete Room
         </button>
+      </div>
+      <div>
         <button
-          class="btn btn-primary"
+          class="btn btn-primary edit-button"
           v-if="isAdmin && !editMode"
           type="button"
           @click.prevent="editMode = !editMode"
         >
           Edit
-        </button>
-        <button class="btn btn-success" v-if="editMode" type="submit">
-          Save
-        </button>
-        <button
-          v-if="editMode"
-          class="btn btn-default"
-          @click="editMode = false"
-        >
-          Cancel
         </button>
       </div>
     </form>
@@ -117,6 +136,8 @@
 </template>
 
 <script>
+import VueGoogleAutocomplete from "vue-google-autocomplete";
+
 export default {
   data() {
     return {
@@ -128,6 +149,7 @@ export default {
       randomColor: "#" + Math.floor(Math.random() * 16777215).toString(16)
     };
   },
+  components: { VueGoogleAutocomplete },
   created() {
     this.$store.dispatch("initRealtimeListeners");
     this.$store.dispatch("fetchRooms");
@@ -153,6 +175,9 @@ export default {
     },
     participants() {
       return this.currentRoom ? this.currentRoom.participants : false;
+    },
+    address() {
+      return this.currentRoom ? this.currentRoom.address : false;
     },
     isAdmin() {
       return this.loggedInUser.id == this.currentRoom.admin;
@@ -180,6 +205,9 @@ export default {
     }
   },
   methods: {
+    getAddressData(addressData, placeResultData, id) {
+      this.address = addressData;
+    },
     sendMessage(message) {
       if (message == "") return;
       this.scrollToBottom();
@@ -245,38 +273,78 @@ export default {
   flex-direction: column;
 }
 .title {
+  font-size: 30px;
+}
+.title:disabled {
   font-size: 50px;
-  background: transparent;
-  border: transparent;
 }
 .description {
   font-size: 25px;
-  background: transparent;
-  border: transparent;
+  max-width: 78rem;
+}
+.description:disabled {
+  font-size: 25px;
   resize: none;
   min-height: 8rem;
   overflow: auto;
 }
 .participants {
-  width: 5rem;
-  border: none;
+  width: 6rem;
   font-size: 25px;
   font-weight: 500;
+  padding-right: 0;
+  padding-left: 7px;
+  height: 34px !important;
+}
+.participants:disabled {
+  width: 6rem;
+  font-size: 25px;
+  font-weight: 500;
+}
+
+.form-control:not(.participants) {
+  margin-top: 2rem;
+}
+.form-control:disabled {
+  color: #333;
+  background-color: #fff;
+  border: none;
+  box-shadow: none;
+  height: inherit;
+}
+.form-control:disabled:hover {
+  cursor: default;
 }
 label {
   font-size: 25px;
 }
 .joined-users {
+  position: absolute;
+  top: 266px;
+  right: 15px;
   border: 1px solid black;
+  border-radius: 8px;
   width: 22rem;
   height: 10rem;
   box-shadow: 0 2px 3px #1a191971;
+  .joined-user {
+    margin-top: 0px;
+    text-align: center;
+    border: 1px solid #b3e5fc;
+    border-radius: 8px;
+    border-right: none;
+    border-left: none;
+    box-shadow: 0 2px 3px #1a191971;
+  }
+  .joined-user:not(:first-of-type) {
+    margin-top: 4px;
+  }
 }
 .chat {
   margin-top: 1rem;
   padding: 10px;
-  border: 1px solid black;
-  background-color: #cef3ff85;
+  border: 1px solid #000;
+  background-color: #e6ffff;
   box-shadow: 0 2px 3px #1a191971;
 
   .messages-container {
@@ -326,5 +394,10 @@ label {
 
 .buttons {
   margin-top: 2rem;
+  position: absolute;
+  bottom: 12px;
+}
+.edit-button {
+  margin: 1rem auto;
 }
 </style>
