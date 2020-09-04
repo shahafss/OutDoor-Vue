@@ -17,9 +17,7 @@
         <div class="participants">
           Participants: {{ room.joinedUsers.length }}/{{ room.participants }}
         </div>
-        <div class="pull-right">
-          <div v-if="isFull" class="full-label btn btn-default">Full</div>
-        </div>
+        <div v-if="isFull" class="full-label">Full</div>
       </div>
     </router-link>
   </div>
@@ -44,11 +42,14 @@ export default {
 .panel {
   height: 20rem;
   box-shadow: 0 2px 3px #ccc;
+  display: flex;
+  flex-direction: column;
 
   cursor: pointer;
 
   .panel-body {
     height: 100%;
+    position: relative;
     .description {
       min-height: 2rem;
       max-height: 9rem;
@@ -60,18 +61,28 @@ export default {
 
     .participants {
       position: absolute;
-      bottom: 31px;
+      bottom: 0;
       margin-top: 2rem;
       width: fit-content;
       border: 1px solid rgba(0, 128, 0, 0.342);
-      border-radius: 4px;
+      border-radius: 4px 4px 0 0;
       padding: 3px;
+      border-bottom: none;
     }
 
     .full-label {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #ccc;
+      font-size: 25px;
+      font-weight: 600;
+      opacity: 80%;
+      height: 4rem;
       position: absolute;
-      bottom: 31px;
-      right: 31px;
+      top: 33%;
+      left: 0;
+      width: 100%;
     }
   }
 }

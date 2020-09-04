@@ -76,7 +76,11 @@ export default {
           title: this.roomTitle,
           description: this.roomDescription,
           participants: this.roomParticipants,
-          address: this.getAddressString(this.address)
+          address: {
+            addressString: this.getAddressString(this.address),
+            lat: this.address.latitude,
+            lng: this.address.longitude
+          }
         })
         .then(
           this.$store.dispatch("fetchRooms"),
