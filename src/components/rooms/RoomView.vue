@@ -21,8 +21,9 @@
       />
       <div>
         <vue-google-autocomplete
-          v-model="address.addressString"
+          v-model="getAddress.addressString"
           id="map"
+          ref="address"
           classname="form-control"
           placeholder="Address"
           v-on:placechanged="getAddressData"
@@ -31,7 +32,7 @@
         >
         </vue-google-autocomplete>
       </div>
-      <div style="display:flex">
+      <div style="display:flex; margin-top:1rem">
         <label for="participants"
           >Participants: {{ currentRoom.joinedUsers.length }}/</label
         >
@@ -46,17 +47,20 @@
       </div>
       <gmap-map
         class="activity-map"
-        :center="{ lat: address.lat, lng: address.lng }"
-        :zoom="18"
+        :center="{
+          lat: getAddress.lat,
+          lng: getAddress.lng
+        }"
+        :zoom="16"
       >
         <GmapMarker
-          :position="{ lat: address.lat, lng: address.lng }"
+          :position="{ lat: getAddress.lat, lng: getAddress.lng }"
           :clickable="true"
           :draggable="true"
         />
       </gmap-map>
-      <transition name="fade">
-        <section v-if="!editMode">
+      <transition name="list">
+        <div class="section" v-if="!editMode">
           <div class="joined-users">
             <transition-group name="list">
               <div v-for="user in joinedUsers" :key="user" class="joined-user">
@@ -93,17 +97,17 @@
               />
               <button
                 class="btn btn-success btn-send"
-                @click="sendMessage(message)"
+                @click.prevent="sendMessage(message)"
               >
                 Send
               </button>
             </div>
           </div>
-        </section>
+        </div>
       </transition>
       <div class="buttons">
         <transition name="fade">
-          <div class="user-buttons">
+          <div v-if="!editMode" class="user-buttons">
             <button
               v-if="!isJoinedUser && !isFull"
               type="button"
@@ -132,7 +136,7 @@
         </transition>
         <transition name="fade">
           <div v-if="editMode" class="edit-buttons">
-            <button class="btn btn-default" @click="editMode = false">
+            <button class="btn btn-default" @click.prevent="cancel()">
               Cancel
             </button>
             <button class="btn btn-success" type="submit">
@@ -162,6 +166,7 @@ export default {
   data() {
     return {
       roomId: this.$route.params.id,
+      address: "",
       isActive: true,
       editMode: false,
       message: "",
@@ -176,7 +181,6 @@ export default {
     this.$store.dispatch("fetchUsers");
   },
   mounted() {
-    this.user = this.$store.getters.getUser;
     this.scrollToBottom();
   },
   computed: {
@@ -196,7 +200,7 @@ export default {
     participants() {
       return this.currentRoom ? this.currentRoom.participants : false;
     },
-    address() {
+    getAddress() {
       return this.currentRoom ? this.currentRoom.address : false;
     },
     isAdmin() {
@@ -231,6 +235,11 @@ export default {
     getAddressData(addressData, placeResultData, id) {
       this.address = addressData;
     },
+    getAddressString(address) {
+      const addressString =
+        address.route + " " + address.street_number + ", " + address.locality;
+      return addressString;
+    },
     sendMessage(message) {
       if (message == "") return;
       this.scrollToBottom();
@@ -249,10 +258,18 @@ export default {
       const editedData = {
         title: this.$refs.title.value,
         description: this.$refs.description.value,
+        address: {
+          addressString: this.getAddressString(this.address),
+          lat: this.address.latitude,
+          lng: this.address.longitude
+        },
         participants: this.$refs.participants.value
       };
       const updatedRoom = { ...this.currentRoom, ...editedData };
       this.$store.dispatch("updateRoom", updatedRoom);
+      this.editMode = false;
+    },
+    cancel() {
       this.editMode = false;
     },
     deleteRoom(id) {
@@ -277,9 +294,6 @@ export default {
     },
     getMessageTime(timestamp) {
       const messageTime = new Date(timestamp);
-      // const date = new Date();
-      console.log("timestamp", timestamp);
-      // console.log("messageTime", date.toLocaleString());
       return messageTime;
     },
     scrollToBottom() {
@@ -292,14 +306,18 @@ export default {
 
 <style lang="scss" scoped>
 .container-fluid {
-  height: 100%;
+  height: 89%;
   .room-form {
+    height: 100%;
     display: flex;
     flex-direction: column;
 
     .title {
       font-size: 30px;
+      height: 60px !important;
       margin-top: 0 !important;
+      padding-top: 0;
+      padding-bottom: 0;
     }
     .title:disabled {
       font-size: 50px;
@@ -307,6 +325,7 @@ export default {
     .description {
       font-size: 25px;
       max-width: 78rem;
+      max-height: 8rem;
     }
     .description:disabled {
       font-size: 25px;
@@ -315,11 +334,11 @@ export default {
       overflow: auto;
     }
     .participants {
-      width: 6rem;
+      width: 5rem;
       font-size: 25px;
       font-weight: 500;
       padding-right: 0;
-      padding-left: 7px;
+      padding-left: 2px;
       height: 34px !important;
     }
     .participants:disabled {
@@ -329,16 +348,16 @@ export default {
     }
 
     .form-control:not(.participants) {
-      width: 60rem;
+      max-width: 75rem;
       margin-top: 2rem;
-      transition: all ease 0.3s;
+      transition: all ease 0.5s;
     }
     .form-control:disabled {
       color: #333;
       background-color: #fff;
       border: none;
       box-shadow: none;
-      height: inherit;
+      height: auto;
     }
     .form-control:disabled:hover {
       cursor: default;
@@ -348,22 +367,28 @@ export default {
     }
     .activity-map {
       position: absolute;
-      top: 80px;
       right: 15px;
       width: 180px;
       height: 180px;
       border: 1px solid black;
+      border-radius: 8px;
+      overflow: hidden;
     }
-    section {
+    .section {
+      position: relative;
+      height: 100%;
+      width: 100%;
+
       .joined-users {
         position: absolute;
-        top: 275px;
-        right: 15px;
+        bottom: 300px;
+        right: 0;
         border: 1px solid black;
         border-radius: 8px;
         width: 22rem;
         height: 10rem;
         box-shadow: 0 2px 3px #1a191971;
+
         .joined-user {
           margin-top: 0px;
           text-align: center;
@@ -372,6 +397,10 @@ export default {
           border-right: none;
           border-left: none;
           box-shadow: 0 2px 3px #1a191971;
+          cursor: pointer;
+        }
+        .joined-user:hover {
+          background-color: #ccc;
         }
         .joined-user:not(:first-of-type) {
           margin-top: 4px;
@@ -380,14 +409,14 @@ export default {
       .chat {
         width: 400px;
         float: right;
-        margin-top: 4rem;
         padding: 10px;
         border: 1px solid #000;
         border-radius: 4px;
         background-color: #e6ffff;
         box-shadow: 0 2px 3px #1a191971;
         position: absolute;
-        right: 15px;
+        right: 0;
+        bottom: 60px;
 
         .messages-container {
           display: flex;
@@ -439,14 +468,12 @@ export default {
       }
     }
     .buttons {
-      margin: 1rem 0;
-      .edit-buttons {
-        position: absolute;
-        bottom: 15px;
-      }
+      position: absolute;
+      bottom: 15px;
+
       .user-buttons {
         position: absolute;
-        bottom: 15px;
+        bottom: 0px;
       }
     }
   }
@@ -462,7 +489,7 @@ export default {
 
 .list-enter-active,
 .list-leave-active {
-  transition: all 1s;
+  transition: all 0.5s;
 }
 .list-enter, .list-leave-to /* .list-leave-active below version 2.1.8 */ {
   opacity: 0;

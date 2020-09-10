@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="height:100%">
     <OutDoorHeader></OutDoorHeader>
     <app-fade>
       <router-view />
@@ -28,7 +28,7 @@ html {
   padding: 0;
   margin: 0;
   width: 100%;
-  min-height: 100%;
+  min-height: 100vh;
   height: 100%;
 }
 </style>

@@ -10,6 +10,7 @@ const mutations = {
     state.rooms.push({
       id: room.id,
       title: room.title,
+      category: room.category,
       description: room.description,
       participants: room.participants,
       address: room.address,
@@ -48,6 +49,7 @@ const actions = {
               commit("ADD_ROOM", {
                 id: change.doc.id,
                 title: change.doc.data().title,
+                category: change.doc.data().category,
                 description: change.doc.data().description,
                 participants: change.doc.data().participants,
                 address: change.doc.data().address,
@@ -87,6 +89,7 @@ const actions = {
           const roomData = {
             id: doc.id,
             title: doc.data().title,
+            category: doc.data().category,
             description: doc.data().description,
             participants: doc.data().participants,
             address: doc.data().address,
@@ -106,6 +109,7 @@ const actions = {
     db.collection("rooms")
       .add({
         title: room.title,
+        category: room.category,
         description: room.description,
         participants: room.participants,
         address: room.address,
@@ -118,6 +122,7 @@ const actions = {
         commit("ADD_ROOM", {
           id: docRef.id,
           title: docRef.title,
+          category: docRef.category,
           description: docRef.description,
           participants: docRef.participants,
           address: docRef.address,
@@ -165,7 +170,6 @@ const actions = {
   },
   postMessage: ({ commit }, messageData) => {
     const currentRoom = state.rooms.find(room => room.id == messageData.roomId);
-    console.log("currentRoom>", currentRoom.messages);
     const messages = currentRoom.messages;
     messages.push(messageData);
 

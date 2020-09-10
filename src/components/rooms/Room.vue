@@ -33,6 +33,9 @@ export default {
     isJoinedUser() {
       if (this.$store.getters.getUser)
         return this.room.joinedUsers.includes(this.$store.getters.getUser.id);
+    },
+    category() {
+      return this.room.category;
     }
   }
 };

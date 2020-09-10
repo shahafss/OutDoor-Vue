@@ -102,9 +102,6 @@ export default {
         password: this.password,
         terms: this.terms
       };
-
-      console.log(formData);
-
       this.$store.dispatch("signup", formData);
     }
   }

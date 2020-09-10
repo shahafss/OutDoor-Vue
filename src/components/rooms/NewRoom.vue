@@ -1,33 +1,37 @@
 <template>
   <div class="container-fluid">
-    <h1>New Room</h1>
+    <h1>New Activity</h1>
     <div class="new-room-form">
       <form @submit.prevent="createRoom">
         <div class="input">
-          <label for="title">Room Title</label>
-          <input
-            id="title"
-            v-model="roomTitle"
-            class="form-control"
-            type="text"
-            placeholder="Title"
-          />
+          <label for="title">Title</label>
+          <input id="title" v-model="title" class="form-control" type="text" />
         </div>
         <div class="input">
-          <label for="description">Room Description</label>
+          <div class="form-group">
+            <label for="sel1">Category:</label>
+            <select v-model="category" class="form-control" id="sel1">
+              <option>Sport</option>
+              <option>Study</option>
+              <option>Hangout</option>
+              <option>Protest</option>
+            </select>
+          </div>
+        </div>
+        <div class="input">
+          <label for="description">Description</label>
           <input
             id="description"
             class="form-control"
-            v-model="roomDescription"
+            v-model="description"
             type="text"
-            placeholder="Description"
           />
         </div>
         <div class="input">
           <label for="participants">Participants</label>
           <input
             id="participants"
-            v-model="roomParticipants"
+            v-model="participants"
             type="number"
             placeholder="0"
             class="form-control"
@@ -39,7 +43,6 @@
             v-model="address"
             id="map"
             classname="form-control"
-            placeholder="Address"
             v-on:placechanged="getAddressData"
             country="il"
           >
@@ -59,9 +62,10 @@ import VueGoogleAutocomplete from "vue-google-autocomplete";
 export default {
   data() {
     return {
-      roomTitle: "",
-      roomDescription: "",
-      roomParticipants: null,
+      title: "",
+      category: null,
+      description: "",
+      participants: null,
       address: ""
     };
   },
@@ -71,32 +75,27 @@ export default {
       this.address = addressData;
     },
     createRoom() {
-      this.$store
-        .dispatch("addRoom", {
-          title: this.roomTitle,
-          description: this.roomDescription,
-          participants: this.roomParticipants,
-          address: {
-            addressString: this.getAddressString(this.address),
-            lat: this.address.latitude,
-            lng: this.address.longitude
-          }
-        })
-        .then(
-          this.$store.dispatch("fetchRooms"),
-          setTimeout(() => {
-            const newRoom = this.getRooms.find(
-              room => room.description == this.roomDescription
-            );
-            if (newRoom !== undefined) {
-              this.$router.push("/room/" + newRoom.id);
-            }
-          }, 1000)
-        );
+      this.$store.dispatch("addRoom", {
+        title: this.title,
+        category: this.category,
+        description: this.description,
+        participants: this.participants,
+        address: {
+          addressString: this.getAddressString(this.address),
+          lat: this.address.latitude,
+          lng: this.address.longitude
+        }
+      });
+      this.$store.dispatch("fetchRooms");
+      const newRoom = this.getRooms.find(
+        room => room.description == this.description
+      );
+      if (newRoom !== undefined) {
+        this.$router.push("/room/" + newRoom.id);
+      }
     },
     getAddressString(address) {
-      const addressString =
-        address.route + " " + address.street_number + ", " + address.locality;
+      const addressString = `${address.route} ${address.street_number}, ${address.locality}`;
       return addressString;
     }
   },
