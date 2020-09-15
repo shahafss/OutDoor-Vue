@@ -5,46 +5,49 @@
       v-if="loggedInUser && isActive && currentRoom"
       @submit.prevent="saveRoom"
     >
-      <input
-        :value="title"
-        ref="title"
-        class="title form-control"
-        type="text"
-        :disabled="!editMode"
-      />
-      <textarea
-        :value="description"
-        ref="description"
-        class="description form-control"
-        type="text"
-        :disabled="!editMode"
-      />
-      <div>
-        <vue-google-autocomplete
-          v-model="getAddress.addressString"
-          id="map"
-          ref="address"
-          classname="form-control"
-          placeholder="Address"
-          v-on:placechanged="getAddressData"
-          country="il"
-          :disabled="!editMode"
-        >
-        </vue-google-autocomplete>
-      </div>
-      <div style="display:flex; margin-top:1rem">
-        <label for="participants"
-          >Participants: {{ currentRoom.joinedUsers.length }}/</label
-        >
+      <section>
         <input
-          :value="participants"
-          ref="participants"
-          id="participants"
-          type="number"
-          class="participants form-control"
+          :value="title"
+          ref="title"
+          class="title form-control"
+          type="text"
           :disabled="!editMode"
         />
-      </div>
+        {{ date }}
+        <textarea
+          :value="description"
+          ref="description"
+          class="description form-control"
+          type="text"
+          :disabled="!editMode"
+        />
+        <div>
+          <vue-google-autocomplete
+            v-model="getAddress.addressString"
+            id="map"
+            ref="address"
+            classname="form-control"
+            placeholder="Address"
+            v-on:placechanged="getAddressData"
+            country="il"
+            :disabled="!editMode"
+          >
+          </vue-google-autocomplete>
+        </div>
+        <div style="display:flex; margin-top:1rem">
+          <label for="participants"
+            >Participants: {{ currentRoom.joinedUsers.length }}/</label
+          >
+          <input
+            :value="participants"
+            ref="participants"
+            id="participants"
+            type="number"
+            class="participants form-control"
+            :disabled="!editMode"
+          />
+        </div>
+      </section>
       <gmap-map
         class="activity-map"
         :center="{
@@ -60,50 +63,56 @@
         />
       </gmap-map>
       <transition name="list">
-        <div class="section" v-if="!editMode">
-          <div class="joined-users">
-            <transition-group name="list">
-              <div v-for="user in joinedUsers" :key="user" class="joined-user">
-                {{ user }}
-              </div>
-            </transition-group>
-          </div>
-          <div class="chat">
-            <div class="messages-container" ref="messages">
-              <u class="messages">
-                <li
-                  class="message"
-                  v-for="message in messages"
-                  :key="message.id"
+        <section class="section" v-if="!editMode">
+          <div>
+            <div class="joined-users">
+              <transition-group name="list">
+                <div
+                  v-for="user in joinedUsers"
+                  :key="user"
+                  class="joined-user"
                 >
-                  <div class="msg-time">{{ message.timestamp }}</div>
-                  <div class="msg-text">
-                    <span :style="{ color: randomColor }">
-                      {{ message.username }}:
-                    </span>
-                    <span>
-                      {{ message.text }}
-                    </span>
-                  </div>
-                </li>
-              </u>
+                  {{ user }}
+                </div>
+              </transition-group>
             </div>
-            <div v-if="isJoinedUser" class="user-input">
-              <input
-                class="msg-input"
-                v-model="message"
-                type="text"
-                placeholder="message.."
-              />
-              <button
-                class="btn btn-success btn-send"
-                @click.prevent="sendMessage(message)"
-              >
-                Send
-              </button>
+            <div class="chat">
+              <div class="messages-container" ref="messages">
+                <u class="messages">
+                  <li
+                    class="message"
+                    v-for="message in messages"
+                    :key="message.id"
+                  >
+                    <div class="msg-time">{{ message.timestamp }}</div>
+                    <div class="msg-text">
+                      <span :style="{ color: randomColor }">
+                        {{ message.username }}:
+                      </span>
+                      <span>
+                        {{ message.text }}
+                      </span>
+                    </div>
+                  </li>
+                </u>
+              </div>
+              <div v-if="isJoinedUser" class="user-input">
+                <input
+                  class="msg-input"
+                  v-model="message"
+                  type="text"
+                  placeholder="message.."
+                />
+                <button
+                  class="btn btn-success btn-send"
+                  @click.prevent="sendMessage(message)"
+                >
+                  Send
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        </section>
       </transition>
       <div class="buttons">
         <transition name="fade">
@@ -193,6 +202,9 @@ export default {
     },
     title() {
       return this.currentRoom ? this.currentRoom.title : false;
+    },
+    date() {
+      return this.currentRoom ? this.currentRoom.date : false;
     },
     description() {
       return this.currentRoom ? this.currentRoom.description : false;

@@ -5,12 +5,18 @@
       <form @submit.prevent="createRoom">
         <div class="input">
           <label for="title">Title</label>
-          <input id="title" v-model="title" class="form-control" type="text" />
+          <input
+            id="title"
+            v-model="title"
+            class="form-control"
+            type="text"
+            required
+          />
         </div>
         <div class="input">
           <div class="form-group">
             <label for="sel1">Category:</label>
-            <select v-model="category" class="form-control" id="sel1">
+            <select v-model="category" class="form-control" id="sel1" required>
               <option>Sport</option>
               <option>Study</option>
               <option>Hangout</option>
@@ -19,12 +25,21 @@
           </div>
         </div>
         <div class="input">
+          <label for="date">Date</label>
+          <input
+            v-model="date"
+            type="datetime-local"
+            id="date"
+            class="form-control"
+          />
+        </div>
+        <div class="input">
           <label for="description">Description</label>
           <input
-            id="description"
-            class="form-control"
             v-model="description"
             type="text"
+            id="description"
+            class="form-control"
           />
         </div>
         <div class="input">
@@ -40,6 +55,8 @@
         <div class="input">
           <label for="map">Address</label>
           <vue-google-autocomplete
+            role="input"
+            required
             v-model="address"
             id="map"
             classname="form-control"
@@ -64,6 +81,7 @@ export default {
     return {
       title: "",
       category: null,
+      date: "",
       description: "",
       participants: null,
       address: ""
@@ -75,9 +93,12 @@ export default {
       this.address = addressData;
     },
     createRoom() {
+      const tempDate = new Date(this.date).toDateString();
+      console.log(tempDate);
       this.$store.dispatch("addRoom", {
         title: this.title,
         category: this.category,
+        date: new Date(this.date).toLocaleTimeString(),
         description: this.description,
         participants: this.participants,
         address: {
