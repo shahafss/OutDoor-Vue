@@ -1,6 +1,5 @@
 <template>
   <nav class="navbar navbar-default">
-    <div class="container-fluid"></div>
     <div class="navbar-header">
       <router-link to="/" class="navbar-brand" href="#">OutDoor</router-link>
     </div>
