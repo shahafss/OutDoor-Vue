@@ -9,7 +9,7 @@ const config = {
   storageBucket: "outdoor-vue.appspot.com",
   messagingSenderId: "936161685309",
   appId: "1:936161685309:web:cbb20f9716a880a7299f54",
-  measurementId: "G-C4675PE78K"
+  measurementId: "G-C4675PE78K",
 };
 
 const firebaseApp = firebase.initializeApp(config);

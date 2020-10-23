@@ -1,4 +1,3 @@
-import Vue from "vue";
 import VueRouter from "vue-router";
 
 import Login from "./components/auth/Login.vue";
@@ -11,8 +10,6 @@ import NewRoom from "./components/rooms/NewRoom.vue";
 
 import store from "./store/store";
 
-Vue.use(VueRouter);
-
 export const routes = [
   { path: "/", component: Home },
   {
@@ -24,7 +21,7 @@ export const routes = [
       } else {
         next("/rooms");
       }
-    }
+    },
   },
   { path: "/signup", component: Signup },
   {
@@ -38,7 +35,7 @@ export const routes = [
           next("/login");
         }
       }, 10);
-    }
+    },
   },
   {
     path: "/profile",
@@ -51,7 +48,7 @@ export const routes = [
           next("/login");
         }
       }, 10);
-    }
+    },
   },
   {
     path: "/room/:id",
@@ -65,9 +62,9 @@ export const routes = [
           next("/login");
         }
       }, 10);
-    }
+    },
   },
-  { path: "/new-room", component: NewRoom }
+  { path: "/new-room", component: NewRoom },
 ];
 
 export default new VueRouter({ mode: "history", routes });

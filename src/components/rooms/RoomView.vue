@@ -48,22 +48,22 @@
           />
         </div>
       </section>
-      <gmap-map
-        class="activity-map"
-        :center="{
-          lat: getAddress.lat,
-          lng: getAddress.lng
-        }"
-        :zoom="16"
-      >
-        <GmapMarker
-          :position="{ lat: getAddress.lat, lng: getAddress.lng }"
-          :clickable="true"
-          :draggable="true"
-        />
-      </gmap-map>
       <transition name="list">
         <section class="section" v-if="!editMode">
+          <gmap-map
+            class="activity-map"
+            :center="{
+              lat: getAddress.lat,
+              lng: getAddress.lng,
+            }"
+            :zoom="16"
+          >
+            <GmapMarker
+              :position="{ lat: getAddress.lat, lng: getAddress.lng }"
+              :clickable="true"
+              :draggable="true"
+            />
+          </gmap-map>
           <div>
             <div class="joined-users">
               <transition-group name="list">
@@ -175,12 +175,12 @@ export default {
   data() {
     return {
       roomId: this.$route.params.id,
-      address: "",
+      address: this.getAddress,
       isActive: true,
       editMode: false,
       message: "",
       scrollPosition: null,
-      randomColor: "#" + Math.floor(Math.random() * 16777215).toString(16)
+      randomColor: "#" + Math.floor(Math.random() * 16777215).toString(16),
     };
   },
   components: { VueGoogleAutocomplete },
@@ -198,7 +198,7 @@ export default {
       return this.$store.getters.getRooms;
     },
     currentRoom() {
-      return this.rooms.find(room => room.id == this.roomId);
+      return this.rooms.find((room) => room.id == this.roomId);
     },
     title() {
       return this.currentRoom ? this.currentRoom.title : false;
@@ -226,7 +226,7 @@ export default {
     },
     joinedUsers() {
       const joinedUsers = [];
-      this.currentRoom.joinedUsers.forEach(userId => {
+      this.currentRoom.joinedUsers.forEach((userId) => {
         const joinedUser = this.$store.state.auth.allUsers[userId].username
           ? this.$store.state.auth.allUsers[userId].username
           : this.$store.state.auth.allUsers[userId].email;
@@ -241,10 +241,11 @@ export default {
     },
     messages() {
       return this.currentRoom ? this.currentRoom.messages : false;
-    }
+    },
   },
   methods: {
     getAddressData(addressData, placeResultData, id) {
+      console.log("addressData>> ", addressData);
       this.address = addressData;
     },
     getAddressString(address) {
@@ -261,7 +262,7 @@ export default {
         text: message,
         username: this.$store.getters.getUser.username,
         timestamp: date.toLocaleTimeString(),
-        roomId: this.currentRoom.id
+        roomId: this.currentRoom.id,
       };
       this.$store.dispatch("postMessage", messageData);
       this.message = "";
@@ -273,9 +274,9 @@ export default {
         address: {
           addressString: this.getAddressString(this.address),
           lat: this.address.latitude,
-          lng: this.address.longitude
+          lng: this.address.longitude,
         },
-        participants: this.$refs.participants.value
+        participants: this.$refs.participants.value,
       };
       const updatedRoom = { ...this.currentRoom, ...editedData };
       this.$store.dispatch("updateRoom", updatedRoom);
@@ -295,13 +296,13 @@ export default {
     joinRoom() {
       this.$store.dispatch("joinUser", {
         roomId: this.currentRoom.id,
-        userId: this.loggedInUser.id
+        userId: this.loggedInUser.id,
       });
     },
     leaveRoom() {
       this.$store.dispatch("leaveUser", {
         roomId: this.currentRoom.id,
-        userId: this.loggedInUser.id
+        userId: this.loggedInUser.id,
       });
     },
     getMessageTime(timestamp) {
@@ -311,8 +312,8 @@ export default {
     scrollToBottom() {
       if (!this.$refs.messages) return;
       this.$refs.messages.scrollTop = this.$refs.messages.scrollHeight;
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -321,70 +322,71 @@ export default {
   height: 89%;
   .room-form {
     height: 100%;
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 40% 60%;
+    section {
+      .title {
+        font-size: 30px;
+        height: 60px !important;
+        margin-top: 0 !important;
+        padding-top: 0;
+        padding-bottom: 0;
+      }
+      .title:disabled {
+        font-size: 50px;
+      }
+      .description {
+        font-size: 25px;
+        max-width: 78rem;
+        max-height: 8rem;
+      }
+      .description:disabled {
+        font-size: 25px;
+        resize: none;
+        min-height: 8rem;
+        overflow: auto;
+      }
+      .participants {
+        width: 5rem;
+        font-size: 25px;
+        font-weight: 500;
+        padding-right: 0;
+        padding-left: 2px;
+        height: 34px !important;
+      }
+      .participants:disabled {
+        width: 6rem;
+        font-size: 25px;
+        font-weight: 500;
+      }
 
-    .title {
-      font-size: 30px;
-      height: 60px !important;
-      margin-top: 0 !important;
-      padding-top: 0;
-      padding-bottom: 0;
-    }
-    .title:disabled {
-      font-size: 50px;
-    }
-    .description {
-      font-size: 25px;
-      max-width: 78rem;
-      max-height: 8rem;
-    }
-    .description:disabled {
-      font-size: 25px;
-      resize: none;
-      min-height: 8rem;
-      overflow: auto;
-    }
-    .participants {
-      width: 5rem;
-      font-size: 25px;
-      font-weight: 500;
-      padding-right: 0;
-      padding-left: 2px;
-      height: 34px !important;
-    }
-    .participants:disabled {
-      width: 6rem;
-      font-size: 25px;
-      font-weight: 500;
-    }
-
-    .form-control:not(.participants) {
-      max-width: 75rem;
-      margin-top: 2rem;
-      transition: all ease 0.5s;
-    }
-    .form-control:disabled {
-      color: #333;
-      background-color: #fff;
-      border: none;
-      box-shadow: none;
-      height: auto;
-    }
-    .form-control:disabled:hover {
-      cursor: default;
-    }
-    label {
-      font-size: 25px;
-    }
-    .activity-map {
-      position: absolute;
-      right: 15px;
-      width: 180px;
-      height: 180px;
-      border: 1px solid black;
-      border-radius: 8px;
-      overflow: hidden;
+      .form-control:not(.participants) {
+        max-width: 75rem;
+        margin-top: 2rem;
+        transition: all ease 0.5s;
+      }
+      .form-control:disabled {
+        color: #333;
+        background-color: #fff;
+        border: none;
+        box-shadow: none;
+        height: auto;
+      }
+      .form-control:disabled:hover {
+        cursor: default;
+      }
+      label {
+        font-size: 25px;
+      }
+      .activity-map {
+        position: absolute;
+        right: 0;
+        width: 180px;
+        height: 180px;
+        border: 1px solid black;
+        border-radius: 8px;
+        overflow: hidden;
+      }
     }
     .section {
       position: relative;
@@ -488,6 +490,23 @@ export default {
         bottom: 0px;
       }
     }
+  }
+}
+
+@media (max-width: 640px) {
+  .room-form {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  .activity-map {
+    display: none;
+  }
+  .joined-users {
+    position: inherit !important;
+  }
+  .chat {
+    position: inherit !important;
+    width: 100% !important;
   }
 }
 

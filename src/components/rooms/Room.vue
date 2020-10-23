@@ -31,13 +31,14 @@ export default {
       return this.room.participants == this.room.joinedUsers.length;
     },
     isJoinedUser() {
-      if (this.$store.getters.getUser)
-        return this.room.joinedUsers.includes(this.$store.getters.getUser.id);
+      return this.$store.getters.getUser
+        ? this.room.joinedUsers.includes(this.$store.getters.getUser.id)
+        : false;
     },
     category() {
       return this.room.category;
-    }
-  }
+    },
+  },
 };
 </script>
 

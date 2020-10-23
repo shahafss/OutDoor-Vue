@@ -10,13 +10,13 @@ Vue.use(VueRouter);
 Vue.use(VueGoogleMaps, {
   load: {
     key: "AIzaSyAuuPYLZG4AGm2Kd8G6NwtIrE2H0JjgNpw",
-    libraries: "places"
-  }
+    libraries: "places",
+  },
 });
 
 new Vue({
   el: "#app",
   router,
   store,
-  render: h => h(App)
+  render: (h) => h(App),
 });

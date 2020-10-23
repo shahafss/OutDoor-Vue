@@ -28,13 +28,13 @@ export default {
       return !this.$store.getters.getUser
         ? false
         : this.$store.getters.getUser.email;
-    }
+    },
   },
   methods: {
     onLogout() {
       this.$store.dispatch("logout");
-    }
-  }
+    },
+  },
 };
 </script>
 

@@ -84,7 +84,7 @@ export default {
       date: "",
       description: "",
       participants: null,
-      address: ""
+      address: "",
     };
   },
   components: { VueGoogleAutocomplete },
@@ -104,12 +104,12 @@ export default {
         address: {
           addressString: this.getAddressString(this.address),
           lat: this.address.latitude,
-          lng: this.address.longitude
-        }
+          lng: this.address.longitude,
+        },
       });
       this.$store.dispatch("fetchRooms");
       const newRoom = this.getRooms.find(
-        room => room.description == this.description
+        (room) => room.description == this.description
       );
       if (newRoom !== undefined) {
         this.$router.push("/room/" + newRoom.id);
@@ -118,13 +118,13 @@ export default {
     getAddressString(address) {
       const addressString = `${address.route} ${address.street_number}, ${address.locality}`;
       return addressString;
-    }
+    },
   },
   computed: {
     getRooms() {
       return this.$store.getters.getRooms;
-    }
-  }
+    },
+  },
 };
 </script>
 

@@ -17,8 +17,8 @@ export default {
   },
   components: {
     OutDoorHeader: Header,
-    AppFade
-  }
+    AppFade,
+  },
 };
 </script>
 
