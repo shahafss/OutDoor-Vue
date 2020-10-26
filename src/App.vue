@@ -1,14 +1,19 @@
 <template>
-  <div style="height:100%">
-    <OutDoorHeader></OutDoorHeader>
-    <app-fade>
-      <router-view />
-    </app-fade>
-  </div>
+  <v-app>
+    <drawer></drawer>
+    <v-main>
+      <AppFade>
+        <router-view></router-view>
+      </AppFade>
+    </v-main>
+    <!-- <v-footer app> -->
+    <!-- -->
+    <!-- </v-footer> -->
+  </v-app>
 </template>
 
 <script>
-import Header from "./components/Header";
+import Drawer from "./components/Drawer";
 import AppFade from "./components/AppFade";
 
 export default {
@@ -16,8 +21,8 @@ export default {
     this.$store.dispatch("tryAutoLogin");
   },
   components: {
-    OutDoorHeader: Header,
     AppFade,
+    Drawer,
   },
 };
 </script>

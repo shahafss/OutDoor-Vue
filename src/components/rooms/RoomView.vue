@@ -49,7 +49,7 @@
         </div>
       </section>
       <transition name="list">
-        <section class="section" v-if="!editMode">
+        <section class="section section-right" v-if="!editMode">
           <gmap-map
             class="activity-map"
             :center="{
@@ -378,28 +378,23 @@ export default {
       label {
         font-size: 25px;
       }
+    }
+    .section-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+
       .activity-map {
-        position: absolute;
-        right: 0;
         width: 180px;
         height: 180px;
         border: 1px solid black;
         border-radius: 8px;
         overflow: hidden;
       }
-    }
-    .section {
-      position: relative;
-      height: 100%;
-      width: 100%;
 
       .joined-users {
-        position: absolute;
-        bottom: 300px;
-        right: 0;
         border: 1px solid black;
         border-radius: 8px;
-        width: 22rem;
         height: 10rem;
         box-shadow: 0 2px 3px #1a191971;
 
@@ -428,7 +423,6 @@ export default {
         border-radius: 4px;
         background-color: #e6ffff;
         box-shadow: 0 2px 3px #1a191971;
-        position: absolute;
         right: 0;
         bottom: 60px;
 
