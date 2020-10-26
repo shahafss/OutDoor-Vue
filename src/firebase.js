@@ -2,7 +2,7 @@ import firebase from "firebase";
 import "firebase/firestore";
 
 const config = {
-  apiKey: "AIzaSyCdTx55AnwVv8tw_jqoWEDyiVMX7pahn4Y",
+  apiKey: process.env.VUE_APP_FIREBASE,
   authDomain: "outdoor-vue.firebaseapp.com",
   databaseURL: "https://outdoor-vue.firebaseio.com",
   projectId: "outdoor-vue",
