@@ -3,7 +3,7 @@
     <v-list>
       <v-list-item class="px-2">
         <v-list-item-avatar>
-          <v-img src="https://randomuser.me/api/portraits/women/85.jpg"></v-img>
+          <v-img src="../assets/outdoor_logo.png"></v-img>
         </v-list-item-avatar>
       </v-list-item>
 

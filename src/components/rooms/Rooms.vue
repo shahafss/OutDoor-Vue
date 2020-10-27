@@ -1,59 +1,30 @@
 <template>
-  <div class="container-fluid">
-    <router-link to="/new-room" class="create-btn btn btn-primary" tag="button"
-      >Create</router-link
-    >
-    <div class="filters">
-      <div>
-        <label class="checkbox-inline"
-          ><input
-            type="radio"
-            name="catradio"
-            @change="setFilter($event)"
-            value="All"
-            checked
-          />All</label
-        >
-      </div>
-      <div>
-        <label class="checkbox-inline"
-          ><input
-            type="radio"
-            name="catradio"
-            @change="setFilter($event)"
-            value="Sport"
-          />Sport</label
-        >
-      </div>
-      <div>
-        <label class="checkbox-inline"
-          ><input
-            type="radio"
-            name="catradio"
-            value="Study"
-            @change="setFilter($event)"
-          />Study</label
-        >
-      </div>
-      <label class="checkbox-inline"
-        ><input
-          type="radio"
-          name="catradio"
-          value="Hangout"
-          @change="setFilter($event)"
-        />Hangout</label
-      >
-      <div>
-        <label class="checkbox-inline"
-          ><input
-            type="radio"
-            name="catradio"
-            value="Protest"
-            @change="setFilter($event)"
-          />Protest</label
-        >
-      </div>
-    </div>
+  <v-container fluid>
+    <v-btn to="/new-room" color="blue" dark fixed top right fab>
+      <v-icon>mdi-plus</v-icon>
+    </v-btn>
+
+    <v-btn-toggle color="blue accent-3" mandatory>
+      <v-btn value="All" @click="setFilter($event)">
+        All
+      </v-btn>
+
+      <v-btn value="Sport" @click="setFilter($event)">
+        Sport
+      </v-btn>
+
+      <v-btn value="Study" @click="setFilter($event)">
+        Study
+      </v-btn>
+
+      <v-btn value="Hangout" @click="setFilter($event)">
+        Hangout
+      </v-btn>
+
+      <v-btn value="Protest" @click="setFilter($event)">
+        Protest
+      </v-btn>
+    </v-btn-toggle>
     <section class="rooms-container">
       <room
         v-for="room in getRooms"
@@ -63,7 +34,7 @@
         class="room"
       ></room>
     </section>
-  </div>
+  </v-container>
 </template>
 
 <script>
@@ -95,10 +66,10 @@ export default {
   },
   methods: {
     setFilter(filter) {
-      if (filter.target.value == "All") {
+      if (filter.target.textContent.trim() == "All") {
         this.filter = null;
       } else {
-        this.filter = filter.target.value;
+        this.filter = filter.target.textContent.trim();
       }
     },
   },
@@ -106,7 +77,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.container-fluid {
+.container {
   padding: 0;
   display: flex;
   flex-direction: column;

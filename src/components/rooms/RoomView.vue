@@ -1,11 +1,11 @@
 <template>
-  <div class="container-fluid">
+  <v-container style="height:100%" fluid>
     <form
       class="room-form"
       v-if="loggedInUser && isActive && currentRoom"
       @submit.prevent="saveRoom"
     >
-      <section>
+      <section class="section-left">
         <input
           :value="title"
           ref="title"
@@ -13,7 +13,7 @@
           type="text"
           :disabled="!editMode"
         />
-        {{ date }}
+        <!-- {{ date }} -->
         <textarea
           :value="description"
           ref="description"
@@ -49,7 +49,14 @@
         </div>
       </section>
       <transition name="list">
-        <section class="section section-right" v-if="!editMode">
+        <section class="section-right" v-if="!editMode">
+          <div class="joined-users">
+            <transition-group name="list">
+              <div v-for="user in joinedUsers" :key="user" class="joined-user">
+                {{ user }}
+              </div>
+            </transition-group>
+          </div>
           <gmap-map
             class="activity-map"
             :center="{
@@ -64,52 +71,39 @@
               :draggable="true"
             />
           </gmap-map>
-          <div>
-            <div class="joined-users">
-              <transition-group name="list">
-                <div
-                  v-for="user in joinedUsers"
-                  :key="user"
-                  class="joined-user"
+          <div class="chat">
+            <div class="messages-container" ref="messages">
+              <u class="messages">
+                <li
+                  class="message"
+                  v-for="message in messages"
+                  :key="message.id"
                 >
-                  {{ user }}
-                </div>
-              </transition-group>
+                  <div class="msg-time">{{ message.timestamp }}</div>
+                  <div class="msg-text">
+                    <span :style="{ color: randomColor }">
+                      {{ message.username }}:
+                    </span>
+                    <span>
+                      {{ message.text }}
+                    </span>
+                  </div>
+                </li>
+              </u>
             </div>
-            <div class="chat">
-              <div class="messages-container" ref="messages">
-                <u class="messages">
-                  <li
-                    class="message"
-                    v-for="message in messages"
-                    :key="message.id"
-                  >
-                    <div class="msg-time">{{ message.timestamp }}</div>
-                    <div class="msg-text">
-                      <span :style="{ color: randomColor }">
-                        {{ message.username }}:
-                      </span>
-                      <span>
-                        {{ message.text }}
-                      </span>
-                    </div>
-                  </li>
-                </u>
-              </div>
-              <div v-if="isJoinedUser" class="user-input">
-                <input
-                  class="msg-input"
-                  v-model="message"
-                  type="text"
-                  placeholder="message.."
-                />
-                <button
-                  class="btn btn-success btn-send"
-                  @click.prevent="sendMessage(message)"
-                >
-                  Send
-                </button>
-              </div>
+            <div v-if="isJoinedUser" class="user-input">
+              <input
+                class="msg-input"
+                v-model="message"
+                type="text"
+                placeholder="message.."
+              />
+              <button
+                class="btn btn-success btn-send"
+                @click.prevent="sendMessage(message)"
+              >
+                Send
+              </button>
             </div>
           </div>
         </section>
@@ -165,7 +159,7 @@
     <div v-else>
       <h1>Loading..</h1>
     </div>
-  </div>
+  </v-container>
 </template>
 
 <script>
@@ -249,8 +243,7 @@ export default {
       this.address = addressData;
     },
     getAddressString(address) {
-      const addressString =
-        address.route + " " + address.street_number + ", " + address.locality;
+      const addressString = `${address.route} ${address.street_number}, ${address.locality}, ${address.country}`;
       return addressString;
     },
     sendMessage(message) {
@@ -318,171 +311,171 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.container-fluid {
-  height: 89%;
-  .room-form {
-    height: 100%;
-    display: grid;
-    grid-template-columns: 40% 60%;
-    section {
-      .title {
-        font-size: 30px;
-        height: 60px !important;
-        margin-top: 0 !important;
-        padding-top: 0;
-        padding-bottom: 0;
-      }
-      .title:disabled {
-        font-size: 50px;
-      }
-      .description {
-        font-size: 25px;
-        max-width: 78rem;
-        max-height: 8rem;
-      }
-      .description:disabled {
-        font-size: 25px;
-        resize: none;
-        min-height: 8rem;
-        overflow: auto;
-      }
-      .participants {
-        width: 5rem;
-        font-size: 25px;
-        font-weight: 500;
-        padding-right: 0;
-        padding-left: 2px;
-        height: 34px !important;
-      }
-      .participants:disabled {
-        width: 6rem;
-        font-size: 25px;
-        font-weight: 500;
-      }
+.room-form {
+  height: 100%;
+  display: grid;
+  grid-template-columns: 50% 50%;
+  .section-left {
+    .title {
+      font-size: 30px;
+      height: 60px !important;
+      margin-top: 0 !important;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+    .title:disabled {
+      font-size: 50px !important;
+    }
+    .description {
+      font-size: 25px;
+      max-width: 78rem;
+      max-height: 8rem;
+    }
+    .description:disabled {
+      font-size: 25px;
+      resize: none;
+      min-height: 8rem;
+      overflow: auto;
+    }
+    .participants {
+      width: 5rem;
+      font-size: 25px;
+      font-weight: 500;
+      padding-right: 0;
+      padding-left: 2px;
+      height: 34px !important;
+    }
+    .participants:disabled {
+      width: 6rem;
+      font-size: 25px;
+      font-weight: 500;
+    }
 
-      .form-control:not(.participants) {
-        max-width: 75rem;
-        margin-top: 2rem;
-        transition: all ease 0.5s;
+    .form-control:not(.participants) {
+      max-width: 75rem;
+      margin-top: 2rem;
+      transition: all ease 0.5s;
+    }
+    .form-control:disabled {
+      color: #333;
+      background-color: #fff;
+      border: none;
+      box-shadow: none;
+      height: auto;
+    }
+    .form-control:disabled:hover {
+      cursor: default;
+    }
+    label {
+      font-size: 25px;
+    }
+  }
+  .section-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+
+    .joined-users {
+      border: 1px solid black;
+      border-radius: 8px;
+      min-height: 6rem;
+      width: 15rem;
+      box-shadow: 0 2px 3px #1a191971;
+
+      .joined-user {
+        margin-top: 0px;
+        text-align: center;
+        border: 1px solid #b3e5fc;
+        border-radius: 8px;
+        border-right: none;
+        border-left: none;
+        box-shadow: 0 2px 3px #1a191971;
+        cursor: pointer;
       }
-      .form-control:disabled {
-        color: #333;
-        background-color: #fff;
-        border: none;
-        box-shadow: none;
-        height: auto;
+      .joined-user:hover {
+        background-color: #ccc;
       }
-      .form-control:disabled:hover {
-        cursor: default;
-      }
-      label {
-        font-size: 25px;
+      .joined-user:not(:first-of-type) {
+        margin-top: 4px;
       }
     }
-    .section-right {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
+    .activity-map {
+      width: 400px;
+      height: 200px;
+      margin-top: 6rem;
+      border: 1px solid black;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .chat {
+      position: absolute;
+      height: 220px;
+      width: 400px;
+      padding: 10px;
+      border: 1px solid #000;
+      border-radius: 4px;
+      background-color: #e6ffff;
+      box-shadow: 0 2px 3px #1a191971;
+      bottom: 15px !important;
 
-      .activity-map {
-        width: 180px;
-        height: 180px;
-        border: 1px solid black;
-        border-radius: 8px;
-        overflow: hidden;
-      }
-
-      .joined-users {
-        border: 1px solid black;
-        border-radius: 8px;
-        height: 10rem;
-        box-shadow: 0 2px 3px #1a191971;
-
-        .joined-user {
-          margin-top: 0px;
-          text-align: center;
-          border: 1px solid #b3e5fc;
-          border-radius: 8px;
-          border-right: none;
-          border-left: none;
-          box-shadow: 0 2px 3px #1a191971;
-          cursor: pointer;
-        }
-        .joined-user:hover {
-          background-color: #ccc;
-        }
-        .joined-user:not(:first-of-type) {
-          margin-top: 4px;
-        }
-      }
-      .chat {
-        width: 400px;
-        float: right;
-        padding: 10px;
-        border: 1px solid #000;
+      .messages-container {
+        display: flex;
+        flex-direction: column-reverse;
+        border: 1px solid green;
         border-radius: 4px;
-        background-color: #e6ffff;
-        box-shadow: 0 2px 3px #1a191971;
-        right: 0;
-        bottom: 60px;
+        padding: 10px;
+        overflow: auto;
+        height: 80%;
+        .messages {
+          list-style-type: none;
+          text-decoration: none;
 
-        .messages-container {
-          display: flex;
-          flex-direction: column-reverse;
-          border: 1px solid green;
-          padding: 10px;
-          overflow: auto;
-          height: 15rem;
-          .messages {
-            list-style-type: none;
-            text-decoration: none;
+          .message {
+            width: fit-content;
+            max-width: 100%;
+            overflow-wrap: break-word;
+            margin: 2px 0;
+            border: 1px solid rgba(128, 128, 128, 0.288);
+            border-radius: 4px;
+            background-color: #fff;
 
-            .message {
-              width: fit-content;
-              max-width: 100%;
-              overflow-wrap: break-word;
-              margin: 2px 0;
-              border: 1px solid rgba(128, 128, 128, 0.288);
-              border-radius: 4px;
-              background-color: #fff;
+            .msg-time {
+              width: 100%;
+              background-color: #90ee903b;
+              text-align: right;
+              font-size: 12px;
+            }
 
-              .msg-time {
-                width: 100%;
-                background-color: #90ee903b;
-                text-align: right;
-                font-size: 12px;
-              }
-
-              .msg-text {
-                margin: 4px;
-              }
+            .msg-text {
+              margin: 4px;
             }
           }
         }
-        .user-input {
-          display: flex;
-          margin-top: 1rem;
+      }
 
-          .msg-input {
-            width: 92%;
-            height: 4rem;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-          }
-          .btn-send {
-            margin-left: 1rem;
-          }
+      .user-input {
+        display: flex;
+        margin-top: 0.6rem;
+
+        .msg-input {
+          width: 81%;
+          padding: 0 10px;
+          border-radius: 8px;
+          border: 1px solid #ccc;
+        }
+        .btn-send {
+          margin-left: 1rem;
         }
       }
     }
-    .buttons {
-      position: absolute;
-      bottom: 15px;
+  }
+  .buttons {
+    position: absolute;
+    bottom: 15px;
 
-      .user-buttons {
-        position: absolute;
-        bottom: 0px;
-      }
+    .user-buttons {
+      position: absolute;
+      bottom: 0px;
     }
   }
 }

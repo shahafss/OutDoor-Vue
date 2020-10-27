@@ -1,38 +1,49 @@
 <template>
-  <div class="col-sm-6 col-md-4">
+  <div>
     <v-card
       class="mx-auto"
-      height="100%"
+      minHeight="200px"
+      minWidth="200px"
       outlined
       :to="'/room/' + room.id"
       :class="{ disabled: isFull && !isJoinedUser }"
     >
-      <div v-if="isFull" class="full-label">Full</div>
+      <v-badge bordered color="error" icon="mdi-basketball" overlap>
+        <div>
+          <div v-if="isFull" class="full-label">Full</div>
 
-      <v-list-item three-line>
-        <v-list-item-content>
-          <div class="overline mb-4">
-            {{ room.category }}
-          </div>
-          <v-list-item-title class="headline mb-1">
-            {{ room.title }}
-          </v-list-item-title>
-          <v-list-item-subtitle>{{ room.description }}</v-list-item-subtitle>
-          <v-list-item-subtitle
-            >Participants: {{ room.joinedUsers.length }}/{{
-              room.participants
-            }}</v-list-item-subtitle
-          >
-        </v-list-item-content>
+          <v-list-item three-line>
+            <v-list-item-content>
+              <div class="overline mb-4">
+                {{ room.category }}
+              </div>
+              <v-list-item-title class="headline mb-1">
+                {{ room.title }}
+              </v-list-item-title>
+              <v-list-item-subtitle>{{
+                room.description
+              }}</v-list-item-subtitle>
+              <v-list-item-subtitle
+                >Participants: {{ room.joinedUsers.length }}/{{
+                  room.participants
+                }}</v-list-item-subtitle
+              >
+            </v-list-item-content>
 
-        <v-list-item-avatar tile size="80" color="grey"></v-list-item-avatar>
-      </v-list-item>
+            <v-list-item-avatar
+              tile
+              size="80"
+              color="grey"
+            ></v-list-item-avatar>
+          </v-list-item>
 
-      <v-card-actions>
+          <!-- <v-card-actions>
         <v-btn outlined rounded text>
           Join
         </v-btn>
-      </v-card-actions>
+      </v-card-actions> -->
+        </div>
+      </v-badge>
     </v-card>
   </div>
 </template>
@@ -57,6 +68,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.v-badge {
+  display: block;
+  position: unset;
+}
+
 .full-label {
   display: flex;
   justify-content: center;
