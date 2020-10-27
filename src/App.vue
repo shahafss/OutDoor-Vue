@@ -36,4 +36,8 @@ html {
   min-height: 100vh;
   height: 100%;
 }
+
+a {
+  text-decoration: none;
+}
 </style>

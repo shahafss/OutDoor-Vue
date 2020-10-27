@@ -1,11 +1,8 @@
 <template>
   <v-container style="height:100%" fluid>
-    <form
-      class="room-form"
-      v-if="loggedInUser && isActive && currentRoom"
-      @submit.prevent="saveRoom"
-    >
-      <section class="section-left">
+    <div class="view-container" v-if="loggedInUser && isActive && currentRoom">
+      <!-- <section class="section-top"> -->
+      <form class="room-form" @submit.prevent="saveRoom">
         <input
           :value="title"
           ref="title"
@@ -43,119 +40,120 @@
             ref="participants"
             id="participants"
             type="number"
-            class="participants form-control"
+            class="participants"
             :disabled="!editMode"
           />
         </div>
-      </section>
-      <transition name="list">
-        <section class="section-right" v-if="!editMode">
-          <div class="joined-users">
-            <transition-group name="list">
-              <div v-for="user in joinedUsers" :key="user" class="joined-user">
-                {{ user }}
-              </div>
-            </transition-group>
-          </div>
-          <gmap-map
-            class="activity-map"
-            :center="{
-              lat: getAddress.lat,
-              lng: getAddress.lng,
-            }"
-            :zoom="16"
-          >
-            <GmapMarker
-              :position="{ lat: getAddress.lat, lng: getAddress.lng }"
-              :clickable="true"
-              :draggable="true"
-            />
-          </gmap-map>
-          <div class="chat">
-            <div class="messages-container" ref="messages">
-              <u class="messages">
-                <li
-                  class="message"
-                  v-for="message in messages"
-                  :key="message.id"
-                >
-                  <div class="msg-time">{{ message.timestamp }}</div>
-                  <div class="msg-text">
-                    <span :style="{ color: randomColor }">
-                      {{ message.username }}:
-                    </span>
-                    <span>
-                      {{ message.text }}
-                    </span>
-                  </div>
-                </li>
-              </u>
-            </div>
-            <div v-if="isJoinedUser" class="user-input">
-              <input
-                class="msg-input"
-                v-model="message"
-                type="text"
-                placeholder="message.."
-              />
+        <div class="buttons">
+          <transition name="fade">
+            <div v-if="!editMode" class="user-buttons">
               <button
-                class="btn btn-success btn-send"
-                @click.prevent="sendMessage(message)"
+                v-if="!isJoinedUser && !isFull"
+                type="button"
+                class="btn btn-success"
+                @click="joinRoom()"
               >
-                Send
+                Join
+              </button>
+              <button
+                v-else-if="!isAdmin && isJoinedUser"
+                type="button"
+                class="btn btn-default"
+                @click="leaveRoom()"
+              >
+                Leave
+              </button>
+              <button
+                class="btn btn-primary edit-button"
+                v-if="isAdmin && !editMode"
+                type="button"
+                @click.prevent="editMode = !editMode"
+              >
+                Edit
               </button>
             </div>
+          </transition>
+          <transition name="fade">
+            <div v-if="editMode" class="edit-buttons">
+              <button class="btn btn-default" @click.prevent="cancel()">
+                Cancel
+              </button>
+              <button class="btn btn-success" type="submit">
+                Save
+              </button>
+              <button
+                type="button"
+                class="btn btn-danger"
+                @click="deleteRoom(currentRoom.id)"
+              >
+                Delete Room
+              </button>
+            </div>
+          </transition>
+        </div>
+      </form>
+      <!-- </section> -->
+      <!-- <transition name="list"> -->
+      <!-- <section class="section-bottom" v-if="!editMode"> -->
+      <div class="chat">
+        <div class="chat-container">
+          <div class="messages-container" ref="messages">
+            <u class="messages">
+              <li class="message" v-for="message in messages" :key="message.id">
+                <div class="msg-time">{{ message.timestamp }}</div>
+                <div class="msg-text">
+                  <span :style="{ color: randomColor }">
+                    {{ message.username }}:
+                  </span>
+                  <span>
+                    {{ message.text }}
+                  </span>
+                </div>
+              </li>
+            </u>
           </div>
-        </section>
-      </transition>
-      <div class="buttons">
-        <transition name="fade">
-          <div v-if="!editMode" class="user-buttons">
+          <div v-if="isJoinedUser" class="user-input">
+            <input
+              class="msg-input"
+              v-model="message"
+              type="text"
+              placeholder="message.."
+            />
             <button
-              v-if="!isJoinedUser && !isFull"
-              type="button"
-              class="btn btn-success"
-              @click="joinRoom()"
+              class="btn btn-success btn-send"
+              @click.prevent="sendMessage(message)"
             >
-              Join
-            </button>
-            <button
-              v-else-if="!isAdmin && isJoinedUser"
-              type="button"
-              class="btn btn-default"
-              @click="leaveRoom()"
-            >
-              Leave
-            </button>
-            <button
-              class="btn btn-primary edit-button"
-              v-if="isAdmin && !editMode"
-              type="button"
-              @click.prevent="editMode = !editMode"
-            >
-              Edit
+              Send
             </button>
           </div>
-        </transition>
-        <transition name="fade">
-          <div v-if="editMode" class="edit-buttons">
-            <button class="btn btn-default" @click.prevent="cancel()">
-              Cancel
-            </button>
-            <button class="btn btn-success" type="submit">
-              Save
-            </button>
-            <button
-              type="button"
-              class="btn btn-danger"
-              @click="deleteRoom(currentRoom.id)"
-            >
-              Delete Room
-            </button>
-          </div>
-        </transition>
+        </div>
+
+        <div class="joined-users">
+          <transition-group name="list">
+            <div v-for="user in joinedUsers" :key="user" class="joined-user">
+              {{ user }}
+            </div>
+          </transition-group>
+        </div>
       </div>
-    </form>
+
+      <gmap-map
+        class="activity-map"
+        :center="{
+          lat: getAddress.lat,
+          lng: getAddress.lng,
+        }"
+        :zoom="16"
+      >
+        <GmapMarker
+          :position="{ lat: getAddress.lat, lng: getAddress.lng }"
+          :clickable="true"
+          :draggable="true"
+        />
+      </gmap-map>
+      <!-- </section> -->
+      <!-- </transition> -->
+    </div>
     <div v-else>
       <h1>Loading..</h1>
     </div>
@@ -311,12 +309,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.room-form {
-  height: 100%;
-  display: grid;
-  grid-template-columns: 50% 50%;
-  .section-left {
+// .section-top {
+.view-container {
+  position: relative;
+
+  .room-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    border: 1px solid black;
+    border-radius: 4px;
     .title {
+      text-align: center;
       font-size: 30px;
       height: 60px !important;
       margin-top: 0 !important;
@@ -327,6 +332,8 @@ export default {
       font-size: 50px !important;
     }
     .description {
+      text-align: center;
+
       font-size: 25px;
       max-width: 78rem;
       max-height: 8rem;
@@ -338,7 +345,7 @@ export default {
       overflow: auto;
     }
     .participants {
-      width: 5rem;
+      width: 50px;
       font-size: 25px;
       font-weight: 500;
       padding-right: 0;
@@ -346,7 +353,6 @@ export default {
       height: 34px !important;
     }
     .participants:disabled {
-      width: 6rem;
       font-size: 25px;
       font-weight: 500;
     }
@@ -370,53 +376,25 @@ export default {
       font-size: 25px;
     }
   }
-  .section-right {
+  // }
+  // .section-bottom {
+  //   display: flex;
+  //   flex-direction: column;
+  //   align-items: flex-end;
+
+  .chat {
+    margin-top: 2rem;
     display: flex;
-    flex-direction: column;
-    align-items: flex-end;
+    height: 240px;
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #000;
+    border-radius: 4px;
+    background-color: #e6ffff;
+    box-shadow: 0 2px 3px #1a191971;
 
-    .joined-users {
-      border: 1px solid black;
-      border-radius: 8px;
-      min-height: 6rem;
-      width: 15rem;
-      box-shadow: 0 2px 3px #1a191971;
-
-      .joined-user {
-        margin-top: 0px;
-        text-align: center;
-        border: 1px solid #b3e5fc;
-        border-radius: 8px;
-        border-right: none;
-        border-left: none;
-        box-shadow: 0 2px 3px #1a191971;
-        cursor: pointer;
-      }
-      .joined-user:hover {
-        background-color: #ccc;
-      }
-      .joined-user:not(:first-of-type) {
-        margin-top: 4px;
-      }
-    }
-    .activity-map {
-      width: 400px;
-      height: 200px;
-      margin-top: 6rem;
-      border: 1px solid black;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    .chat {
-      position: absolute;
-      height: 220px;
-      width: 400px;
-      padding: 10px;
-      border: 1px solid #000;
-      border-radius: 4px;
-      background-color: #e6ffff;
-      box-shadow: 0 2px 3px #1a191971;
-      bottom: 15px !important;
+    .chat-container {
+      flex: 4;
 
       .messages-container {
         display: flex;
@@ -458,24 +436,65 @@ export default {
         margin-top: 0.6rem;
 
         .msg-input {
-          width: 81%;
+          flex: 8;
           padding: 0 10px;
           border-radius: 8px;
           border: 1px solid #ccc;
         }
         .btn-send {
-          margin-left: 1rem;
+          flex: 1;
+          margin-left: 0.6rem;
         }
       }
     }
+
+    .joined-users {
+      flex: 1;
+      border: 1px solid black;
+      border-radius: 4px;
+      margin-left: 0.6rem;
+      box-shadow: 0 2px 3px #1a191971;
+
+      .joined-user {
+        margin-top: 0px;
+        text-align: center;
+        border: 1px solid #b3e5fc;
+        border-radius: 8px;
+        border-right: none;
+        border-left: none;
+        box-shadow: 0 2px 3px #1a191971;
+        cursor: pointer;
+      }
+      .joined-user:hover {
+        background-color: #ccc;
+      }
+      .joined-user:not(:first-of-type) {
+        margin-top: 4px;
+      }
+    }
   }
+
+  .activity-map {
+    height: 200px;
+    margin-top: 2rem;
+    border: 1px solid black;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  // }
   .buttons {
-    position: absolute;
-    bottom: 15px;
+    position: fixed;
+    top: 43px;
+    right: 60px;
 
     .user-buttons {
       position: absolute;
       bottom: 0px;
+    }
+
+    .edit-buttons {
+      display: flex;
+      flex-direction: column;
     }
   }
 }
@@ -484,9 +503,6 @@ export default {
   .room-form {
     display: flex !important;
     flex-direction: column !important;
-  }
-  .activity-map {
-    display: none;
   }
   .joined-users {
     position: inherit !important;
