@@ -36,12 +36,6 @@
               color="grey"
             ></v-list-item-avatar>
           </v-list-item>
-
-          <!-- <v-card-actions>
-        <v-btn outlined rounded text>
-          Join
-        </v-btn>
-      </v-card-actions> -->
         </div>
       </v-badge>
     </v-card>

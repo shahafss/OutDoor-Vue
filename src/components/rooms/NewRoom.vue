@@ -54,16 +54,10 @@
         </div>
         <div class="input">
           <label for="map">Address</label>
-          <vue-google-autocomplete
-            role="input"
-            required
-            v-model="address"
-            id="map"
-            classname="form-control"
-            v-on:placechanged="getAddressData"
-            country="il"
-          >
-          </vue-google-autocomplete>
+          <AdressAutocomplete
+            @address-changed="address = $event"
+            :address="getAddress.addressString"
+          ></AdressAutocomplete>
         </div>
         <div class="submit">
           <button type="submit">Create</button>
@@ -74,7 +68,7 @@
 </template>
 
 <script>
-import VueGoogleAutocomplete from "vue-google-autocomplete";
+import AdressAutocomplete from "./AdressAutocomplete";
 
 export default {
   data() {
@@ -87,14 +81,11 @@ export default {
       address: "",
     };
   },
-  components: { VueGoogleAutocomplete },
+  components: { AdressAutocomplete },
   methods: {
-    getAddressData(addressData, placeResultData, id) {
-      this.address = addressData;
-    },
+    //TODO create autocomplete component
     createRoom() {
       const tempDate = new Date(this.date).toDateString();
-      console.log(tempDate);
       this.$store.dispatch("addRoom", {
         title: this.title,
         category: this.category,
@@ -103,12 +94,12 @@ export default {
         participants: this.participants,
         address: {
           addressString: this.getAddressString(this.address),
-          lat: this.address.latitude,
-          lng: this.address.longitude,
+          lat: this.address ? this.address.latitude : this.getAddress.lat,
+          lng: this.address ? this.address.longitude : this.getAddress.lng,
         },
       });
       this.$store.dispatch("fetchRooms");
-      const newRoom = this.getRooms.find(
+      const newRoom = this.rooms.find(
         (room) => room.description == this.description
       );
       if (newRoom !== undefined) {
@@ -116,13 +107,17 @@ export default {
       }
     },
     getAddressString(address) {
-      const addressString = `${address.route} ${address.street_number}, ${address.locality}`;
-      return addressString;
+      return address
+        ? address.formatted_address
+        : this.getAddress.addressString;
     },
   },
   computed: {
-    getRooms() {
+    rooms() {
       return this.$store.getters.getRooms;
+    },
+    getAddress() {
+      return this.currentRoom ? this.currentRoom.address : false;
     },
   },
 };

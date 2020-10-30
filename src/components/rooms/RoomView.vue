@@ -1,7 +1,6 @@
 <template>
   <v-container style="height:100%" fluid>
     <div class="view-container" v-if="loggedInUser && isActive && currentRoom">
-      <!-- <section class="section-top"> -->
       <form class="room-form" @submit.prevent="saveRoom">
         <input
           :value="title"
@@ -10,7 +9,6 @@
           type="text"
           :disabled="!editMode"
         />
-        <!-- {{ date }} -->
         <textarea
           :value="description"
           ref="description"
@@ -19,17 +17,10 @@
           :disabled="!editMode"
         />
         <div>
-          <vue-google-autocomplete
-            v-model="getAddress.addressString"
-            id="map"
-            ref="address"
-            classname="form-control"
-            placeholder="Address"
-            v-on:placechanged="getAddressData"
-            country="il"
-            :disabled="!editMode"
-          >
-          </vue-google-autocomplete>
+          <AdressAutocomplete
+            @address-changed="address = $event"
+            :address="getAddress.addressString"
+          ></AdressAutocomplete>
         </div>
         <div style="display:flex; margin-top:1rem">
           <label for="participants"
@@ -92,9 +83,6 @@
           </transition>
         </div>
       </form>
-      <!-- </section> -->
-      <!-- <transition name="list"> -->
-      <!-- <section class="section-bottom" v-if="!editMode"> -->
       <div class="chat">
         <div class="chat-container">
           <div class="messages-container" ref="messages">
@@ -151,8 +139,6 @@
           :draggable="true"
         />
       </gmap-map>
-      <!-- </section> -->
-      <!-- </transition> -->
     </div>
     <div v-else>
       <h1>Loading..</h1>
@@ -161,13 +147,13 @@
 </template>
 
 <script>
-import VueGoogleAutocomplete from "vue-google-autocomplete";
+import AdressAutocomplete from "./AdressAutocomplete";
 
 export default {
   data() {
     return {
       roomId: this.$route.params.id,
-      address: this.getAddress,
+      address: "",
       isActive: true,
       editMode: false,
       message: "",
@@ -175,7 +161,9 @@ export default {
       randomColor: "#" + Math.floor(Math.random() * 16777215).toString(16),
     };
   },
-  components: { VueGoogleAutocomplete },
+  components: {
+    AdressAutocomplete,
+  },
   created() {
     this.$store.dispatch("initRealtimeListeners");
     this.$store.dispatch("fetchRooms");
@@ -236,13 +224,10 @@ export default {
     },
   },
   methods: {
-    getAddressData(addressData, placeResultData, id) {
-      console.log("addressData>> ", addressData);
-      this.address = addressData;
-    },
     getAddressString(address) {
-      const addressString = `${address.route} ${address.street_number}, ${address.locality}, ${address.country}`;
-      return addressString;
+      return address
+        ? address.formatted_address
+        : this.getAddress.addressString;
     },
     sendMessage(message) {
       if (message == "") return;
@@ -264,8 +249,8 @@ export default {
         description: this.$refs.description.value,
         address: {
           addressString: this.getAddressString(this.address),
-          lat: this.address.latitude,
-          lng: this.address.longitude,
+          lat: this.address ? this.address.latitude : this.getAddress.lat,
+          lng: this.address ? this.address.longitude : this.getAddress.lng,
         },
         participants: this.$refs.participants.value,
       };
@@ -309,7 +294,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-// .section-top {
 .view-container {
   position: relative;
 
@@ -376,11 +360,6 @@ export default {
       font-size: 25px;
     }
   }
-  // }
-  // .section-bottom {
-  //   display: flex;
-  //   flex-direction: column;
-  //   align-items: flex-end;
 
   .chat {
     margin-top: 2rem;

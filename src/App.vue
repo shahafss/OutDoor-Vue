@@ -1,19 +1,16 @@
 <template>
   <v-app>
-    <drawer></drawer>
+    <nav-drawer></nav-drawer>
     <v-main style="padding-top: 1rem">
       <AppFade>
         <router-view></router-view>
       </AppFade>
     </v-main>
-    <!-- <v-footer app> -->
-    <!-- -->
-    <!-- </v-footer> -->
   </v-app>
 </template>
 
 <script>
-import Drawer from "./components/Drawer";
+import NavDrawer from "./components/NavDrawer";
 import AppFade from "./components/AppFade";
 
 export default {
@@ -22,7 +19,7 @@ export default {
   },
   components: {
     AppFade,
-    Drawer,
+    NavDrawer,
   },
 };
 </script>
