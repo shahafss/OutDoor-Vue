@@ -19,7 +19,7 @@
         <div>
           <AdressAutocomplete
             @address-changed="address = $event"
-            :address="getAddress.addressString"
+            :address="getAddress ? getAddress.addressString : ``"
           ></AdressAutocomplete>
         </div>
         <div style="display:flex; margin-top:1rem">
@@ -126,6 +126,7 @@
       </div>
 
       <gmap-map
+        v-if="getAddress"
         class="activity-map"
         :center="{
           lat: getAddress.lat,

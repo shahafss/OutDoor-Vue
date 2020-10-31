@@ -83,28 +83,29 @@ export default {
   },
   components: { AdressAutocomplete },
   methods: {
-    //TODO create autocomplete component
     createRoom() {
       const tempDate = new Date(this.date).toDateString();
-      this.$store.dispatch("addRoom", {
-        title: this.title,
-        category: this.category,
-        date: new Date(this.date).toLocaleTimeString(),
-        description: this.description,
-        participants: this.participants,
-        address: {
-          addressString: this.getAddressString(this.address),
-          lat: this.address ? this.address.latitude : this.getAddress.lat,
-          lng: this.address ? this.address.longitude : this.getAddress.lng,
-        },
-      });
-      this.$store.dispatch("fetchRooms");
-      const newRoom = this.rooms.find(
-        (room) => room.description == this.description
-      );
-      if (newRoom !== undefined) {
-        this.$router.push("/room/" + newRoom.id);
-      }
+      this.$store
+        .dispatch("addRoom", {
+          title: this.title,
+          category: this.category,
+          date: new Date(this.date).toLocaleTimeString(),
+          description: this.description,
+          participants: this.participants,
+          address: {
+            addressString: this.getAddressString(this.address),
+            lat: this.address ? this.address.latitude : this.getAddress.lat,
+            lng: this.address ? this.address.longitude : this.getAddress.lng,
+          },
+        })
+        .then(
+          (res) => {
+            if (res && res.id) this.$router.push("/room/" + res.id);
+          },
+          (err) => {
+            console.log("error>> ", err);
+          }
+        );
     },
     getAddressString(address) {
       return address

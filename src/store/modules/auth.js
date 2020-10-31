@@ -110,12 +110,13 @@ const actions = {
     });
   },
   logout({ commit }) {
+    console.log("logged out");
     commit("CLEAR_AUTH");
     localStorage.removeItem("expirationDate");
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
     localStorage.removeItem("username");
-    router.replace("/login");
+    router.push("/login");
   },
   storeUser({ commit, state }, userData) {
     if (!state.idToken) return;

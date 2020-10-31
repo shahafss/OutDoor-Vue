@@ -11,6 +11,10 @@
           <label for="password">Password</label>
           <input type="password" id="password" v-model="password" />
         </div>
+        <span
+          >Dont have an account?
+          <router-link to="/signup">Register</router-link></span
+        >
         <div class="submit">
           <button type="submit">Submit</button>
         </div>
