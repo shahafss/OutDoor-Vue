@@ -1,27 +1,28 @@
 <template>
-  <v-container style="height:100%" fluid>
+  <v-container :style="{ height: '100%', padding: '0' }">
     <div class="view-container" v-if="loggedInUser && isActive && currentRoom">
       <form class="room-form" @submit.prevent="saveRoom">
         <input
           :value="title"
           ref="title"
-          class="title form-control"
+          class="title"
           type="text"
           :disabled="!editMode"
         />
+        <hr :style="{ width: '95%', marginBottom: '0' }" />
         <textarea
           :value="description"
           ref="description"
-          class="description form-control"
+          class="description "
           type="text"
           :disabled="!editMode"
         />
-        <div>
-          <AdressAutocomplete
-            @address-changed="address = $event"
-            :address="getAddress ? getAddress.addressString : ``"
-          ></AdressAutocomplete>
-        </div>
+        <AdressAutocomplete
+          @address-changed="address = $event"
+          :address="getAddress ? getAddress.addressString : ``"
+          :disabled="!editMode"
+          :center="true"
+        ></AdressAutocomplete>
         <div style="display:flex; margin-top:1rem">
           <label for="participants"
             >Participants: {{ currentRoom.joinedUsers.length }}/</label
@@ -125,7 +126,9 @@
         </div>
       </div>
 
-      <gmap-map
+      <div class="activity-map">
+        GOOGLE MAP
+        <!-- <gmap-map
         v-if="getAddress"
         class="activity-map"
         :center="{
@@ -139,7 +142,8 @@
           :clickable="true"
           :draggable="true"
         />
-      </gmap-map>
+      </gmap-map> -->
+      </div>
     </div>
     <div v-else>
       <h1>Loading..</h1>
@@ -159,11 +163,11 @@ export default {
       editMode: false,
       message: "",
       scrollPosition: null,
-      randomColor: "#" + Math.floor(Math.random() * 16777215).toString(16),
+      randomColor: "#" + Math.floor(Math.random() * 16777215).toString(16)
     };
   },
   components: {
-    AdressAutocomplete,
+    AdressAutocomplete
   },
   created() {
     this.$store.dispatch("initRealtimeListeners");
@@ -179,7 +183,7 @@ export default {
       return this.$store.getters.getRooms;
     },
     currentRoom() {
-      return this.rooms.find((room) => room.id == this.roomId);
+      return this.rooms.find(room => room.id == this.roomId);
     },
     title() {
       return this.currentRoom ? this.currentRoom.title : false;
@@ -207,7 +211,7 @@ export default {
     },
     joinedUsers() {
       const joinedUsers = [];
-      this.currentRoom.joinedUsers.forEach((userId) => {
+      this.currentRoom.joinedUsers.forEach(userId => {
         const joinedUser = this.$store.state.auth.allUsers[userId].username
           ? this.$store.state.auth.allUsers[userId].username
           : this.$store.state.auth.allUsers[userId].email;
@@ -222,7 +226,7 @@ export default {
     },
     messages() {
       return this.currentRoom ? this.currentRoom.messages : false;
-    },
+    }
   },
   methods: {
     getAddressString(address) {
@@ -239,7 +243,7 @@ export default {
         text: message,
         username: this.$store.getters.getUser.username,
         timestamp: date.toLocaleTimeString(),
-        roomId: this.currentRoom.id,
+        roomId: this.currentRoom.id
       };
       this.$store.dispatch("postMessage", messageData);
       this.message = "";
@@ -251,9 +255,9 @@ export default {
         address: {
           addressString: this.getAddressString(this.address),
           lat: this.address ? this.address.latitude : this.getAddress.lat,
-          lng: this.address ? this.address.longitude : this.getAddress.lng,
+          lng: this.address ? this.address.longitude : this.getAddress.lng
         },
-        participants: this.$refs.participants.value,
+        participants: this.$refs.participants.value
       };
       const updatedRoom = { ...this.currentRoom, ...editedData };
       this.$store.dispatch("updateRoom", updatedRoom);
@@ -273,13 +277,13 @@ export default {
     joinRoom() {
       this.$store.dispatch("joinUser", {
         roomId: this.currentRoom.id,
-        userId: this.loggedInUser.id,
+        userId: this.loggedInUser.id
       });
     },
     leaveRoom() {
       this.$store.dispatch("leaveUser", {
         roomId: this.currentRoom.id,
-        userId: this.loggedInUser.id,
+        userId: this.loggedInUser.id
       });
     },
     getMessageTime(timestamp) {
@@ -289,8 +293,8 @@ export default {
     scrollToBottom() {
       if (!this.$refs.messages) return;
       this.$refs.messages.scrollTop = this.$refs.messages.scrollHeight;
-    },
-  },
+    }
+  }
 };
 </script>
 
@@ -305,30 +309,32 @@ export default {
     height: 100%;
     border: 1px solid black;
     border-radius: 4px;
+
     .title {
+      width: 90%;
       text-align: center;
-      font-size: 30px;
-      height: 60px !important;
-      margin-top: 0 !important;
-      padding-top: 0;
-      padding-bottom: 0;
+      font-size: inherit;
+      transition: all 0.6s ease;
     }
     .title:disabled {
       font-size: 50px !important;
     }
-    .description {
-      text-align: center;
 
+    .description {
+      width: 90%;
+      text-align: center;
+      padding-top: 10px;
+      resize: none;
       font-size: 25px;
       max-width: 78rem;
-      max-height: 8rem;
-    }
-    .description:disabled {
-      font-size: 25px;
-      resize: none;
-      min-height: 8rem;
+      height: 8rem;
       overflow: auto;
     }
+
+    .v-google-places {
+      width: 100%;
+    }
+
     .participants {
       width: 50px;
       font-size: 25px;
@@ -342,21 +348,6 @@ export default {
       font-weight: 500;
     }
 
-    .form-control:not(.participants) {
-      max-width: 75rem;
-      margin-top: 2rem;
-      transition: all ease 0.5s;
-    }
-    .form-control:disabled {
-      color: #333;
-      background-color: #fff;
-      border: none;
-      box-shadow: none;
-      height: auto;
-    }
-    .form-control:disabled:hover {
-      cursor: default;
-    }
     label {
       font-size: 25px;
     }
@@ -461,7 +452,7 @@ export default {
     border-radius: 8px;
     overflow: hidden;
   }
-  // }
+
   .buttons {
     position: fixed;
     top: 43px;
@@ -476,6 +467,10 @@ export default {
       display: flex;
       flex-direction: column;
     }
+  }
+
+  .disabled {
+    pointer-events: none;
   }
 }
 

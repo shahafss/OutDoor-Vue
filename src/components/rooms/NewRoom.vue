@@ -3,65 +3,43 @@
     <h1>New Activity</h1>
     <div class="new-room-form">
       <form @submit.prevent="createRoom">
-        <div class="input">
-          <label for="title">Title</label>
-          <input
-            id="title"
-            v-model="title"
-            class="form-control"
-            type="text"
-            required
-          />
-        </div>
-        <div class="input">
-          <div class="form-group">
-            <label for="sel1">Category:</label>
-            <select v-model="category" class="form-control" id="sel1" required>
-              <option>Sport</option>
-              <option>Study</option>
-              <option>Hangout</option>
-              <option>Protest</option>
-            </select>
-          </div>
-        </div>
-        <div class="input">
-          <label for="date">Date</label>
-          <input
-            v-model="date"
-            type="datetime-local"
-            id="date"
-            class="form-control"
-          />
-        </div>
-        <div class="input">
-          <label for="description">Description</label>
-          <input
-            v-model="description"
-            type="text"
-            id="description"
-            class="form-control"
-          />
-        </div>
-        <div class="input">
-          <label for="participants">Participants</label>
-          <input
-            id="participants"
-            v-model="participants"
-            type="number"
-            placeholder="0"
-            class="form-control"
-          />
-        </div>
-        <div class="input">
-          <label for="map">Address</label>
-          <AdressAutocomplete
-            @address-changed="address = $event"
-            :address="getAddress.addressString"
-          ></AdressAutocomplete>
-        </div>
-        <div class="submit">
-          <button type="submit">Create</button>
-        </div>
+        <v-text-field v-model="title" label="Title"></v-text-field>
+        <v-select
+          v-model="category"
+          :items="categoryItems"
+          label="Category"
+        ></v-select>
+        <v-menu
+          :close-on-content-click="true"
+          :nudge-right="40"
+          transition="scale-transition"
+          offset-y
+          min-width="290px"
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-text-field
+              v-model="date"
+              label="Date"
+              readonly
+              v-bind="attrs"
+              v-on="on"
+            ></v-text-field>
+          </template>
+          <v-date-picker v-model="date"></v-date-picker>
+        </v-menu>
+        <v-text-field v-model="description" label="Description"></v-text-field>
+        <v-text-field
+          type="number"
+          v-model="participants"
+          label="Participants"
+        ></v-text-field>
+        <AdressAutocomplete
+          @address-changed="address = $event"
+          :address="getAddress.addressString"
+        ></AdressAutocomplete>
+        <v-btn type="submit" outlined rounded color="indigo">
+          Create
+        </v-btn>
       </form>
     </div>
   </div>
@@ -79,6 +57,7 @@ export default {
       description: "",
       participants: null,
       address: "",
+      categoryItems: ["Sport", "Study", "Hangout", "Protest"]
     };
   },
   components: { AdressAutocomplete },
@@ -95,15 +74,15 @@ export default {
           address: {
             addressString: this.getAddressString(this.address),
             lat: this.address ? this.address.latitude : this.getAddress.lat,
-            lng: this.address ? this.address.longitude : this.getAddress.lng,
-          },
+            lng: this.address ? this.address.longitude : this.getAddress.lng
+          }
         })
         .then(
-          (res) => {
+          res => {
             if (res && res.id) this.$router.push("/room/" + res.id);
           },
-          (err) => {
-            console.log("error>> ", err);
+          err => {
+            console.log("createRoom error>> ", err);
           }
         );
     },
@@ -111,7 +90,7 @@ export default {
       return address
         ? address.formatted_address
         : this.getAddress.addressString;
-    },
+    }
   },
   computed: {
     rooms() {
@@ -119,8 +98,8 @@ export default {
     },
     getAddress() {
       return this.currentRoom ? this.currentRoom.address : false;
-    },
-  },
+    }
+  }
 };
 </script>
 
@@ -129,43 +108,16 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-.new-room-form {
-  width: 400px;
-  margin: 30px auto;
-  border: 1px solid #eee;
-  padding: 20px;
-  box-shadow: 0 2px 3px #ccc;
-}
-.input {
-  margin: 10px auto;
-}
-.input label {
-  display: block;
-  color: #4e4e4e;
-  margin-bottom: 6px;
-}
+  .new-room-form {
+    width: 400px;
+    margin: 30px auto;
+    border: 1px solid #eee;
+    padding: 20px;
+    box-shadow: 0 2px 3px #ccc;
 
-.submit button {
-  border: 1px solid #521751;
-  color: #521751;
-  padding: 10px 20px;
-  font: inherit;
-  cursor: pointer;
-}
-
-.submit button:hover,
-.submit button:active {
-  background-color: #521751;
-  color: white;
-}
-
-.submit button[disabled],
-.submit button[disabled]:hover,
-.submit button[disabled]:active {
-  border: 1px solid #ccc;
-  background-color: transparent;
-  color: #ccc;
-  cursor: not-allowed;
+    .v-google-places {
+      width: 100%;
+    }
+  }
 }
 </style>

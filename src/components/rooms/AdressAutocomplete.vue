@@ -5,13 +5,19 @@
     country="il"
     @placechanged="onAddressChanged($event)"
   >
-    <input :value="address" type="text" />
+    <input
+      style="width: inherit;"
+      :class="{ center: center }"
+      :disabled="disabled"
+      :value="address"
+      type="text"
+    />
   </VueGooglePlaces>
 </template>
 
 <script>
 export default {
-  props: ["address"],
+  props: ["address", "disabled", "center"],
   data() {
     return {
       googleAPI: process.env.VUE_APP_GMAPS,
@@ -25,4 +31,8 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.center {
+  text-align: center;
+}
+</style>

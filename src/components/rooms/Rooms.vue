@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid>
+  <v-container>
     <v-btn to="/new-room" color="blue" dark fixed top right fab>
       <v-icon>mdi-plus</v-icon>
     </v-btn>
@@ -42,11 +42,11 @@ import Room from "./Room";
 export default {
   data() {
     return {
-      filter: null,
+      filter: null
     };
   },
   components: {
-    Room,
+    Room
   },
   created() {
     this.$store.dispatch("initRealtimeListeners");
@@ -57,12 +57,12 @@ export default {
     getRooms() {
       if (this.filter) {
         return this.$store.getters.getRooms.filter(
-          (room) => room.category == this.filter
+          room => room.category == this.filter
         );
       } else {
         return this.$store.getters.getRooms;
       }
-    },
+    }
   },
   methods: {
     setFilter(filter) {
@@ -71,8 +71,8 @@ export default {
       } else {
         this.filter = filter.target.textContent.trim();
       }
-    },
-  },
+    }
+  }
 };
 </script>
 
