@@ -163,11 +163,11 @@ export default {
       editMode: false,
       message: "",
       scrollPosition: null,
-      randomColor: "#" + Math.floor(Math.random() * 16777215).toString(16)
+      randomColor: "#" + Math.floor(Math.random() * 16777215).toString(16),
     };
   },
   components: {
-    AdressAutocomplete
+    AdressAutocomplete,
   },
   created() {
     this.$store.dispatch("initRealtimeListeners");
@@ -183,7 +183,7 @@ export default {
       return this.$store.getters.getRooms;
     },
     currentRoom() {
-      return this.rooms.find(room => room.id == this.roomId);
+      return this.rooms.find((room) => room.id == this.roomId);
     },
     title() {
       return this.currentRoom ? this.currentRoom.title : false;
@@ -211,7 +211,7 @@ export default {
     },
     joinedUsers() {
       const joinedUsers = [];
-      this.currentRoom.joinedUsers.forEach(userId => {
+      this.currentRoom.joinedUsers.forEach((userId) => {
         const joinedUser = this.$store.state.auth.allUsers[userId].username
           ? this.$store.state.auth.allUsers[userId].username
           : this.$store.state.auth.allUsers[userId].email;
@@ -226,7 +226,7 @@ export default {
     },
     messages() {
       return this.currentRoom ? this.currentRoom.messages : false;
-    }
+    },
   },
   methods: {
     getAddressString(address) {
@@ -243,7 +243,7 @@ export default {
         text: message,
         username: this.$store.getters.getUser.username,
         timestamp: date.toLocaleTimeString(),
-        roomId: this.currentRoom.id
+        roomId: this.currentRoom.id,
       };
       this.$store.dispatch("postMessage", messageData);
       this.message = "";
@@ -255,9 +255,9 @@ export default {
         address: {
           addressString: this.getAddressString(this.address),
           lat: this.address ? this.address.latitude : this.getAddress.lat,
-          lng: this.address ? this.address.longitude : this.getAddress.lng
+          lng: this.address ? this.address.longitude : this.getAddress.lng,
         },
-        participants: this.$refs.participants.value
+        participants: this.$refs.participants.value,
       };
       const updatedRoom = { ...this.currentRoom, ...editedData };
       this.$store.dispatch("updateRoom", updatedRoom);
@@ -277,13 +277,13 @@ export default {
     joinRoom() {
       this.$store.dispatch("joinUser", {
         roomId: this.currentRoom.id,
-        userId: this.loggedInUser.id
+        userId: this.loggedInUser.id,
       });
     },
     leaveRoom() {
       this.$store.dispatch("leaveUser", {
         roomId: this.currentRoom.id,
-        userId: this.loggedInUser.id
+        userId: this.loggedInUser.id,
       });
     },
     getMessageTime(timestamp) {
@@ -293,8 +293,8 @@ export default {
     scrollToBottom() {
       if (!this.$refs.messages) return;
       this.$refs.messages.scrollTop = this.$refs.messages.scrollHeight;
-    }
-  }
+    },
+  },
 };
 </script>
 

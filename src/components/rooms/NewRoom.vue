@@ -49,6 +49,9 @@
 import AdressAutocomplete from "./AdressAutocomplete";
 
 export default {
+  created() {
+    this.$store.dispatch("fetchUsers");
+  },
   data() {
     return {
       title: "",
@@ -57,7 +60,7 @@ export default {
       description: "",
       participants: null,
       address: "",
-      categoryItems: ["Sport", "Study", "Hangout", "Protest"]
+      categoryItems: ["Sport", "Study", "Hangout", "Protest"],
     };
   },
   components: { AdressAutocomplete },
@@ -71,18 +74,21 @@ export default {
           date: new Date(this.date).toLocaleTimeString(),
           description: this.description,
           participants: this.participants,
+          messages: [],
           address: {
             addressString: this.getAddressString(this.address),
             lat: this.address ? this.address.latitude : this.getAddress.lat,
-            lng: this.address ? this.address.longitude : this.getAddress.lng
-          }
+            lng: this.address ? this.address.longitude : this.getAddress.lng,
+          },
+          admin: this.$store.state.auth.user.id,
+          joinedUsers: [this.$store.state.auth.user.id],
         })
         .then(
-          res => {
-            if (res && res.id) this.$router.push("/room/" + res.id);
+          (res) => {
+            this.$router.push("/room/" + res.data);
           },
-          err => {
-            console.log("createRoom error>> ", err);
+          (error) => {
+            console.log("createRoom error>> ", error);
           }
         );
     },
@@ -90,7 +96,7 @@ export default {
       return address
         ? address.formatted_address
         : this.getAddress.addressString;
-    }
+    },
   },
   computed: {
     rooms() {
@@ -98,8 +104,8 @@ export default {
     },
     getAddress() {
       return this.currentRoom ? this.currentRoom.address : false;
-    }
-  }
+    },
+  },
 };
 </script>
 

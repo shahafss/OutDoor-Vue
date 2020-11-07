@@ -1,24 +1,15 @@
 import db from "../../firebase";
 import globalStore from "../store";
 
+import axios from "axios";
+
 const state = {
   rooms: [],
 };
 
 const mutations = {
   ADD_ROOM(state, room) {
-    state.rooms.push({
-      id: room.id,
-      title: room.title,
-      category: room.category,
-      description: room.description,
-      participants: room.participants,
-      address: room.address,
-      joinedUsers: room.joinedUsers,
-      messages: room.messages,
-      admin: room.admin,
-      timestamp: new Date(),
-    });
+    state.rooms.push(room);
   },
   DELETE_ROOM(state, id) {
     const index = state.rooms.findIndex((room) => room.id == id);
@@ -81,62 +72,26 @@ const actions = {
       });
     });
   },
-  fetchRooms: ({ commit }) => {
-    db.collection("rooms")
-      .get()
-      .then((querySnapshot) => {
-        let tempRooms = [];
-        querySnapshot.forEach((doc) => {
-          const roomData = {
-            id: doc.id,
-            title: doc.data().title,
-            category: doc.data().category,
-            date: doc.data().date,
-            description: doc.data().description,
-            participants: doc.data().participants,
-            address: doc.data().address,
-            admin: doc.data().admin,
-            joinedUsers: doc.data().joinedUsers,
-            messages: doc.data().messages,
-            timestamp: doc.data().timestamp,
-          };
-          if (roomData.title !== undefined) tempRooms.push(roomData);
-        });
 
-        tempRooms.sort((a, b) => new Date(a.timestamp - b.timestamp)).reverse();
-        commit("FETCH_ROOMS", tempRooms);
+  fetchRooms: ({ commit }) => {
+    axios
+      .get("http://localhost:5001/outdoor-vue/us-central1/app/api/rooms")
+      .then((res) => {
+        commit("FETCH_ROOMS", res.data);
       });
   },
+
   addRoom: ({ commit }, room) => {
     return new Promise((resolve, reject) => {
-      db.collection("rooms")
-        .add({
-          title: room.title,
-          category: room.category,
-          date: room.date,
-          description: room.description,
-          participants: room.participants,
-          address: room.address,
-          admin: globalStore.state.auth.user.id,
-          joinedUsers: [globalStore.state.auth.user.id],
-          messages: [],
-          timestamp: new Date(),
-        })
+      axios
+        .post(
+          "http://localhost:5001/outdoor-vue/us-central1/app/api/create",
+          room
+        )
         .then(
-          (docRef) => {
-            commit("ADD_ROOM", {
-              id: docRef.id,
-              title: docRef.title,
-              category: docRef.category,
-              date: docRef.date,
-              description: docRef.description,
-              participants: docRef.participants,
-              address: docRef.address,
-              admin: globalStore.state.auth.user.id,
-              joinedUsers: [globalStore.state.auth.user.id],
-              messages: [],
-            });
-            resolve(docRef);
+          (res) => {
+            commit("ADD_ROOM", room);
+            resolve(res);
           },
           (error) => {
             reject(error);
