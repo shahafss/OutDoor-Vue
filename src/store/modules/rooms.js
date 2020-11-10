@@ -5,6 +5,7 @@ import axios from "axios";
 
 const state = {
   rooms: [],
+  currentRoom: {},
 };
 
 const mutations = {
@@ -17,6 +18,9 @@ const mutations = {
   },
   FETCH_ROOMS(state, rooms) {
     state.rooms = rooms;
+  },
+  FETCH_ROOM(state, currentRoom) {
+    state.currentRoom = currentRoom;
   },
   UPDATE_ROOM(state, roomData) {
     if (roomData.roomIndex >= 0) {
@@ -81,6 +85,16 @@ const actions = {
       });
   },
 
+  fetchRoom: ({ commit }, roomId) => {
+    axios
+      .get(
+        `http://localhost:5001/outdoor-vue/us-central1/app/api/rooms/${roomId}`
+      )
+      .then((res) => {
+        commit("FETCH_ROOM", res.data);
+      });
+  },
+
   addRoom: ({ commit }, room) => {
     return new Promise((resolve, reject) => {
       axios
@@ -99,13 +113,22 @@ const actions = {
         );
     });
   },
-  deleteRoom: ({ commit }, id) => {
-    db.collection("rooms")
-      .doc(id)
-      .delete()
-      .then(() => {
-        commit("DELETE_ROOM", id);
-      });
+  deleteRoom: ({ commit }, roomId) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .delete(
+          `http://localhost:5001/outdoor-vue/us-central1/app/api/delete/${roomId}`
+        )
+        .then(
+          (res) => {
+            commit("DELETE_ROOM", roomId);
+            resolve(res);
+          },
+          (error) => {
+            reject(error);
+          }
+        );
+    });
   },
   updateRoom: (context, updatedRoom) => {
     const currentRoomId = state.rooms.find((room) => room.id == updatedRoom.id)
@@ -151,6 +174,9 @@ const actions = {
 const getters = {
   getRooms: (state) => {
     return state.rooms;
+  },
+  getCurrentRoom: (state) => {
+    return state.currentRoom;
   },
 };
 

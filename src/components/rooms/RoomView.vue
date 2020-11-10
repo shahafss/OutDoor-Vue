@@ -23,7 +23,10 @@
           :disabled="!editMode"
           :center="true"
         ></AdressAutocomplete>
-        <div style="display:flex; margin-top:1rem">
+        <div
+          v-if="currentRoom.joinedUsers"
+          style="display:flex; margin-top:1rem"
+        >
           <label for="participants"
             >Participants: {{ currentRoom.joinedUsers.length }}/</label
           >
@@ -268,11 +271,9 @@ export default {
     },
     deleteRoom(id) {
       this.isActive = false;
-      this.$store.dispatch("deleteRoom", id).then(
-        setTimeout(() => {
-          this.$router.push("/rooms");
-        }, 1000)
-      );
+      this.$store.dispatch("deleteRoom", id).then((res) => {
+        this.$router.push("/rooms");
+      });
     },
     joinRoom() {
       this.$store.dispatch("joinUser", {
