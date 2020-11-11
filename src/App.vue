@@ -1,14 +1,16 @@
 <template>
-  <div style="height:100%">
-    <OutDoorHeader></OutDoorHeader>
-    <app-fade>
-      <router-view />
-    </app-fade>
-  </div>
+  <v-app>
+    <nav-drawer></nav-drawer>
+    <v-main style="padding-top: 1rem">
+      <AppFade>
+        <router-view></router-view>
+      </AppFade>
+    </v-main>
+  </v-app>
 </template>
 
 <script>
-import Header from "./components/Header";
+import NavDrawer from "./components/NavDrawer";
 import AppFade from "./components/AppFade";
 
 export default {
@@ -16,9 +18,9 @@ export default {
     this.$store.dispatch("tryAutoLogin");
   },
   components: {
-    OutDoorHeader: Header,
-    AppFade
-  }
+    AppFade,
+    NavDrawer,
+  },
 };
 </script>
 
@@ -30,5 +32,9 @@ html {
   width: 100%;
   min-height: 100vh;
   height: 100%;
+}
+
+a {
+  text-decoration: none;
 }
 </style>

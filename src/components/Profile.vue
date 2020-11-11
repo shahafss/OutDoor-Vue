@@ -3,7 +3,9 @@
     <h1>{{ name }} ({{ userName }})</h1>
     <h2>{{ email }}</h2>
     <hr />
-    <button @click="onLogout" class="btn btn-danger">Logout</button>
+    <v-btn depressed color="error" @click="onLogout">
+      Logout
+    </v-btn>
   </div>
 </template>
 
@@ -28,13 +30,13 @@ export default {
       return !this.$store.getters.getUser
         ? false
         : this.$store.getters.getUser.email;
-    }
+    },
   },
   methods: {
     onLogout() {
       this.$store.dispatch("logout");
-    }
-  }
+    },
+  },
 };
 </script>
 

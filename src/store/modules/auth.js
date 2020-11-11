@@ -7,7 +7,7 @@ const state = {
   idToken: null,
   userId: null,
   user: null,
-  allUsers: null
+  allUsers: null,
 };
 
 const mutations = {
@@ -25,7 +25,7 @@ const mutations = {
     state.idToken = null;
     state.userId = null;
     state.user = null;
-  }
+  },
 };
 
 const actions = {
@@ -36,15 +36,15 @@ const actions = {
   },
   signup: ({ commit, dispatch }, authData) => {
     axios
-      .post("accounts:signUp?key=AIzaSyCdTx55AnwVv8tw_jqoWEDyiVMX7pahn4Y", {
+      .post(`accounts:signUp?key=${process.env.VUE_APP_FIREBASE}`, {
         email: authData.email,
         password: authData.password,
-        returnSecureToken: true
+        returnSecureToken: true,
       })
-      .then(res => {
+      .then((res) => {
         commit("AUTH_USER", {
           token: res.data.idToken,
-          userId: res.data.localId
+          userId: res.data.localId,
         });
 
         const now = new Date();
@@ -61,19 +61,16 @@ const actions = {
         dispatch("setLogoutTimer", res.data.expiresIn);
         router.push("/rooms");
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   },
   login: ({ commit, dispatch }, authData) => {
     axios
-      .post(
-        "accounts:signInWithPassword?key=AIzaSyCdTx55AnwVv8tw_jqoWEDyiVMX7pahn4Y",
-        {
-          email: authData.email,
-          password: authData.password,
-          returnSecureToken: true
-        }
-      )
-      .then(res => {
+      .post(`accounts:signInWithPassword?key=${process.env.VUE_APP_FIREBASE}`, {
+        email: authData.email,
+        password: authData.password,
+        returnSecureToken: true,
+      })
+      .then((res) => {
         const now = new Date();
         const expirationDate = new Date(
           now.getTime() + res.data.expiresIn * 1000
@@ -86,13 +83,13 @@ const actions = {
 
         commit("AUTH_USER", {
           token: res.data.idToken,
-          userId: res.data.localId
+          userId: res.data.localId,
         });
 
         dispatch("setLogoutTimer", res.data.expiresIn);
         router.push("/rooms");
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   },
   tryAutoLogin({ commit, dispatch }) {
     const token = localStorage.getItem("token");
@@ -109,16 +106,17 @@ const actions = {
     const userId = localStorage.getItem("userId");
     commit("AUTH_USER", {
       token: token,
-      userId: userId
+      userId: userId,
     });
   },
   logout({ commit }) {
+    console.log("logged out");
     commit("CLEAR_AUTH");
     localStorage.removeItem("expirationDate");
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
     localStorage.removeItem("username");
-    router.replace("/login");
+    router.push("/login");
   },
   storeUser({ commit, state }, userData) {
     if (!state.idToken) return;
@@ -128,8 +126,8 @@ const actions = {
         "https://outdoor-vue.firebaseio.com/users.json?auth=" + state.idToken,
         userData
       )
-      .then(res => console.log(res))
-      .catch(err => console.log(err));
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
   },
   fetchUsers({ commit, state }) {
     if (!state.idToken) return;
@@ -137,7 +135,7 @@ const actions = {
       .get(
         "https://outdoor-vue.firebaseio.com/users.json?auth=" + state.idToken
       )
-      .then(res => {
+      .then((res) => {
         const data = res.data;
         const users = [];
 
@@ -151,11 +149,11 @@ const actions = {
         const loggedInUsername = localStorage.getItem("username");
         commit(
           "STORE_USER",
-          users.find(user => user.email == loggedInUsername)
+          users.find((user) => user.email == loggedInUsername)
         );
       })
-      .catch(error => console.log(error));
-  }
+      .catch((error) => console.log(error));
+  },
 };
 const getters = {
   getUser(state) {
@@ -166,7 +164,7 @@ const getters = {
   },
   isAuthenticated(state) {
     return state.idToken !== null;
-  }
+  },
 };
 
 export default { state, mutations, actions, getters };

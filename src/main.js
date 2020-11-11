@@ -5,18 +5,25 @@ import VueRouter from "vue-router";
 import store from "./store/store";
 import router from "./router";
 import * as VueGoogleMaps from "vue2-google-maps";
+import VueGooglePlaces from "vue-google-places";
+import Vuetify from "vuetify";
 
 Vue.use(VueRouter);
+Vue.use(Vuetify);
+Vue.use(VueGooglePlaces);
+
 Vue.use(VueGoogleMaps, {
   load: {
-    key: "AIzaSyAuuPYLZG4AGm2Kd8G6NwtIrE2H0JjgNpw",
-    libraries: "places"
-  }
+    key: process.env.VUE_APP_GMAPS,
+    libraries: "places",
+  },
 });
 
 new Vue({
   el: "#app",
   router,
   store,
-  render: h => h(App)
+  vuetify: new Vuetify(),
+
+  render: (h) => h(App),
 });

@@ -1,49 +1,56 @@
 <template>
   <div id="login">
     <div class="login-form">
+      <h1>Login</h1>
       <form @submit.prevent="onSubmit">
         <div class="input">
-          <label for="email">Email</label>
-          <input type="email" id="email" v-model="email" />
+          <v-text-field
+            type="email"
+            v-model="email"
+            label="Email"
+          ></v-text-field>
         </div>
         <div class="input">
-          <label for="password">Password</label>
-          <input type="password" id="password" v-model="password" />
+          <v-text-field
+            type="password"
+            v-model="password"
+            label="Password"
+          ></v-text-field>
         </div>
-        <div class="submit">
-          <button type="submit">Submit</button>
+        <div>
+          <span
+            >Dont have an account?
+            <router-link to="/signup">Register</router-link></span
+          >
         </div>
+        <v-btn type="submit" outlined rounded color="indigo">
+          Submit
+        </v-btn>
       </form>
     </div>
   </div>
 </template>
 
 <script>
-import axios from "../../axios-auth";
-
 export default {
-  created() {
-    console.log("env>>", process.env.VUE_APP_FIREBASE);
-  },
   data() {
     return {
       email: "",
-      password: ""
+      password: "",
     };
   },
   methods: {
     onSubmit() {
       const formData = {
         email: this.email,
-        password: this.password
+        password: this.password,
       };
       this.$store.dispatch("login", {
         email: formData.email,
-        password: formData.password
+        password: formData.password,
       });
-      // .then(this.$router.push("/"));
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -76,27 +83,5 @@ export default {
   outline: none;
   border: 1px solid #521751;
   background-color: #eee;
-}
-.submit button {
-  border: 1px solid #521751;
-  color: #521751;
-  padding: 10px 20px;
-  font: inherit;
-  cursor: pointer;
-}
-
-.submit button:hover,
-.submit button:active {
-  background-color: #521751;
-  color: white;
-}
-
-.submit button[disabled],
-.submit button[disabled]:hover,
-.submit button[disabled]:active {
-  border: 1px solid #ccc;
-  background-color: transparent;
-  color: #ccc;
-  cursor: not-allowed;
 }
 </style>
