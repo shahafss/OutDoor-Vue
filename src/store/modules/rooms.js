@@ -1,6 +1,4 @@
 import db from "../../firebase";
-import globalStore from "../store";
-
 import axios from "axios";
 
 const state = {
@@ -78,96 +76,98 @@ const actions = {
   },
 
   fetchRooms: ({ commit }) => {
-    axios
-      .get("http://localhost:5001/outdoor-vue/us-central1/app/api/rooms")
-      .then((res) => {
-        commit("FETCH_ROOMS", res.data);
-      });
+    axios.get(`${process.env.VUE_APP_API_URL}/rooms`).then((res) => {
+      commit("FETCH_ROOMS", res.data);
+    });
   },
 
   fetchRoom: ({ commit }, roomId) => {
-    axios
-      .get(
-        `http://localhost:5001/outdoor-vue/us-central1/app/api/rooms/${roomId}`
-      )
-      .then((res) => {
-        commit("FETCH_ROOM", res.data);
-      });
+    axios.get(`${process.env.VUE_APP_API_URL}/rooms/${roomId}`).then((res) => {
+      commit("FETCH_ROOM", res.data);
+    });
   },
 
   addRoom: ({ commit }, room) => {
     return new Promise((resolve, reject) => {
-      axios
-        .post(
-          "http://localhost:5001/outdoor-vue/us-central1/app/api/create",
-          room
-        )
-        .then(
-          (res) => {
-            commit("ADD_ROOM", room);
-            resolve(res);
-          },
-          (error) => {
-            reject(error);
-          }
-        );
+      axios.post(`${process.env.VUE_APP_API_URL}/create`, room).then(
+        (res) => {
+          commit("ADD_ROOM", room);
+          resolve(res);
+        },
+        (error) => {
+          reject(error);
+        }
+      );
     });
   },
   deleteRoom: ({ commit }, roomId) => {
     return new Promise((resolve, reject) => {
-      axios
-        .delete(
-          `http://localhost:5001/outdoor-vue/us-central1/app/api/delete/${roomId}`
-        )
-        .then(
-          (res) => {
-            commit("DELETE_ROOM", roomId);
-            resolve(res);
-          },
-          (error) => {
-            reject(error);
-          }
-        );
+      axios.delete(`${process.env.VUE_APP_API_URL}/delete/${roomId}`).then(
+        (res) => {
+          commit("DELETE_ROOM", roomId);
+          resolve(res);
+        },
+        (error) => {
+          reject(error);
+        }
+      );
     });
   },
   updateRoom: (context, updatedRoom) => {
-    const currentRoomId = state.rooms.find((room) => room.id == updatedRoom.id)
-      .id;
-    db.collection("rooms")
-      .doc(currentRoomId)
-      .update(updatedRoom);
+    return new Promise((resolve, reject) => {
+      axios
+        .put(
+          `${process.env.VUE_APP_API_URL}/update/${updatedRoom.id}`,
+          updatedRoom
+        )
+        .then((res) => {
+          resolve(res),
+            (error) => {
+              reject(error);
+            };
+        });
+    });
   },
   joinUser: (context, joinData) => {
     const currentRoom = state.rooms.find((room) => room.id == joinData.roomId);
-    const joinedUsers = currentRoom.joinedUsers;
-    if (currentRoom.participants > currentRoom.joinedUsers.length) {
-      joinedUsers.push(joinData.userId);
 
-      db.collection("rooms")
-        .doc(joinData.roomId)
-        .update({ joinedUsers: joinedUsers });
+    if (currentRoom.participants > currentRoom.joinedUsers.length) {
+      currentRoom.joinedUsers.push(joinData.userId);
+      axios.put(
+        `${process.env.VUE_APP_API_URL}/update/${joinData.roomId}`,
+        currentRoom
+      );
     }
   },
   leaveUser: (context, leaveData) => {
     const currentRoom = state.rooms.find((room) => room.id == leaveData.roomId);
-    const joinedUsers = currentRoom.joinedUsers;
-    const index = joinedUsers.indexOf(leaveData.userId);
-    joinedUsers.splice(index, 1);
+    const index = currentRoom.joinedUsers.indexOf(leaveData.userId);
+    currentRoom.joinedUsers.splice(index, 1);
 
-    db.collection("rooms")
-      .doc(leaveData.roomId)
-      .update({ joinedUsers: joinedUsers });
+    axios.put(
+      `${process.env.VUE_APP_API_URL}/update/${leaveData.roomId}`,
+      currentRoom
+    );
   },
   postMessage: ({ commit }, messageData) => {
     const currentRoom = state.rooms.find(
       (room) => room.id == messageData.roomId
     );
-    const messages = currentRoom.messages;
-    messages.push(messageData);
+    currentRoom.messages.push(messageData);
 
-    db.collection("rooms")
-      .doc(messageData.roomId)
-      .update({ messages: messages });
+    return new Promise((resolve, reject) => {
+      axios
+        .put(
+          `${process.env.VUE_APP_API_URL}/update/${messageData.roomId}`,
+          currentRoom
+        )
+        .then((res) => {
+          resolve(res),
+            (error) => {
+              reject(error);
+            };
+        });
+    });
   },
 };
 

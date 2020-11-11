@@ -130,22 +130,22 @@
       </div>
 
       <div class="activity-map">
-        GOOGLE MAP
+        Google Map
         <!-- <gmap-map
-        v-if="getAddress"
-        class="activity-map"
-        :center="{
-          lat: getAddress.lat,
-          lng: getAddress.lng,
-        }"
-        :zoom="16"
-      >
-        <GmapMarker
-          :position="{ lat: getAddress.lat, lng: getAddress.lng }"
-          :clickable="true"
-          :draggable="true"
-        />
-      </gmap-map> -->
+          v-if="getAddress"
+          class="activity-map"
+          :center="{
+            lat: getAddress.lat,
+            lng: getAddress.lng,
+          }"
+          :zoom="16"
+        >
+          <GmapMarker
+            :position="{ lat: getAddress.lat, lng: getAddress.lng }"
+            :clickable="true"
+            :draggable="true"
+          />
+        </gmap-map> -->
       </div>
     </div>
     <div v-else>
@@ -169,9 +169,6 @@ export default {
       randomColor: "#" + Math.floor(Math.random() * 16777215).toString(16),
     };
   },
-  components: {
-    AdressAutocomplete,
-  },
   created() {
     this.$store.dispatch("initRealtimeListeners");
     this.$store.dispatch("fetchRooms");
@@ -180,38 +177,51 @@ export default {
   mounted() {
     this.scrollToBottom();
   },
+  components: {
+    AdressAutocomplete,
+  },
   computed: {
     //TODO move computed props to getters(if possible)
     rooms() {
       return this.$store.getters.getRooms;
     },
+
     currentRoom() {
       return this.rooms.find((room) => room.id == this.roomId);
     },
+
     title() {
       return this.currentRoom ? this.currentRoom.title : false;
     },
+
     date() {
       return this.currentRoom ? this.currentRoom.date : false;
     },
+
     description() {
       return this.currentRoom ? this.currentRoom.description : false;
     },
+
     participants() {
       return this.currentRoom ? this.currentRoom.participants : false;
     },
+
     getAddress() {
       return this.currentRoom ? this.currentRoom.address : false;
     },
+
     isAdmin() {
       return this.loggedInUser.id == this.currentRoom.admin;
     },
+
     isJoinedUser() {
       return this.joinedUsers.includes(this.$store.getters.getUser.username);
     },
+
     loggedInUser() {
       return this.$store.getters.getUser;
     },
+
     joinedUsers() {
       const joinedUsers = [];
       this.currentRoom.joinedUsers.forEach((userId) => {
@@ -222,11 +232,13 @@ export default {
       });
       return joinedUsers;
     },
+
     isFull() {
       return (
         this.currentRoom.participants == this.currentRoom.joinedUsers.length
       );
     },
+
     messages() {
       return this.currentRoom ? this.currentRoom.messages : false;
     },
@@ -237,6 +249,7 @@ export default {
         ? address.formatted_address
         : this.getAddress.addressString;
     },
+
     sendMessage(message) {
       if (message == "") return;
       this.scrollToBottom();
@@ -251,6 +264,7 @@ export default {
       this.$store.dispatch("postMessage", messageData);
       this.message = "";
     },
+
     saveRoom() {
       const editedData = {
         title: this.$refs.title.value,
@@ -263,34 +277,46 @@ export default {
         participants: this.$refs.participants.value,
       };
       const updatedRoom = { ...this.currentRoom, ...editedData };
-      this.$store.dispatch("updateRoom", updatedRoom);
-      this.editMode = false;
+      this.$store.dispatch("updateRoom", updatedRoom).then(
+        (res) => {
+          this.editMode = false;
+        },
+        (error) => {
+          console.log("saveRoom error> ", error);
+        }
+      );
     },
+
     cancel() {
       this.editMode = false;
     },
+
     deleteRoom(id) {
       this.isActive = false;
       this.$store.dispatch("deleteRoom", id).then((res) => {
         this.$router.push("/rooms");
       });
     },
+
     joinRoom() {
       this.$store.dispatch("joinUser", {
         roomId: this.currentRoom.id,
         userId: this.loggedInUser.id,
       });
     },
+
     leaveRoom() {
       this.$store.dispatch("leaveUser", {
         roomId: this.currentRoom.id,
         userId: this.loggedInUser.id,
       });
     },
+
     getMessageTime(timestamp) {
       const messageTime = new Date(timestamp);
       return messageTime;
     },
+
     scrollToBottom() {
       if (!this.$refs.messages) return;
       this.$refs.messages.scrollTop = this.$refs.messages.scrollHeight;
