@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <nav-drawer></nav-drawer>
-    <v-main style="padding-top: 1rem">
+    <v-main>
       <AppFade>
         <router-view></router-view>
       </AppFade>

@@ -1,137 +1,182 @@
 <template>
-  <v-container :style="{ height: '100%', padding: '0' }">
-    <div class="view-container" v-if="loggedInUser && isActive && currentRoom">
-      <form class="room-form" @submit.prevent="saveRoom">
-        <input
-          :value="title"
-          ref="title"
-          class="title"
-          type="text"
-          :disabled="!editMode"
-        />
-        <hr :style="{ width: '95%', marginBottom: '0' }" />
-        <textarea
-          :value="description"
-          ref="description"
-          class="description "
-          type="text"
-          :disabled="!editMode"
-        />
-        <AdressAutocomplete
-          @address-changed="address = $event"
-          :address="getAddress ? getAddress.addressString : ``"
-          :disabled="!editMode"
-          :center="true"
-        ></AdressAutocomplete>
-        <div
-          v-if="currentRoom.joinedUsers"
-          style="display:flex; margin-top:1rem"
-        >
-          <label for="participants"
-            >Participants: {{ currentRoom.joinedUsers.length }}/</label
-          >
+  <v-container fluid style="padding: 0;">
+    <v-app-bar
+      color="#fcb69f"
+      dark
+      shrink-on-scroll
+      src="https://picsum.photos/1920/1080?random"
+      scroll-target="#scrolling-techniques-2"
+    >
+      <template v-slot:img="{ props }">
+        <v-img
+          v-bind="props"
+          gradient="to top right, rgba(19,84,122,.5), rgba(128,208,199,.8)"
+        ></v-img>
+      </template>
+
+      <v-app-bar-nav-icon></v-app-bar-nav-icon>
+      <v-toolbar-title>
+        {{ title }}
+      </v-toolbar-title>
+
+      <v-spacer></v-spacer>
+
+      <v-btn icon>
+        <v-icon>mdi-magnify</v-icon>
+      </v-btn>
+
+      <v-btn icon>
+        <v-icon>mdi-heart</v-icon>
+      </v-btn>
+
+      <v-btn icon>
+        <v-icon>mdi-dots-vertical</v-icon>
+      </v-btn>
+    </v-app-bar>
+    <v-sheet
+      id="scrolling-techniques-2"
+      class="overflow-y-auto"
+      max-height="600"
+    >
+      <div
+        class="view-container"
+        v-if="loggedInUser && isActive && currentRoom"
+      >
+        <form class="room-form" @submit.prevent="saveRoom">
           <input
-            :value="participants"
-            ref="participants"
-            id="participants"
-            type="number"
-            class="participants"
+            :value="title"
+            ref="title"
+            class="title"
+            type="text"
             :disabled="!editMode"
           />
-        </div>
-        <div class="buttons">
-          <transition name="fade">
-            <div v-if="!editMode" class="user-buttons">
-              <button
-                v-if="!isJoinedUser && !isFull"
-                type="button"
-                class="btn btn-success"
-                @click="joinRoom()"
-              >
-                Join
-              </button>
-              <button
-                v-else-if="!isAdmin && isJoinedUser"
-                type="button"
-                class="btn btn-default"
-                @click="leaveRoom()"
-              >
-                Leave
-              </button>
-              <button
-                class="btn btn-primary edit-button"
-                v-if="isAdmin && !editMode"
-                type="button"
-                @click.prevent="editMode = !editMode"
-              >
-                Edit
-              </button>
-            </div>
-          </transition>
-          <transition name="fade">
-            <div v-if="editMode" class="edit-buttons">
-              <button class="btn btn-default" @click.prevent="cancel()">
-                Cancel
-              </button>
-              <button class="btn btn-success" type="submit">
-                Save
-              </button>
-              <button
-                type="button"
-                class="btn btn-danger"
-                @click="deleteRoom(currentRoom.id)"
-              >
-                Delete Room
-              </button>
-            </div>
-          </transition>
-        </div>
-      </form>
-      <div class="chat">
-        <div class="chat-container">
-          <div class="messages-container" ref="messages">
-            <u class="messages">
-              <li class="message" v-for="message in messages" :key="message.id">
-                <div class="msg-time">{{ message.timestamp }}</div>
-                <div class="msg-text">
-                  <span :style="{ color: randomColor }">
-                    {{ message.username }}:
-                  </span>
-                  <span>
-                    {{ message.text }}
-                  </span>
-                </div>
-              </li>
-            </u>
-          </div>
-          <div v-if="isJoinedUser" class="user-input">
-            <input
-              class="msg-input"
-              v-model="message"
-              type="text"
-              placeholder="message.."
-            />
-            <button
-              class="btn btn-success btn-send"
-              @click.prevent="sendMessage(message)"
+          <hr :style="{ width: '95%', marginBottom: '0' }" />
+          <textarea
+            :value="description"
+            ref="description"
+            class="description "
+            type="text"
+            :disabled="!editMode"
+          />
+          <AdressAutocomplete
+            @address-changed="address = $event"
+            :address="getAddress ? getAddress.addressString : ``"
+            :disabled="!editMode"
+            :center="true"
+          ></AdressAutocomplete>
+          <div
+            v-if="currentRoom.joinedUsers"
+            style="display:flex; margin-top:1rem"
+          >
+            <label for="participants"
+              >Participants: {{ currentRoom.joinedUsers.length }}/</label
             >
-              Send
-            </button>
+            <input
+              :value="participants"
+              ref="participants"
+              id="participants"
+              type="number"
+              class="participants"
+              :disabled="!editMode"
+            />
+          </div>
+          <div class="buttons">
+            <transition name="fade">
+              <div v-if="!editMode" class="user-buttons">
+                <button
+                  v-if="!isJoinedUser && !isFull"
+                  type="button"
+                  class="btn btn-success"
+                  @click="joinRoom()"
+                >
+                  Join
+                </button>
+                <button
+                  v-else-if="!isAdmin && isJoinedUser"
+                  type="button"
+                  class="btn btn-default"
+                  @click="leaveRoom()"
+                >
+                  Leave
+                </button>
+                <button
+                  class="btn btn-primary edit-button"
+                  v-if="isAdmin && !editMode"
+                  type="button"
+                  @click.prevent="editMode = !editMode"
+                >
+                  Edit
+                </button>
+              </div>
+            </transition>
+            <transition name="fade">
+              <div v-if="editMode" class="edit-buttons">
+                <button class="btn btn-default" @click.prevent="cancel()">
+                  Cancel
+                </button>
+                <button class="btn btn-success" type="submit">
+                  Save
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-danger"
+                  @click="deleteRoom(currentRoom.id)"
+                >
+                  Delete Room
+                </button>
+              </div>
+            </transition>
+          </div>
+        </form>
+        <div class="chat">
+          <div class="chat-container">
+            <div class="messages-container" ref="messages">
+              <u class="messages">
+                <li
+                  class="message"
+                  v-for="message in messages"
+                  :key="message.id"
+                >
+                  <div class="msg-time">{{ message.timestamp }}</div>
+                  <div class="msg-text">
+                    <span :style="{ color: randomColor }">
+                      {{ message.username }}:
+                    </span>
+                    <span>
+                      {{ message.text }}
+                    </span>
+                  </div>
+                </li>
+              </u>
+            </div>
+            <div v-if="isJoinedUser" class="user-input">
+              <input
+                class="msg-input"
+                v-model="message"
+                type="text"
+                placeholder="message.."
+              />
+              <button
+                class="btn btn-success btn-send"
+                @click.prevent="sendMessage(message)"
+              >
+                Send
+              </button>
+            </div>
+          </div>
+
+          <div class="joined-users">
+            <transition-group name="list">
+              <div v-for="user in joinedUsers" :key="user" class="joined-user">
+                {{ user }}
+              </div>
+            </transition-group>
           </div>
         </div>
 
-        <div class="joined-users">
-          <transition-group name="list">
-            <div v-for="user in joinedUsers" :key="user" class="joined-user">
-              {{ user }}
-            </div>
-          </transition-group>
-        </div>
-      </div>
-
-      <div class="activity-map">
-        Google Map
-        <!-- <gmap-map
+        <div class="activity-map">
+          Google Map
+          <!-- <gmap-map
           v-if="getAddress"
           class="activity-map"
           :center="{
@@ -146,11 +191,12 @@
             :draggable="true"
           />
         </gmap-map> -->
+        </div>
       </div>
-    </div>
-    <div v-else>
-      <h1>Loading..</h1>
-    </div>
+      <div v-else>
+        <h1>Loading..</h1>
+      </div>
+    </v-sheet>
   </v-container>
 </template>
 

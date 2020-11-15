@@ -8,7 +8,7 @@
       :to="'/room/' + room.id"
       :class="{ disabled: isFull && !isJoinedUser }"
     >
-      <v-badge bordered color="error" icon="mdi-basketball" overlap>
+      <v-badge avatar :color="icon.color" :icon="icon.icon" overlap>
         <div>
           <div v-if="isFull" class="full-label">Full</div>
 
@@ -29,12 +29,6 @@
                 }}</v-list-item-subtitle
               >
             </v-list-item-content>
-
-            <v-list-item-avatar
-              tile
-              size="80"
-              color="grey"
-            ></v-list-item-avatar>
           </v-list-item>
         </div>
       </v-badge>
@@ -45,6 +39,28 @@
 <script>
 export default {
   props: ["room"],
+  data() {
+    return {
+      icons: [
+        { category: "Sport", icon: "mdi-basketball", color: "#ffa600" },
+        {
+          category: "Study",
+          icon: "mdi-book-open-blank-variant",
+          color: "#bb8ac8",
+        },
+        {
+          category: "Hangout",
+          icon: "mdi-account-group-outline",
+          color: "#1f74ff",
+        },
+        {
+          category: "Protest",
+          icon: "mdi-alert-octagram-outline",
+          color: "#ff4745",
+        },
+      ],
+    };
+  },
   computed: {
     isFull() {
       return this.room.participants == this.room.joinedUsers.length;
@@ -56,6 +72,9 @@ export default {
     },
     category() {
       return this.room.category;
+    },
+    icon() {
+      return this.icons.find((icon) => icon.category == this.room.category);
     },
   },
 };
