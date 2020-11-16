@@ -14,23 +14,58 @@
         ></v-img>
       </template>
 
-      <v-app-bar-nav-icon></v-app-bar-nav-icon>
       <v-toolbar-title>
         {{ title }}
       </v-toolbar-title>
 
       <v-spacer></v-spacer>
 
-      <v-btn icon>
-        <v-icon>mdi-magnify</v-icon>
+      <v-btn
+        style="borderRadius:30px;"
+        v-if="!isJoinedUser && !isFull"
+        color="success"
+        @click="joinRoom()"
+      >
+        Join
       </v-btn>
-
+      <v-btn
+        style="borderRadius:30px;"
+        v-else-if="!isAdmin && isJoinedUser"
+        color="primary"
+        @click="leaveRoom()"
+      >
+        Leave
+      </v-btn>
       <v-btn icon>
         <v-icon>mdi-heart</v-icon>
       </v-btn>
 
       <v-btn icon>
-        <v-icon>mdi-dots-vertical</v-icon>
+        <v-menu>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn dark icon v-bind="attrs" v-on="on">
+              <v-icon>mdi-dots-vertical</v-icon>
+            </v-btn>
+          </template>
+
+          <v-list v-if="isAdmin">
+            <v-list-item link>
+              <RoomViewModal
+                v-if="isAdmin"
+                @roomSaved="saveRoom($event)"
+                :room="currentRoom"
+              ></RoomViewModal>
+            </v-list-item>
+            <v-list-item @click="deleteRoom()" link>
+              Delete
+            </v-list-item>
+          </v-list>
+          <v-list v-else>
+            <v-list-item link>
+              Report room
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </v-btn>
     </v-app-bar>
     <v-sheet
@@ -43,14 +78,6 @@
         v-if="loggedInUser && isActive && currentRoom"
       >
         <form class="room-form" @submit.prevent="saveRoom">
-          <input
-            :value="title"
-            ref="title"
-            class="title"
-            type="text"
-            :disabled="!editMode"
-          />
-          <hr :style="{ width: '95%', marginBottom: '0' }" />
           <textarea
             :value="description"
             ref="description"
@@ -79,53 +106,6 @@
               class="participants"
               :disabled="!editMode"
             />
-          </div>
-          <div class="buttons">
-            <transition name="fade">
-              <div v-if="!editMode" class="user-buttons">
-                <button
-                  v-if="!isJoinedUser && !isFull"
-                  type="button"
-                  class="btn btn-success"
-                  @click="joinRoom()"
-                >
-                  Join
-                </button>
-                <button
-                  v-else-if="!isAdmin && isJoinedUser"
-                  type="button"
-                  class="btn btn-default"
-                  @click="leaveRoom()"
-                >
-                  Leave
-                </button>
-                <button
-                  class="btn btn-primary edit-button"
-                  v-if="isAdmin && !editMode"
-                  type="button"
-                  @click.prevent="editMode = !editMode"
-                >
-                  Edit
-                </button>
-              </div>
-            </transition>
-            <transition name="fade">
-              <div v-if="editMode" class="edit-buttons">
-                <button class="btn btn-default" @click.prevent="cancel()">
-                  Cancel
-                </button>
-                <button class="btn btn-success" type="submit">
-                  Save
-                </button>
-                <button
-                  type="button"
-                  class="btn btn-danger"
-                  @click="deleteRoom(currentRoom.id)"
-                >
-                  Delete Room
-                </button>
-              </div>
-            </transition>
           </div>
         </form>
         <div class="chat">
@@ -202,6 +182,7 @@
 
 <script>
 import AdressAutocomplete from "./AdressAutocomplete";
+import RoomViewModal from "./RoomViewModal";
 
 export default {
   data() {
@@ -225,6 +206,7 @@ export default {
   },
   components: {
     AdressAutocomplete,
+    RoomViewModal,
   },
   computed: {
     //TODO move computed props to getters(if possible)
@@ -311,17 +293,7 @@ export default {
       this.message = "";
     },
 
-    saveRoom() {
-      const editedData = {
-        title: this.$refs.title.value,
-        description: this.$refs.description.value,
-        address: {
-          addressString: this.getAddressString(this.address),
-          lat: this.address ? this.address.latitude : this.getAddress.lat,
-          lng: this.address ? this.address.longitude : this.getAddress.lng,
-        },
-        participants: this.$refs.participants.value,
-      };
+    saveRoom(editedData) {
       const updatedRoom = { ...this.currentRoom, ...editedData };
       this.$store.dispatch("updateRoom", updatedRoom).then(
         (res) => {
@@ -337,9 +309,8 @@ export default {
       this.editMode = false;
     },
 
-    deleteRoom(id) {
-      this.isActive = false;
-      this.$store.dispatch("deleteRoom", id).then((res) => {
+    deleteRoom() {
+      this.$store.dispatch("deleteRoom", this.currentRoom.id).then(() => {
         this.$router.push("/rooms");
       });
     },
