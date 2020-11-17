@@ -5,13 +5,7 @@
     country="il"
     @placechanged="onAddressChanged($event)"
   >
-    <input
-      style="width: inherit;"
-      :class="{ center: center }"
-      :disabled="disabled"
-      :value="address"
-      type="text"
-    />
+    <v-text-field :value="address" label="Address" type="text"></v-text-field>
   </VueGooglePlaces>
 </template>
 

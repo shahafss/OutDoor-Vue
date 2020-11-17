@@ -36,6 +36,14 @@
       >
         Leave
       </v-btn>
+
+      <div class="participants-container">
+        <v-icon>mdi-account-multiple</v-icon>
+        <div class="participants">
+          {{ currentRoom.joinedUsers.length }}/{{ currentRoom.participants }}
+        </div>
+      </div>
+
       <v-btn icon>
         <v-icon>mdi-heart</v-icon>
       </v-btn>
@@ -73,41 +81,8 @@
       class="overflow-y-auto"
       max-height="600"
     >
-      <div
-        class="view-container"
-        v-if="loggedInUser && isActive && currentRoom"
-      >
-        <form class="room-form" @submit.prevent="saveRoom">
-          <textarea
-            :value="description"
-            ref="description"
-            class="description "
-            type="text"
-            :disabled="!editMode"
-          />
-          <AdressAutocomplete
-            @address-changed="address = $event"
-            :address="getAddress ? getAddress.addressString : ``"
-            :disabled="!editMode"
-            :center="true"
-          ></AdressAutocomplete>
-          <div
-            v-if="currentRoom.joinedUsers"
-            style="display:flex; margin-top:1rem"
-          >
-            <label for="participants"
-              >Participants: {{ currentRoom.joinedUsers.length }}/</label
-            >
-            <input
-              :value="participants"
-              ref="participants"
-              id="participants"
-              type="number"
-              class="participants"
-              :disabled="!editMode"
-            />
-          </div>
-        </form>
+      <div class="view-container" v-if="currentRoom">
+        <p class="description">{{ description }}</p>
         <div class="chat">
           <div class="chat-container">
             <div class="messages-container" ref="messages">
@@ -154,9 +129,12 @@
           </div>
         </div>
 
-        <div class="activity-map">
-          Google Map
-          <!-- <gmap-map
+        <h4 style=" textAlign: center; marginTop: 2rem">
+          {{ currentRoom.address.addressString }}
+        </h4>
+        <!-- <div class="activity-map">
+          Google Map -->
+        <gmap-map
           v-if="getAddress"
           class="activity-map"
           :center="{
@@ -170,9 +148,9 @@
             :clickable="true"
             :draggable="true"
           />
-        </gmap-map> -->
-        </div>
+        </gmap-map>
       </div>
+      <!-- </div> -->
       <div v-else>
         <h1>Loading..</h1>
       </div>
@@ -181,7 +159,6 @@
 </template>
 
 <script>
-import AdressAutocomplete from "./AdressAutocomplete";
 import RoomViewModal from "./RoomViewModal";
 
 export default {
@@ -205,7 +182,6 @@ export default {
     this.scrollToBottom();
   },
   components: {
-    AdressAutocomplete,
     RoomViewModal,
   },
   computed: {
@@ -343,58 +319,39 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.participants-container {
+  border-radius: 8px;
+  border: 2px solid white;
+  padding: 0 4px;
+  display: flex;
+  margin-top: 0.3rem;
+  transition: border 1s ease;
+
+  i {
+    border-right: 1px solid white;
+  }
+
+  .participants {
+    padding: 0 4px;
+    text-align: center;
+    align-self: center;
+    font-size: 23px;
+  }
+}
+
+.participants-container:hover {
+  border-color: #ff0000;
+}
+
 .view-container {
-  position: relative;
+  padding: 0 20px;
 
-  .room-form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: 100%;
-    border: 1px solid black;
-    border-radius: 4px;
-
-    .title {
-      width: 90%;
-      text-align: center;
-      font-size: inherit;
-      transition: all 0.6s ease;
-    }
-    .title:disabled {
-      font-size: 50px !important;
-    }
-
-    .description {
-      width: 90%;
-      text-align: center;
-      padding-top: 10px;
-      resize: none;
-      font-size: 25px;
-      max-width: 78rem;
-      height: 8rem;
-      overflow: auto;
-    }
-
-    .v-google-places {
-      width: 100%;
-    }
-
-    .participants {
-      width: 50px;
-      font-size: 25px;
-      font-weight: 500;
-      padding-right: 0;
-      padding-left: 2px;
-      height: 34px !important;
-    }
-    .participants:disabled {
-      font-size: 25px;
-      font-weight: 500;
-    }
-
-    label {
-      font-size: 25px;
-    }
+  .description {
+    margin-top: 2rem;
+    height: 150px;
+    text-align: center;
+    font-size: 20px;
+    overflow: scroll;
   }
 
   .chat {
@@ -405,7 +362,7 @@ export default {
     padding: 10px;
     border: 1px solid #000;
     border-radius: 4px;
-    background-color: #e6ffff;
+    background-color: #e1f5fe;
     box-shadow: 0 2px 3px #1a191971;
 
     .chat-container {
@@ -416,9 +373,11 @@ export default {
         flex-direction: column-reverse;
         border: 1px solid green;
         border-radius: 4px;
+        background-color: #ffffff;
         padding: 10px;
         overflow: auto;
         height: 80%;
+
         .messages {
           list-style-type: none;
           text-decoration: none;
@@ -451,6 +410,7 @@ export default {
         margin-top: 0.6rem;
 
         .msg-input {
+          background-color: #ffffff;
           flex: 8;
           padding: 0 10px;
           border-radius: 8px;
@@ -469,6 +429,7 @@ export default {
       border-radius: 4px;
       margin-left: 0.6rem;
       box-shadow: 0 2px 3px #1a191971;
+      background-color: #ffffff;
 
       .joined-user {
         margin-top: 0px;
@@ -491,26 +452,10 @@ export default {
 
   .activity-map {
     height: 200px;
-    margin-top: 2rem;
+    margin: 2rem 0;
     border: 1px solid black;
     border-radius: 8px;
     overflow: hidden;
-  }
-
-  .buttons {
-    position: fixed;
-    top: 43px;
-    right: 60px;
-
-    .user-buttons {
-      position: absolute;
-      bottom: 0px;
-    }
-
-    .edit-buttons {
-      display: flex;
-      flex-direction: column;
-    }
   }
 
   .disabled {
@@ -519,17 +464,6 @@ export default {
 }
 
 @media (max-width: 640px) {
-  .room-form {
-    display: flex !important;
-    flex-direction: column !important;
-  }
-  .joined-users {
-    position: inherit !important;
-  }
-  .chat {
-    position: inherit !important;
-    width: 100% !important;
-  }
 }
 
 .fade-enter-active,

@@ -30,19 +30,11 @@
               ></v-text-field>
             </div>
             <div class="input-container">
-              <v-text-field
-                v-model="address"
-                label="Address"
-                type="text"
-              ></v-text-field>
+              <AdressAutocomplete
+                @address-changed="address = $event"
+                :address="room.address.addressString"
+              ></AdressAutocomplete>
             </div>
-            <!-- <div cols="12>
-                <AdressAutocomplete
-                  @address-changed="address = $event"
-                  :address="getAddress ? getAddress.addressString : ``"
-                  :center="true"
-                ></AdressAutocomplete>
-              </div> -->
           </div>
         </v-container>
         <v-card-actions>
@@ -59,7 +51,7 @@
   </v-row>
 </template>
 <script>
-// import AdressAutocomplete from "./AdressAutocomplete";
+import AdressAutocomplete from "./AdressAutocomplete";
 export default {
   props: ["room"],
   data() {
@@ -72,16 +64,21 @@ export default {
     };
   },
   components: {
-    // AdressAutocomplete,
+    AdressAutocomplete,
   },
   methods: {
     save() {
+      console.log();
       this.dialog = false;
       const editedRoom = {
         title: this.title,
         description: this.description,
         participants: this.participants,
-        address: this.address,
+        address: {
+          addressString: this.address.formatted_address,
+          lat: this.address.latitude,
+          lng: this.address.longitude,
+        },
       };
       this.$emit("roomSaved", editedRoom);
     },
