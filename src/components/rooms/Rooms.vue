@@ -1,31 +1,21 @@
 <template>
   <v-container>
-    <v-btn to="/new-room" color="blue" dark fixed top right fab>
+    <v-btn to="/new-room" color="blue" dark fixed bottom right fab>
       <v-icon>mdi-plus</v-icon>
     </v-btn>
 
-    <v-btn-toggle color="blue accent-3" mandatory>
-      <v-btn value="All" @click="setFilter($event)">
-        All
-      </v-btn>
-
-      <v-btn value="Sport" @click="setFilter($event)">
-        Sport
-      </v-btn>
-
-      <v-btn value="Study" @click="setFilter($event)">
-        Study
-      </v-btn>
-
-      <v-btn value="Hangout" @click="setFilter($event)">
-        Hangout
-      </v-btn>
-
-      <v-btn value="Protest" @click="setFilter($event)">
-        Protest
-      </v-btn>
-    </v-btn-toggle>
-    <section class="rooms-container">
+    <div class="filters">
+      <div v-for="filter in filters" :key="filter.category" class="filter">
+        <v-checkbox
+          :label="filter.category"
+          :color="filter.color"
+          :value="filter.category"
+          v-model="checkedFilters"
+          hide-details
+        ></v-checkbox>
+      </div>
+    </div>
+    <transition-group role="section" class="rooms-container" name="fade">
       <room
         v-for="room in getRooms"
         :key="room.id"
@@ -33,7 +23,7 @@
         style="width:100%; padding:10px;"
         class="room"
       ></room>
-    </section>
+    </transition-group>
   </v-container>
 </template>
 
@@ -42,7 +32,13 @@ import Room from "./Room";
 export default {
   data() {
     return {
-      filter: null,
+      checkedFilters: [],
+      filters: [
+        { category: "Sport", color: "orange" },
+        { category: "Hangout", color: "info" },
+        { category: "Protest", color: "red" },
+        { category: "Study", color: "#CE93D8" },
+      ],
     };
   },
   components: {
@@ -55,22 +51,10 @@ export default {
   },
   computed: {
     getRooms() {
-      if (this.filter) {
-        return this.$store.getters.getRooms.filter(
-          (room) => room.category == this.filter
-        );
-      } else {
-        return this.$store.getters.getRooms;
-      }
-    },
-  },
-  methods: {
-    setFilter(filter) {
-      if (filter.target.textContent.trim() == "All") {
-        this.filter = null;
-      } else {
-        this.filter = filter.target.textContent.trim();
-      }
+      if (!this.checkedFilters.length) return this.$store.getters.getRooms;
+      return this.$store.getters.getRooms.filter((room) =>
+        this.checkedFilters.includes(room.category)
+      );
     },
   },
 };
@@ -88,6 +72,16 @@ a {
 
   .filters {
     display: flex;
+    border: 2px solid #add8e6;
+    border-radius: 8px;
+    padding: 10px;
+
+    .filter {
+      padding: 0 10px;
+      .v-input {
+        margin: 0;
+      }
+    }
   }
 
   .rooms-container {

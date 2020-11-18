@@ -46,7 +46,7 @@ export default {
         {
           category: "Study",
           icon: "mdi-book-open-blank-variant",
-          color: "#bb8ac8",
+          color: "#CE93D8",
         },
         {
           category: "Hangout",
@@ -87,6 +87,7 @@ export default {
 }
 
 .full-label {
+  background-color: #bb8ac8;
   display: flex;
   justify-content: center;
   align-items: center;
