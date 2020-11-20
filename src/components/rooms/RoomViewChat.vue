@@ -1,7 +1,7 @@
 <template>
-  <div class="chat">
-    <div class="chat-container">
-      <div class="messages-container" ref="messages">
+  <div class="chat-container">
+    <div class="chat" ref="chatContainer">
+      <div class="messages-container">
         <u class="messages">
           <li class="message" v-for="message in messages" :key="message.id">
             <div class="msg-time">{{ message.timestamp }}</div>
@@ -82,14 +82,14 @@ export default {
     },
 
     scrollToBottom() {
-      //   if (!this.$refs.messages) return;
-      this.$refs.messages.scrollTop = this.$refs.messages.scrollHeight;
+      if (!this.$refs.chatContainer) return;
+      this.$refs.chatContainer.scrollTop = this.$refs.chatContainer.scrollHeight;
     },
   },
 };
 </script>
 <style lang="scss" scoped>
-.chat {
+.chat-container {
   margin-top: 2rem;
   display: flex;
   height: 240px;
@@ -100,7 +100,7 @@ export default {
   background-color: #e1f5fe;
   box-shadow: 0 2px 3px #1a191971;
 
-  .chat-container {
+  .chat {
     display: flex;
     flex: 4;
     flex-direction: column;
