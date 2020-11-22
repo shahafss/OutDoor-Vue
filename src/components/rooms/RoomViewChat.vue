@@ -108,6 +108,7 @@ export default {
     .messages-container {
       display: flex;
       flex-direction: column-reverse;
+      height: 100%;
       border: 1px solid green;
       border-radius: 4px;
       background-color: #ffffff;

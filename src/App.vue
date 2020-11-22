@@ -11,7 +11,7 @@
 
 <script>
 import NavDrawer from "./components/NavDrawer";
-import AppFade from "./components/AppFade";
+import AppFade from "./components/utils/AppFade";
 
 export default {
   created() {
