@@ -3,6 +3,7 @@
     :api-key="googleAPI"
     types="address"
     country="il"
+    aria-placeholder=""
     @placechanged="onAddressChanged($event)"
   >
     <v-text-field :value="address" label="Address" type="text"></v-text-field>
