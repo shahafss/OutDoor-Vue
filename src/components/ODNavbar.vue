@@ -1,14 +1,10 @@
 <template>
-  <v-card
-    class="overflow-hidden"
-    :style="{ height: '100%', 'border-radius': 0 }"
-  >
+  <v-card :style="{ height: '100%', 'border-radius': 0 }">
     <v-app-bar
       color="#fcb69f"
       dark
-      shrink-on-scroll
+      :prominent="!main"
       src="https://picsum.photos/1920/1080?random"
-      scroll-target="#scrolling-techniques-2"
     >
       <template v-slot:img="{ props }">
         <v-img
@@ -20,7 +16,7 @@
       <v-app-bar-nav-icon
         @click.stop="drawerShown = !drawerShown"
       ></v-app-bar-nav-icon>
-      <h2>{{ title }}</h2>
+      <h3 :style="{ margin: '.5rem 0' }">{{ title }}</h3>
 
       <v-spacer></v-spacer>
 
@@ -85,9 +81,11 @@
       :shown="drawerShown"
     ></NavDrawer>
     <v-sheet
-      id="scrolling-techniques-2"
-      class="overflow-y-auto"
-      max-height="100vh"
+      :style="{
+        maxHeight: `${main ? '90' : '80'}vh`,
+        height: '100%',
+        overflowY: 'auto',
+      }"
     >
       <v-container style="height: 100%;"><slot></slot></v-container>
     </v-sheet>
@@ -101,7 +99,6 @@ export default {
   props: ["main", "room"],
   data() {
     return {
-      isMain: false,
       drawerShown: false,
     };
   },
