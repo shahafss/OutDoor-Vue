@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer v-if="user" permanent expand-on-hover app>
+  <v-navigation-drawer v-model="isShown" temporary app>
     <v-list>
       <v-list-item class="px-2">
         <v-list-item-avatar>
@@ -7,7 +7,7 @@
         </v-list-item-avatar>
       </v-list-item>
 
-      <router-link to="/profile" tag="v-list-item">
+      <router-link v-if="user" to="/profile" tag="v-list-item">
         <v-list-item-content>
           <v-list-item-title class="title">
             {{ user.firstName }} {{ user.lastName }}
@@ -45,12 +45,23 @@
 </template>
 <script>
 export default {
+  props: ["shown"],
   data() {
     return {};
   },
   computed: {
     user() {
+      if (!this.$store.getters.getUser) return;
       return this.$store.getters.getUser;
+    },
+    isShown: {
+      get() {
+        return this.shown ? this.shown : false;
+      },
+      set(drawerDismiss) {
+        this.$emit("drawerDismiss", drawerDismiss);
+        return drawerDismiss;
+      },
     },
   },
 };

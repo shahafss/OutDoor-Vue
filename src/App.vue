@@ -1,6 +1,5 @@
 <template>
   <v-app>
-    <nav-drawer></nav-drawer>
     <v-main>
       <AppFade>
         <router-view></router-view>
@@ -10,7 +9,6 @@
 </template>
 
 <script>
-import NavDrawer from "./components/NavDrawer";
 import AppFade from "./components/utils/AppFade";
 
 export default {
@@ -19,7 +17,6 @@ export default {
   },
   components: {
     AppFade,
-    NavDrawer,
   },
 };
 </script>

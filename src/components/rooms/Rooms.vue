@@ -1,34 +1,38 @@
 <template>
-  <v-container>
-    <v-btn to="/new-room" color="blue" dark fixed bottom right fab>
-      <v-icon>mdi-plus</v-icon>
-    </v-btn>
+  <ODNavbar :main="true">
+    <v-container fluid>
+      <v-btn to="/new-room" color="blue" dark fixed bottom right fab>
+        <v-icon>mdi-plus</v-icon>
+      </v-btn>
 
-    <div class="filters">
-      <div v-for="filter in filters" :key="filter.category" class="filter">
-        <v-checkbox
-          :label="filter.category"
-          :color="filter.color"
-          :value="filter.category"
-          v-model="checkedFilters"
-          hide-details
-        ></v-checkbox>
+      <div class="filters">
+        <div v-for="filter in filters" :key="filter.category" class="filter">
+          <v-checkbox
+            :label="filter.category"
+            :color="filter.color"
+            :value="filter.category"
+            v-model="checkedFilters"
+            hide-details
+          ></v-checkbox>
+        </div>
       </div>
-    </div>
-    <transition-group role="section" class="rooms-container" name="fade">
-      <room
-        v-for="room in getRooms"
-        :key="room.id"
-        :room="room"
-        style="width:100%; padding:10px;"
-        class="room"
-      ></room>
-    </transition-group>
-  </v-container>
+      <transition-group role="section" class="rooms-container" name="fade">
+        <room
+          v-for="room in getRooms"
+          :key="room.id"
+          :room="room"
+          :style="{ width: '100%', padding: '10px' }"
+          class="room"
+        ></room>
+      </transition-group>
+    </v-container>
+  </ODNavbar>
 </template>
 
 <script>
 import Room from "./Room";
+import ODNavbar from "../ODNavbar";
+
 export default {
   data() {
     return {
@@ -42,6 +46,7 @@ export default {
     };
   },
   components: {
+    ODNavbar,
     Room,
   },
   created() {

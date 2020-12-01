@@ -1,87 +1,11 @@
 <template>
   <v-container style="padding: 0;">
-    <v-app-bar
-      color="#fcb69f"
-      dark
-      shrink-on-scroll
-      src="https://picsum.photos/1920/1080?random"
-      scroll-target="#scrolling-techniques-2"
-    >
-      <template v-slot:img="{ props }">
-        <v-img
-          v-bind="props"
-          gradient="to top right, rgba(19,84,122,.5), rgba(128,208,199,.8)"
-        ></v-img>
-      </template>
-
-      <v-toolbar-title>
-        {{ title }}
-      </v-toolbar-title>
-
-      <v-spacer></v-spacer>
-
-      <v-btn
-        class="toolbar-btn"
-        style="borderRadius:30px;"
-        v-if="!isJoinedUser && !isFull"
-        color="success"
-        @click="joinRoom()"
-      >
-        Join
-      </v-btn>
-      <v-btn
-        class="toolbar-btn"
-        style="borderRadius:30px;"
-        v-else-if="!isAdmin && isJoinedUser"
-        color="primary"
-        @click="leaveRoom()"
-      >
-        Leave
-      </v-btn>
-
-      <div class="participants-container">
-        <v-icon>mdi-account-multiple</v-icon>
-        <div class="participants">
-          {{ currentRoom.joinedUsers.length }}/{{ currentRoom.participants }}
-        </div>
-      </div>
-
-      <v-btn icon>
-        <v-icon>mdi-heart</v-icon>
-      </v-btn>
-
-      <v-btn icon>
-        <v-menu>
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn dark icon v-bind="attrs" v-on="on">
-              <v-icon>mdi-dots-vertical</v-icon>
-            </v-btn>
-          </template>
-
-          <v-list v-if="isAdmin">
-            <v-list-item link>
-              <RoomViewModal
-                v-if="isAdmin"
-                @roomSaved="saveRoom($event)"
-                :room="currentRoom"
-              ></RoomViewModal>
-            </v-list-item>
-            <v-list-item @click="deleteRoom()" link>
-              Delete
-            </v-list-item>
-          </v-list>
-          <v-list v-else>
-            <v-list-item link>
-              Report room
-            </v-list-item>
-          </v-list>
-        </v-menu>
-      </v-btn>
-    </v-app-bar>
-    <v-sheet
-      id="scrolling-techniques-2"
-      class="overflow-y-auto"
-      max-height="600"
+    <ODNavbar
+      @joinRequest="joinRoom()"
+      @leaveRequest="leaveRoom()"
+      @roomSaved="saveRoom($event)"
+      @roomDeleted="deleteRoom()"
+      :room="currentRoom"
     >
       <div class="view-container" v-if="currentRoom">
         <p
@@ -137,13 +61,13 @@
       <div v-else>
         <h1>Loading..</h1>
       </div>
-    </v-sheet>
+    </ODNavbar>
   </v-container>
 </template>
 
 <script>
-import RoomViewModal from "./RoomViewModal";
 import RoomViewChat from "./RoomViewChat";
+import ODNavbar from "../ODNavbar";
 
 export default {
   data() {
@@ -162,8 +86,8 @@ export default {
     this.checkIfOverflown(this.$refs.description);
   },
   components: {
-    RoomViewModal,
     RoomViewChat,
+    ODNavbar,
   },
   computed: {
     rooms() {
@@ -271,32 +195,10 @@ export default {
 
 <style lang="scss" scoped>
 .container {
+  height: 100%;
+  max-width: unset;
   .toolbar-btn {
     margin: 0.3rem 1rem;
-  }
-
-  .participants-container {
-    border-radius: 8px;
-    border: 2px solid white;
-    padding: 0 4px;
-    display: flex;
-    margin-top: 0.3rem;
-    transition: border 1s ease;
-
-    i {
-      border-right: 1px solid white;
-    }
-
-    .participants {
-      padding: 0 4px;
-      text-align: center;
-      align-self: center;
-      font-size: 23px;
-    }
-  }
-
-  .participants-container:hover {
-    border-color: #ff0000;
   }
 
   .view-container {

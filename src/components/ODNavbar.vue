@@ -1,0 +1,161 @@
+<template>
+  <v-card
+    class="overflow-hidden"
+    :style="{ height: '100%', 'border-radius': 0 }"
+  >
+    <v-app-bar
+      color="#fcb69f"
+      dark
+      shrink-on-scroll
+      src="https://picsum.photos/1920/1080?random"
+      scroll-target="#scrolling-techniques-2"
+    >
+      <template v-slot:img="{ props }">
+        <v-img
+          v-bind="props"
+          gradient="to top right, rgba(19,84,122,.5), rgba(128,208,199,.8)"
+        ></v-img>
+      </template>
+
+      <v-app-bar-nav-icon
+        @click.stop="drawerShown = !drawerShown"
+      ></v-app-bar-nav-icon>
+      <h2>{{ title }}</h2>
+
+      <v-spacer></v-spacer>
+
+      <template v-if="!main">
+        <v-btn
+          class="toolbar-btn"
+          style="borderRadius:30px;"
+          v-if="!isJoinedUser && !isFull"
+          color="success"
+          @click="$emit('joinRequest')"
+        >
+          Join
+        </v-btn>
+        <v-btn
+          class="toolbar-btn"
+          style="borderRadius:30px;"
+          v-else-if="!isAdmin && isJoinedUser"
+          color="primary"
+          @click="$emit('leaveRequest')"
+        >
+          Leave
+        </v-btn>
+
+        <div class="participants-container">
+          <v-icon>mdi-account-multiple</v-icon>
+          <div class="participants">
+            {{ participantsStr }}
+          </div>
+        </div>
+
+        <v-btn icon>
+          <v-menu>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn dark icon v-bind="attrs" v-on="on">
+                <v-icon>mdi-dots-vertical</v-icon>
+              </v-btn>
+            </template>
+
+            <v-list v-if="isAdmin">
+              <v-list-item link>
+                <RoomViewModal
+                  v-if="isAdmin"
+                  @roomSaved="$emit('roomSaved', $event)"
+                  :room="room"
+                ></RoomViewModal>
+              </v-list-item>
+              <v-list-item @click="$emit('roomDeleted')" link>
+                Delete
+              </v-list-item>
+            </v-list>
+            <v-list v-else>
+              <v-list-item link>
+                Report room
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </v-btn>
+      </template>
+    </v-app-bar>
+    <NavDrawer
+      @drawerDismiss="drawerShown = $event"
+      :shown="drawerShown"
+    ></NavDrawer>
+    <v-sheet
+      id="scrolling-techniques-2"
+      class="overflow-y-auto"
+      max-height="100vh"
+    >
+      <v-container style="height: 100%;"><slot></slot></v-container>
+    </v-sheet>
+  </v-card>
+</template>
+
+<script>
+import RoomViewModal from "../components/rooms/RoomViewModal";
+import NavDrawer from "../components/NavDrawer";
+export default {
+  props: ["main", "room"],
+  data() {
+    return {
+      isMain: false,
+      drawerShown: false,
+    };
+  },
+  components: {
+    RoomViewModal,
+    NavDrawer,
+  },
+  computed: {
+    title() {
+      return this.main ? "OutDoor" : this.room.title;
+    },
+    participantsStr() {
+      if (!this.room) return;
+      return `${this.room.joinedUsers.length} / ${this.room.participants}`;
+    },
+    isFull() {
+      if (!this.room) return;
+      return this.room.participants == this.room.joinedUsers.length;
+    },
+    isAdmin() {
+      if (!this.room) return;
+      return this.$store.getters.getUser.id == this.room.admin;
+    },
+
+    isJoinedUser() {
+      if (!this.room) return;
+      return this.room.joinedUsers.includes(this.$store.getters.getUser.id);
+    },
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+.participants-container {
+  border-radius: 8px;
+  border: 2px solid white;
+  padding: 0 4px;
+  display: flex;
+  margin-top: 0.3rem;
+  transition: border 1s ease;
+
+  i {
+    border-right: 1px solid white;
+  }
+
+  .participants {
+    padding: 0 4px;
+    text-align: center;
+    align-self: center;
+    font-size: 23px;
+  }
+}
+
+.participants-container:hover {
+  border-color: #ff0000;
+}
+</style>
