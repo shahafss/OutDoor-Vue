@@ -4,18 +4,7 @@
       <v-btn to="/new-room" color="blue" dark fixed bottom right fab>
         <v-icon>mdi-plus</v-icon>
       </v-btn>
-
-      <div class="filters">
-        <div v-for="filter in filters" :key="filter.category" class="filter">
-          <v-checkbox
-            :label="filter.category"
-            :color="filter.color"
-            :value="filter.category"
-            v-model="checkedFilters"
-            hide-details
-          ></v-checkbox>
-        </div>
-      </div>
+      <RoomsFilters @filterChange="filters = $event"></RoomsFilters>
       <transition-group role="section" class="rooms-container" name="fade">
         <room
           v-for="room in getRooms"
@@ -32,22 +21,18 @@
 <script>
 import Room from "./Room";
 import ODNavbar from "../ODNavbar";
+import RoomsFilters from "./RoomsFilters";
 
 export default {
   data() {
     return {
-      checkedFilters: [],
-      filters: [
-        { category: "Sport", color: "orange" },
-        { category: "Hangout", color: "info" },
-        { category: "Protest", color: "red" },
-        { category: "Study", color: "#CE93D8" },
-      ],
+      filters: [],
     };
   },
   components: {
     ODNavbar,
     Room,
+    RoomsFilters,
   },
   created() {
     this.$store.dispatch("initRealtimeListeners");
@@ -56,9 +41,9 @@ export default {
   },
   computed: {
     getRooms() {
-      if (!this.checkedFilters.length) return this.$store.getters.getRooms;
+      if (!this.filters.length) return this.$store.getters.getRooms;
       return this.$store.getters.getRooms.filter((room) =>
-        this.checkedFilters.includes(room.category)
+        this.filters.includes(room.category)
       );
     },
   },
@@ -66,28 +51,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-a {
-  text-decoration: none;
-}
 .container {
   padding: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-
-  .filters {
-    display: flex;
-    border: 2px solid #add8e6;
-    border-radius: 8px;
-    padding: 10px;
-
-    .filter {
-      padding: 0 10px;
-      .v-input {
-        margin: 0;
-      }
-    }
-  }
 
   .rooms-container {
     display: grid;

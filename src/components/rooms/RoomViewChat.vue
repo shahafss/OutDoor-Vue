@@ -17,16 +17,23 @@
         </u>
       </div>
       <div v-if="isJoinedUser" class="user-input">
-        <input
+        <v-text-field
+          :style="{ width: '100%' }"
+          solo
+          hide-details
           @keydown.enter="sendMessage(message)"
-          class="msg-input"
           v-model="message"
           type="text"
           placeholder="message.."
         />
-        <button class="btn btn-success btn-send" @click="sendMessage(message)">
+        <v-btn
+          :style="{ height: '100%' }"
+          color="success"
+          class="btn-send"
+          @click="sendMessage(message)"
+        >
           Send
-        </button>
+        </v-btn>
       </div>
     </div>
 
@@ -146,15 +153,7 @@ export default {
       display: flex;
       margin-top: 0.6rem;
 
-      .msg-input {
-        background-color: #ffffff;
-        flex: 8;
-        padding: 0 10px;
-        border-radius: 8px;
-        border: 1px solid #ccc;
-      }
       .btn-send {
-        flex: 1;
         margin-left: 0.6rem;
       }
     }
