@@ -39,9 +39,7 @@
         <h4 style=" textAlign: center; marginTop: 2rem">
           {{ currentRoom.address.addressString }}
         </h4>
-        <div class="activity-map">
-          Google Map
-          <!-- <gmap-map
+        <gmap-map
           v-if="getAddress"
           class="activity-map"
           :center="{
@@ -55,8 +53,7 @@
             :clickable="true"
             :draggable="true"
           />
-        </gmap-map> -->
-        </div>
+        </gmap-map>
       </div>
       <div v-else>
         <h1>Loading..</h1>
