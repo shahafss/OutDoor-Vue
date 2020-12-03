@@ -1,78 +1,66 @@
 <template>
-  <div id="signup">
+  <v-container :style="{ height: '100vh', overflowY: 'auto', display: 'flex' }">
+    <!-- <div class="cont" :style="{ height: '100vh', overflowY: 'auto' }"> -->
     <div class="signup-form">
       <h1>Sign-Up!</h1>
       <form @submit.prevent="onSubmit">
         <div class="input">
-          <label for="user-name">User Name</label>
-          <input v-model="username" type="text" id="user-name" />
+          <v-text-field type="text" v-model="firstName" label="First Name">
+          </v-text-field>
         </div>
         <div class="input">
-          <label for="first-name">First Name</label>
-          <input v-model="firstName" type="text" id="first-name" />
+          <v-text-field type="text" v-model="lastName" label="Last Name">
+          </v-text-field>
         </div>
         <div class="input">
-          <label for="last-name">Last Name</label>
-          <input v-model="lastName" type="text" id="last-name" />
+          <v-text-field type="text" v-model="username" label="User-Name">
+          </v-text-field>
         </div>
-        <div class="gender-inputs">
-          <div class="form-check">
-            <input
-              v-model="gender"
-              class="form-check-input"
-              type="radio"
-              name="gender"
-              id="male"
-              value="m"
-            />
-            <label class="form-check-label" for="male">
-              Male
-            </label>
-          </div>
-          <div class="form-check" style="margin-left:1rem">
-            <input
-              v-model="gender"
-              class="form-check-input"
-              type="radio"
-              name="gender"
-              id="female"
-              value="f"
-            />
-            <label class="form-check-label" for="female">
-              Female
-            </label>
-          </div>
+        <v-radio-group row>
+          <v-radio
+            v-model="gender"
+            label="Male"
+            color="primary"
+            value="m"
+          ></v-radio>
+          <v-radio
+            v-model="gender"
+            label="Female"
+            color="primary"
+            value="f"
+          ></v-radio>
+        </v-radio-group>
+        <div class="input">
+          <v-text-field type="date" label="Birth Date" v-model="birthday" />
         </div>
         <div class="input">
-          <label for="age">Your Age</label>
-          <input type="date" id="birthday" v-model="birthday" />
+          <v-text-field type="email" v-model="email" label="E-Mail">
+          </v-text-field>
         </div>
         <div class="input">
-          <label for="email">E-Mail</label>
-          <input type="email" id="email" v-model="email" />
+          <v-text-field type="password" v-model="password" label="Password">
+          </v-text-field>
         </div>
         <div class="input">
-          <label for="password">Password</label>
-          <input type="password" id="password" v-model="password" />
-        </div>
-        <div class="input">
-          <label for="confirm-password">Confirm Password</label>
-          <input
-            type="password"
+          <v-text-field
             id="confirm-password"
+            type="password"
             v-model="confirmPassword"
-          />
+            label="Confirm Password"
+          >
+          </v-text-field>
         </div>
         <div class="input inline">
           <input type="checkbox" id="terms" v-model="terms" />
           <label for="terms">Accept Terms of Use</label>
         </div>
-        <div class="submit">
-          <button type="submit">Submit</button>
-        </div>
+        <v-btn color="primary" type="submit" :style="{ marginTop: '2rem' }"
+          >Submit</v-btn
+        >
       </form>
     </div>
-  </div>
+    <!-- </div> -->
+  </v-container>
 </template>
 
 <script>
@@ -87,7 +75,7 @@ export default {
       gender: null,
       password: "",
       confirmPassword: "",
-      terms: false
+      terms: false,
     };
   },
   methods: {
@@ -100,84 +88,26 @@ export default {
         birthday: new Date(this.birthday),
         email: this.email,
         password: this.password,
-        terms: this.terms
+        terms: this.terms,
       };
       this.$store.dispatch("signup", formData);
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style scoped>
 .signup-form {
   width: 400px;
+  height: fit-content;
   margin: 30px auto;
   border: 1px solid #eee;
   padding: 20px;
   box-shadow: 0 2px 3px #ccc;
+  margin-bottom: 2rem;
 }
 
 .gender-inputs {
   display: flex;
-}
-
-.input {
-  margin: 10px auto;
-}
-
-.input label {
-  display: block;
-  color: #4e4e4e;
-  margin-bottom: 6px;
-}
-
-.input.inline label {
-  display: inline;
-}
-
-.input input {
-  font: inherit;
-  width: 100%;
-  padding: 6px 12px;
-  box-sizing: border-box;
-  border: 1px solid #ccc;
-}
-
-.input.inline input {
-  width: auto;
-}
-
-.input input:focus {
-  outline: none;
-  border: 1px solid #521751;
-  background-color: #eee;
-}
-
-.input select {
-  border: 1px solid #ccc;
-  font: inherit;
-}
-
-.submit button {
-  border: 1px solid #521751;
-  color: #521751;
-  padding: 10px 20px;
-  font: inherit;
-  cursor: pointer;
-}
-
-.submit button:hover,
-.submit button:active {
-  background-color: #521751;
-  color: white;
-}
-
-.submit button[disabled],
-.submit button[disabled]:hover,
-.submit button[disabled]:active {
-  border: 1px solid #ccc;
-  background-color: transparent;
-  color: #ccc;
-  cursor: not-allowed;
 }
 </style>

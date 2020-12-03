@@ -6,7 +6,12 @@
     aria-placeholder=""
     @placechanged="onAddressChanged($event)"
   >
-    <v-text-field :value="address" label="Address" type="text"></v-text-field>
+    <v-text-field
+      :value="address"
+      placeholder=""
+      label="Address"
+      type="text"
+    ></v-text-field>
   </VueGooglePlaces>
 </template>
 

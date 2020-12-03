@@ -68,7 +68,6 @@ export default {
   },
   methods: {
     save() {
-      console.log();
       this.dialog = false;
       const editedRoom = {
         title: this.title,
