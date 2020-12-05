@@ -92,10 +92,13 @@ export default {
     },
 
     currentRoom() {
+      if (!this.rooms.length || !this.roomId) return;
       return this.rooms.find((room) => room.id == this.roomId);
     },
 
     title() {
+      if (!this.currentRoom.title) return;
+
       return this.currentRoom ? this.currentRoom.title : false;
     },
 
@@ -128,11 +131,12 @@ export default {
     },
 
     joinedUsers() {
+      const allUsers = this.$store.state.auth.allUsers;
+      if (!this.currentRoom.joinedUsers.length || !allUsers) return;
+
       const joinedUsers = [];
       this.currentRoom.joinedUsers.forEach((userId) => {
-        const joinedUser = this.$store.state.auth.allUsers[userId].username
-          ? this.$store.state.auth.allUsers[userId].username
-          : this.$store.state.auth.allUsers[userId].email;
+        const joinedUser = allUsers[userId];
         joinedUsers.push(joinedUser);
       });
       return joinedUsers;

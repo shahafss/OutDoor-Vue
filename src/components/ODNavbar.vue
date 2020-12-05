@@ -16,7 +16,7 @@
       <v-app-bar-nav-icon
         @click.stop="drawerShown = !drawerShown"
       ></v-app-bar-nav-icon>
-      <h3 :style="{ margin: '.5rem 0' }">{{ title }}</h3>
+      <h3 class="title">{{ title }}</h3>
 
       <v-spacer></v-spacer>
 
@@ -108,23 +108,25 @@ export default {
   },
   computed: {
     title() {
-      return this.main ? "OutDoor" : this.room.title;
+      if (this.main) return "OutDoor";
+
+      return this.room ? this.room.title : "OutDoor";
     },
     participantsStr() {
       if (!this.room) return;
-      return `${this.room.joinedUsers.length} / ${this.room.participants}`;
+      return `${this.room.joinedUsers.length}/${this.room.participants}`;
     },
     isFull() {
       if (!this.room) return;
       return this.room.participants == this.room.joinedUsers.length;
     },
     isAdmin() {
-      if (!this.room) return;
+      if (!this.room || !this.$store.getters.getUser) return;
       return this.$store.getters.getUser.id == this.room.admin;
     },
 
     isJoinedUser() {
-      if (!this.room) return;
+      if (!this.room || !this.$store.getters.getUser) return;
       return this.room.joinedUsers.includes(this.$store.getters.getUser.id);
     },
   },
@@ -132,6 +134,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.title {
+  margin: 0.5rem 0;
+  line-height: 1;
+}
 .participants-container {
   border-radius: 8px;
   border: 2px solid white;
@@ -149,6 +155,7 @@ export default {
     text-align: center;
     align-self: center;
     font-size: 23px;
+    white-space: nowrap;
   }
 }
 

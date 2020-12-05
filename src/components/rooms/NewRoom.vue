@@ -66,12 +66,12 @@ export default {
   components: { AdressAutocomplete },
   methods: {
     createRoom() {
-      const tempDate = new Date(this.date).toDateString();
+      const activityDate = new Date(this.date).toLocaleDateString();
       this.$store
         .dispatch("addRoom", {
           title: this.title,
           category: this.category,
-          date: new Date(this.date).toLocaleTimeString(),
+          date: activityDate,
           description: this.description,
           participants: this.participants,
           messages: [],

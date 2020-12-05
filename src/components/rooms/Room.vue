@@ -2,10 +2,10 @@
   <div>
     <v-card
       class="mx-auto"
-      minHeight="200px"
-      minWidth="200px"
       outlined
       :to="'/room/' + room.id"
+      minHeight="200px"
+      maxHeight="200px"
       :class="{ disabled: isFull && !isJoinedUser }"
     >
       <v-badge avatar :color="icon.color" :icon="icon.icon" overlap>
@@ -14,8 +14,13 @@
 
           <v-list-item three-line>
             <v-list-item-content>
-              <div class="overline mb-4">
-                {{ room.category }}
+              <div class="overline-container">
+                <div class="overline mb-4">
+                  {{ room.category }}
+                </div>
+                <div class="overline mb-4">
+                  {{ room.date }}
+                </div>
               </div>
               <v-list-item-title class="headline mb-1">
                 {{ room.title }}
@@ -84,22 +89,26 @@ export default {
 .v-badge {
   display: block;
   position: unset;
-}
+  .full-label {
+    background-color: #bb8ac8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ccc;
+    font-size: 25px;
+    font-weight: 600;
+    opacity: 80%;
+    height: 4rem;
+    position: absolute;
+    top: 33%;
+    left: 0;
+    width: 100%;
+  }
 
-.full-label {
-  background-color: #bb8ac8;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #ccc;
-  font-size: 25px;
-  font-weight: 600;
-  opacity: 80%;
-  height: 4rem;
-  position: absolute;
-  top: 33%;
-  left: 0;
-  width: 100%;
+  .overline-container {
+    display: flex;
+    justify-content: space-between;
+  }
 }
 
 .disabled {

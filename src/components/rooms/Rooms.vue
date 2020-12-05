@@ -10,7 +10,6 @@
           v-for="room in getRooms"
           :key="room.id"
           :room="room"
-          :style="{ width: '100%', padding: '10px' }"
           class="room"
         ></room>
       </transition-group>
@@ -41,10 +40,14 @@ export default {
   },
   computed: {
     getRooms() {
-      if (!this.filters.length) return this.$store.getters.getRooms;
-      return this.$store.getters.getRooms.filter((room) =>
-        this.filters.includes(room.category)
-      );
+      const rooms = this.$store.getters.getRooms;
+
+      return (this.filters.length
+        ? rooms.filter((room) => this.filters.includes(room.category))
+        : rooms
+      ).sort((a, b) => {
+        return new Date(a.date) - new Date(b.date);
+      });
     },
   },
 };
@@ -64,6 +67,10 @@ export default {
     margin-top: 2rem;
     padding-right: 15px;
     padding-left: 15px;
+
+    .room {
+      margin: 0.5rem;
+    }
   }
 }
 

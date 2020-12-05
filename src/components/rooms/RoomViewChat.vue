@@ -39,8 +39,8 @@
 
     <div class="joined-users">
       <transition-group name="list">
-        <div v-for="user in joinedUsers" :key="user" class="joined-user">
-          {{ user }}
+        <div v-for="user in joinedUsers" :key="user.id" class="joined-user">
+          {{ user.username }}
         </div>
       </transition-group>
     </div>
@@ -65,7 +65,10 @@ export default {
       return this.currentRoom ? this.currentRoom.messages : false;
     },
     isJoinedUser() {
-      return this.joinedUsers.includes(this.$store.getters.getUser.username);
+      if (!this.joinedUsers) return;
+      return this.joinedUsers.some(
+        (user) => user.id == this.$store.getters.getUser.id
+      );
     },
   },
   methods: {
