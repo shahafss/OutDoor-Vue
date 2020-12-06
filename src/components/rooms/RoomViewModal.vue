@@ -31,7 +31,7 @@
             </div>
             <div class="input-container">
               <AdressAutocomplete
-                @address-changed="address = $event"
+                @change="address = $event"
                 :address="room.address.addressString"
               ></AdressAutocomplete>
             </div>

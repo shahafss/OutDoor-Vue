@@ -25,7 +25,7 @@ export default {
   },
   methods: {
     onAddressChanged(addressData) {
-      this.$emit("address-changed", addressData);
+      this.$emit("change", addressData);
     },
   },
 };

@@ -1,52 +1,57 @@
 <template>
-  <div class="container-fluid">
-    <h1>New Activity</h1>
-    <div class="new-room-form">
-      <form @submit.prevent="createRoom">
-        <v-text-field v-model="title" label="Title"></v-text-field>
-        <v-select
-          v-model="category"
-          :items="categoryItems"
-          label="Category"
-        ></v-select>
-        <v-menu
-          :close-on-content-click="true"
-          :nudge-right="40"
-          transition="scale-transition"
-          offset-y
-          min-width="290px"
-        >
-          <template v-slot:activator="{ on, attrs }">
-            <v-text-field
-              v-model="date"
-              label="Date"
-              readonly
-              v-bind="attrs"
-              v-on="on"
-            ></v-text-field>
-          </template>
-          <v-date-picker v-model="date"></v-date-picker>
-        </v-menu>
-        <v-text-field v-model="description" label="Description"></v-text-field>
-        <v-text-field
-          type="number"
-          v-model="participants"
-          label="Participants"
-        ></v-text-field>
-        <AdressAutocomplete
-          @address-changed="address = $event"
-          :address="getAddress.addressString"
-        ></AdressAutocomplete>
-        <v-btn type="submit" outlined rounded color="indigo">
-          Create
-        </v-btn>
-      </form>
+  <div class="container">
+    <h1 style="textAlign:center;">New Activity</h1>
+
+    <v-tabs v-model="tab" class="tabs">
+      <v-tab v-for="item in tabItems" :key="item.tab">
+        {{ item.tab }}
+      </v-tab>
+    </v-tabs>
+
+    <v-tabs-items class="tabs-content" v-model="tab">
+      <v-tab-item v-for="item in tabItems" :key="item.tab">
+        <div class="tab-content" @keydown.enter="tab++">
+          <keep-alive>
+            <component
+              @change="setRoomProp($event)"
+              :is="steps[tab]"
+            ></component>
+          </keep-alive>
+        </div>
+      </v-tab-item>
+    </v-tabs-items>
+
+    <div class="buttons">
+      <v-btn
+        v-if="tab == 5"
+        @click="createRoom(newRoom)"
+        outlined
+        rounded
+        color="indigo"
+      >
+        Create
+      </v-btn>
+      <v-btn
+        class="btn-next"
+        v-if="tab != 5"
+        @click="tab <= 4 ? tab++ : (tab = 0)"
+        outlined
+        rounded
+        color="indigo"
+      >
+        Next
+      </v-btn>
     </div>
   </div>
 </template>
 
 <script>
 import AdressAutocomplete from "./AdressAutocomplete";
+import ODTitle from "./newRoom/ODTitle";
+import ODDescription from "./newRoom/ODDescription";
+import ODParticipants from "./newRoom/ODParticipants";
+import ODDate from "./newRoom/ODDate";
+import ODCategory from "./newRoom/ODCategory";
 
 export default {
   created() {
@@ -54,31 +59,82 @@ export default {
   },
   data() {
     return {
-      title: "",
-      category: null,
-      date: "",
-      description: "",
-      participants: null,
-      address: "",
-      categoryItems: ["Sport", "Study", "Hangout", "Protest"],
+      tab: null,
+      newRoom: {
+        title: "",
+        description: "",
+        participants: null,
+        date: "",
+        category: null,
+        address: "",
+      },
+      steps: [
+        ODTitle,
+        ODDescription,
+        ODParticipants,
+        ODDate,
+        ODCategory,
+        AdressAutocomplete,
+      ],
+      tabItems: [
+        { tab: "Title" },
+        { tab: "Description" },
+        { tab: "Participants" },
+        { tab: "Date" },
+        { tab: "Category" },
+        { tab: "Address" },
+      ],
     };
   },
-  components: { AdressAutocomplete },
+  components: {
+    AdressAutocomplete,
+    ODTitle,
+    ODDescription,
+    ODParticipants,
+    ODDate,
+    ODCategory,
+  },
   methods: {
-    createRoom() {
-      const activityDate = new Date(this.date).toLocaleDateString();
+    setRoomProp(change) {
+      switch (this.tab) {
+        case 0:
+          this.newRoom.title = change;
+          break;
+        case 1:
+          this.newRoom.description = change;
+          break;
+        case 2:
+          this.newRoom.participants = change;
+          break;
+        case 3:
+          this.newRoom.date = change;
+          break;
+        case 4:
+          this.newRoom.category = change;
+          break;
+        case 5:
+          this.newRoom.address = change;
+          break;
+      }
+    },
+    createRoom(newRoom) {
+      const activityDate = new Date(newRoom.date).toLocaleDateString("en-GB");
       this.$store
         .dispatch("addRoom", {
-          title: this.title,
-          category: this.category,
+          title: newRoom.title,
+          category: newRoom.category,
           date: activityDate,
-          description: this.description,
-          participants: this.participants,
+          description: newRoom.description,
+          participants: newRoom.participants,
           messages: [],
           address: {
-            addressString: this.getAddressString(this.address),
-            lat: this.address ? this.address.latitude : this.getAddress.lat,
-            lng: this.address ? this.address.longitude : this.getAddress.lng,
+            addressString: this.getAddressString(newRoom.address),
+            lat: newRoom.address
+              ? newRoom.address.latitude
+              : this.getAddress.lat,
+            lng: newRoom.address
+              ? newRoom.address.longitude
+              : this.getAddress.lng,
           },
           admin: this.$store.state.auth.user.id,
           joinedUsers: [this.$store.state.auth.user.id],
@@ -110,19 +166,31 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.container-fluid {
+.container {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  .new-room-form {
-    width: 400px;
-    margin: 30px auto;
-    border: 1px solid #eee;
-    padding: 20px;
-    box-shadow: 0 2px 3px #ccc;
 
-    .v-google-places {
-      width: 100%;
+  .tabs {
+    display: flex;
+    justify-content: center;
+  }
+
+  .tabs-content {
+    align-self: center;
+    margin-top: 10rem;
+
+    .tab-content {
+      width: 20rem;
+    }
+  }
+
+  .buttons {
+    display: flex;
+    justify-content: center;
+
+    .btn-next {
+      position: absolute;
+      right: 10px;
     }
   }
 }
