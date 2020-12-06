@@ -2,11 +2,13 @@
   <div class="container">
     <h1 style="textAlign:center;">New Activity</h1>
 
-    <v-tabs v-model="tab" class="tabs">
-      <v-tab v-for="item in tabItems" :key="item.tab">
-        {{ item.tab }}
-      </v-tab>
-    </v-tabs>
+    <div>
+      <v-tabs :vertical="isMobile ? true : false" v-model="tab" class="tabs">
+        <v-tab v-for="item in tabItems" :key="item.tab">
+          {{ item.tab }}
+        </v-tab>
+      </v-tabs>
+    </div>
 
     <v-tabs-items class="tabs-content" v-model="tab">
       <v-tab-item v-for="item in tabItems" :key="item.tab">
@@ -46,12 +48,12 @@
 </template>
 
 <script>
-import AdressAutocomplete from "./AdressAutocomplete";
-import ODTitle from "./newRoom/ODTitle";
-import ODDescription from "./newRoom/ODDescription";
-import ODParticipants from "./newRoom/ODParticipants";
-import ODDate from "./newRoom/ODDate";
-import ODCategory from "./newRoom/ODCategory";
+import AdressAutocomplete from "../AdressAutocomplete";
+import ODTitle from "./ODTitle";
+import ODDescription from "./ODDescription";
+import ODParticipants from "./ODParticipants";
+import ODDate from "./ODDate";
+import ODCategory from "./ODCategory";
 
 export default {
   created() {
@@ -160,6 +162,9 @@ export default {
     },
     getAddress() {
       return this.currentRoom ? this.currentRoom.address : false;
+    },
+    isMobile() {
+      return this.$vuetify.breakpoint.width <= 700 ? true : false;
     },
   },
 };

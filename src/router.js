@@ -6,7 +6,7 @@ import Rooms from "./components/rooms/Rooms.vue";
 import Home from "./components/Home.vue";
 import Profile from "./components/Profile.vue";
 import RoomView from "./components/rooms/RoomView.vue";
-import NewRoom from "./components/rooms/NewRoom.vue";
+import NewRoom from "./components/rooms/newRoom/NewRoom.vue";
 
 import store from "./store/store";
 
