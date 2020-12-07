@@ -5,15 +5,15 @@
       @leaveRequest="leaveRoom()"
       @roomSaved="saveRoom($event)"
       @roomDeleted="deleteRoom()"
-      :room="currentRoom"
+      :room="room"
     >
-      <div class="view-container" v-if="currentRoom">
+      <div class="view-container" v-if="room">
         <p
           class="description"
           :class="{ expanded: isDesExpanded }"
           ref="description"
         >
-          {{ description }}
+          {{ room.description }}
         </p>
 
         <v-btn
@@ -33,27 +33,30 @@
         </v-btn>
         <RoomViewChat
           :joinedUsers="joinedUsers"
-          :currentRoom="currentRoom"
+          :currentRoom="room"
         ></RoomViewChat>
 
-        <h4 style=" textAlign: center; marginTop: 2rem">
-          {{ currentRoom.address.addressString }}
+        <h4 v-if="room.address" style=" textAlign: center; marginTop: 2rem">
+          {{ room.address.addressString }}
         </h4>
-        <gmap-map
-          v-if="getAddress"
-          class="activity-map"
-          :center="{
-            lat: getAddress.lat,
-            lng: getAddress.lng,
-          }"
-          :zoom="16"
-        >
-          <GmapMarker
-            :position="{ lat: getAddress.lat, lng: getAddress.lng }"
-            :clickable="true"
-            :draggable="true"
-          />
-        </gmap-map>
+        <div class="activity-map">
+          Google Map
+          <!-- <gmap-map
+            v-if="room.address"
+            class="activity-map"
+            :center="{
+              lat: room.address.lat,
+              lng: room.address.lng,
+            }"
+            :zoom="16"
+          >
+            <GmapMarker
+              :position="{ lat: room.address.lat, lng: room.address.lng }"
+              :clickable="true"
+              :draggable="true"
+            />
+          </gmap-map> -->
+        </div>
       </div>
       <div v-else>
         <h1>Loading..</h1>
@@ -76,10 +79,10 @@ export default {
   },
   created() {
     this.$store.dispatch("initRealtimeListeners");
-    this.$store.dispatch("fetchRooms");
     this.$store.dispatch("fetchUsers");
   },
   mounted() {
+    this.$store.dispatch("fetchRoom", this.roomId);
     this.checkIfOverflown(this.$refs.description);
   },
   components: {
@@ -87,43 +90,16 @@ export default {
     ODNavbar,
   },
   computed: {
-    rooms() {
-      return this.$store.getters.getRooms;
-    },
-
-    currentRoom() {
-      if (!this.rooms.length || !this.roomId) return;
-      return this.rooms.find((room) => room.id == this.roomId);
-    },
-
-    title() {
-      if (!this.currentRoom.title) return;
-
-      return this.currentRoom ? this.currentRoom.title : false;
-    },
-
-    date() {
-      return this.currentRoom ? this.currentRoom.date : false;
-    },
-
-    description() {
-      return this.currentRoom ? this.currentRoom.description : false;
-    },
-
-    participants() {
-      return this.currentRoom ? this.currentRoom.participants : false;
+    room() {
+      return this.$store.getters.getRoom;
     },
 
     getAddress() {
-      return this.currentRoom ? this.currentRoom.address : false;
+      return this.room ? this.room.address : false;
     },
 
     isAdmin() {
-      return this.loggedInUser.id == this.currentRoom.admin;
-    },
-
-    isJoinedUser() {
-      return this.joinedUsers.includes(this.$store.getters.getUser.username);
+      return this.loggedInUser.id == this.room.admin;
     },
 
     loggedInUser() {
@@ -132,21 +108,16 @@ export default {
 
     joinedUsers() {
       const allUsers = this.$store.state.auth.allUsers;
-      if (!this.currentRoom.joinedUsers.length || !allUsers) return;
+      if (!this.room.joinedUsers || !allUsers) return;
 
       const joinedUsers = [];
-      this.currentRoom.joinedUsers.forEach((userId) => {
+      this.room.joinedUsers.forEach((userId) => {
         const joinedUser = allUsers[userId];
         joinedUsers.push(joinedUser);
       });
       return joinedUsers;
     },
 
-    isFull() {
-      return (
-        this.currentRoom.participants == this.currentRoom.joinedUsers.length
-      );
-    },
     descBtnText() {
       return this.isDesExpanded ? "Read Less" : "Read More";
     },
@@ -160,7 +131,7 @@ export default {
     },
 
     saveRoom(editedData) {
-      const updatedRoom = { ...this.currentRoom, ...editedData };
+      const updatedRoom = { ...this.room, ...editedData };
       this.$store.dispatch("updateRoom", updatedRoom).then(
         (res) => {
           this.editMode = false;
@@ -172,21 +143,21 @@ export default {
     },
 
     deleteRoom() {
-      this.$store.dispatch("deleteRoom", this.currentRoom.id).then(() => {
+      this.$store.dispatch("deleteRoom", this.room.id).then(() => {
         this.$router.push("/rooms");
       });
     },
 
     joinRoom() {
       this.$store.dispatch("joinUser", {
-        roomId: this.currentRoom.id,
+        roomId: this.room.id,
         userId: this.loggedInUser.id,
       });
     },
 
     leaveRoom() {
       this.$store.dispatch("leaveUser", {
-        roomId: this.currentRoom.id,
+        roomId: this.room.id,
         userId: this.loggedInUser.id,
       });
     },

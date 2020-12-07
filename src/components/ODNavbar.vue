@@ -113,11 +113,11 @@ export default {
       return this.room ? this.room.title : "OutDoor";
     },
     participantsStr() {
-      if (!this.room) return;
+      if (!this.room.joinedUsers) return;
       return `${this.room.joinedUsers.length}/${this.room.participants}`;
     },
     isFull() {
-      if (!this.room) return;
+      if (!this.room.joinedUsers) return;
       return this.room.participants == this.room.joinedUsers.length;
     },
     isAdmin() {
@@ -126,7 +126,7 @@ export default {
     },
 
     isJoinedUser() {
-      if (!this.room || !this.$store.getters.getUser) return;
+      if (!this.room.joinedUsers || !this.$store.getters.getUser) return;
       return this.room.joinedUsers.includes(this.$store.getters.getUser.id);
     },
   },

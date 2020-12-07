@@ -3,7 +3,7 @@ import axios from "axios";
 
 const state = {
   rooms: [],
-  currentRoom: {},
+  room: {},
 };
 
 const mutations = {
@@ -17,8 +17,8 @@ const mutations = {
   FETCH_ROOMS(state, rooms) {
     state.rooms = rooms;
   },
-  FETCH_ROOM(state, currentRoom) {
-    state.currentRoom = currentRoom;
+  FETCH_ROOM(state, room) {
+    state.room = room;
   },
   UPDATE_ROOM(state, roomData) {
     if (roomData.roomIndex >= 0) {
@@ -64,8 +64,10 @@ const actions = {
             room: change.doc.data(),
           };
           roomData.room.id = change.doc.id;
+          console.log("roomData", roomData);
 
           commit("UPDATE_ROOM", roomData);
+          commit("FETCH_ROOM", roomData.room);
         }
 
         if (change.type === "removed") {
@@ -83,7 +85,7 @@ const actions = {
 
   fetchRoom: ({ commit }, roomId) => {
     axios.get(`${process.env.VUE_APP_API_URL}/rooms/${roomId}`).then((res) => {
-      commit("FETCH_ROOM", res.data);
+      commit("FETCH_ROOM", res.data.room);
     });
   },
 
@@ -175,8 +177,8 @@ const getters = {
   getRooms: (state) => {
     return state.rooms;
   },
-  getCurrentRoom: (state) => {
-    return state.currentRoom;
+  getRoom: (state) => {
+    return state.room;
   },
 };
 
