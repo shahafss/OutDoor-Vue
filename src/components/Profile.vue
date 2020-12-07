@@ -1,18 +1,24 @@
 <template>
-  <div class="container-fluid">
-    <h1>{{ name }} ({{ userName }})</h1>
-    <h2>{{ email }}</h2>
-    <hr />
-    <v-btn depressed color="error" @click="onLogout">
-      Logout
-    </v-btn>
-  </div>
+  <ODNavbar :main="true">
+    <div class="container-fluid">
+      <h1>{{ name }} ({{ userName }})</h1>
+      <h2>{{ email }}</h2>
+      <hr />
+      <v-btn depressed color="error" @click="onLogout">
+        Logout
+      </v-btn>
+    </div>
+  </ODNavbar>
 </template>
 
 <script>
+import ODNavbar from "./ODNavbar";
 export default {
   created() {
     this.$store.dispatch("fetchUsers");
+  },
+  components: {
+    ODNavbar,
   },
   computed: {
     user() {

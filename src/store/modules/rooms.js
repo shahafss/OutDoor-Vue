@@ -77,7 +77,7 @@ const actions = {
 
   fetchRooms: ({ commit }) => {
     axios.get(`${process.env.VUE_APP_API_URL}/rooms`).then((res) => {
-      commit("FETCH_ROOMS", res.data);
+      commit("FETCH_ROOMS", res.data.rooms);
     });
   },
 

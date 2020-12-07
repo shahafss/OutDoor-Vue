@@ -215,7 +215,7 @@ export default {
 
       &.expanded {
         height: fit-content;
-        max-height: 430px;
+        max-height: 1000px;
       }
     }
 
