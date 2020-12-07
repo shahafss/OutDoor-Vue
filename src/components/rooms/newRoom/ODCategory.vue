@@ -3,6 +3,7 @@
     v-model="category"
     :items="categoryItems"
     label="Category"
+    outlined
   ></v-select>
 </template>
 <script>

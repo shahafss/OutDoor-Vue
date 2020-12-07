@@ -22,7 +22,7 @@
     <v-list nav dense>
       <router-link to="/rooms" tag="v-list-item">
         <v-list-item-icon>
-          <v-icon>mdi-folder</v-icon>
+          <v-icon>mdi-cube-scan</v-icon>
         </v-list-item-icon>
         <v-list-item-title>
           Rooms
@@ -32,7 +32,7 @@
         <v-list-item-icon>
           <v-icon>mdi-account-multiple</v-icon>
         </v-list-item-icon>
-        <v-list-item-title>Shared with me</v-list-item-title>
+        <v-list-item-title>Joined Rooms</v-list-item-title>
       </v-list-item>
       <v-list-item link>
         <v-list-item-icon>

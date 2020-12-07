@@ -1,53 +1,57 @@
 <template>
-  <div class="container">
-    <h1 style="textAlign:center;">New Activity</h1>
+  <ODNavbar :main="true">
+    <div class="container">
+      <h1 style="textAlign:center;">New Activity</h1>
 
-    <div>
-      <v-tabs :vertical="isMobile ? true : false" v-model="tab" class="tabs">
-        <v-tab v-for="item in tabItems" :key="item.tab">
-          {{ item.tab }}
-        </v-tab>
-      </v-tabs>
+      <div>
+        <v-tabs :vertical="isMobile ? true : false" v-model="tab" class="tabs">
+          <v-tab v-for="item in tabItems" :key="item.tab">
+            {{ item.tab }}
+          </v-tab>
+        </v-tabs>
+      </div>
+
+      <v-tabs-items class="tabs-content" v-model="tab">
+        <v-tab-item v-for="item in tabItems" :key="item.tab">
+          <div class="tab-content" @keydown.enter="tab++">
+            <keep-alive>
+              <component
+                @change="setRoomProp($event)"
+                :is="steps[tab]"
+              ></component>
+            </keep-alive>
+          </div>
+        </v-tab-item>
+      </v-tabs-items>
+
+      <div class="buttons">
+        <v-btn
+          v-if="tab == 5"
+          @click="createRoom(newRoom)"
+          outlined
+          rounded
+          color="indigo"
+        >
+          Create
+        </v-btn>
+        <v-btn
+          class="btn-next"
+          v-if="tab != 5"
+          @click="tab <= 4 ? tab++ : (tab = 0)"
+          outlined
+          rounded
+          color="indigo"
+        >
+          Next
+        </v-btn>
+      </div>
     </div>
-
-    <v-tabs-items class="tabs-content" v-model="tab">
-      <v-tab-item v-for="item in tabItems" :key="item.tab">
-        <div class="tab-content" @keydown.enter="tab++">
-          <keep-alive>
-            <component
-              @change="setRoomProp($event)"
-              :is="steps[tab]"
-            ></component>
-          </keep-alive>
-        </div>
-      </v-tab-item>
-    </v-tabs-items>
-
-    <div class="buttons">
-      <v-btn
-        v-if="tab == 5"
-        @click="createRoom(newRoom)"
-        outlined
-        rounded
-        color="indigo"
-      >
-        Create
-      </v-btn>
-      <v-btn
-        class="btn-next"
-        v-if="tab != 5"
-        @click="tab <= 4 ? tab++ : (tab = 0)"
-        outlined
-        rounded
-        color="indigo"
-      >
-        Next
-      </v-btn>
-    </div>
-  </div>
+  </ODNavbar>
 </template>
 
 <script>
+import ODNavbar from "../../ODNavbar";
+
 import AdressAutocomplete from "../AdressAutocomplete";
 import ODTitle from "./ODTitle";
 import ODDescription from "./ODDescription";
@@ -89,6 +93,7 @@ export default {
     };
   },
   components: {
+    ODNavbar,
     AdressAutocomplete,
     ODTitle,
     ODDescription,
@@ -182,21 +187,19 @@ export default {
 
   .tabs-content {
     align-self: center;
-    margin-top: 10rem;
+    margin-top: 3rem;
 
     .tab-content {
+      display: flex;
+      align-items: center;
       width: 20rem;
+      height: 8rem;
     }
   }
 
   .buttons {
     display: flex;
     justify-content: center;
-
-    .btn-next {
-      position: absolute;
-      right: 10px;
-    }
   }
 }
 </style>

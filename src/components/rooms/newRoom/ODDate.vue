@@ -1,5 +1,5 @@
 <template>
-  <v-text-field v-model="date" label="Date" type="date"></v-text-field>
+  <v-text-field v-model="date" outlined label="Date" type="date"></v-text-field>
 </template>
 <script>
 export default {

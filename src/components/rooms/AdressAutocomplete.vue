@@ -4,6 +4,7 @@
     types="address"
     country="il"
     aria-placeholder=""
+    style="width:100%;"
     @placechanged="onAddressChanged($event)"
   >
     <v-text-field
@@ -11,6 +12,8 @@
       placeholder=""
       label="Address"
       type="text"
+      outlined
+      clearable
     ></v-text-field>
   </VueGooglePlaces>
 </template>

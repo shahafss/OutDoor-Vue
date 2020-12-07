@@ -3,6 +3,7 @@
     type="number"
     v-model.number="participants"
     label="Participants"
+    outlined
   ></v-text-field>
 </template>
 <script>
