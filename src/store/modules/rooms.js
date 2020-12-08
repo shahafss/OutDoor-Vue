@@ -64,7 +64,6 @@ const actions = {
             room: change.doc.data(),
           };
           roomData.room.id = change.doc.id;
-          console.log("roomData", roomData);
 
           commit("UPDATE_ROOM", roomData);
           commit("FETCH_ROOM", roomData.room);

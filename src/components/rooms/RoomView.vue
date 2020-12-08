@@ -132,6 +132,7 @@ export default {
 
     saveRoom(editedData) {
       const updatedRoom = { ...this.room, ...editedData };
+      updatedRoom.id = this.roomId;
       this.$store.dispatch("updateRoom", updatedRoom).then(
         (res) => {
           this.editMode = false;
@@ -143,21 +144,21 @@ export default {
     },
 
     deleteRoom() {
-      this.$store.dispatch("deleteRoom", this.room.id).then(() => {
+      this.$store.dispatch("deleteRoom", this.roomId).then(() => {
         this.$router.push("/rooms");
       });
     },
 
     joinRoom() {
       this.$store.dispatch("joinUser", {
-        roomId: this.room.id,
+        roomId: this.roomId,
         userId: this.loggedInUser.id,
       });
     },
 
     leaveRoom() {
       this.$store.dispatch("leaveUser", {
-        roomId: this.room.id,
+        roomId: this.roomId,
         userId: this.loggedInUser.id,
       });
     },
