@@ -148,7 +148,7 @@ export default {
         })
         .then(
           (res) => {
-            this.$router.push("/room/" + res.data);
+            this.$router.push("/room/" + res.data.roomId);
           },
           (error) => {
             console.log("createRoom error>> ", error);
