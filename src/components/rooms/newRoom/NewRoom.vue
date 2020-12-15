@@ -148,7 +148,8 @@ export default {
         })
         .then(
           (res) => {
-            this.$router.push("/room/" + res.data.roomId);
+            if (res.status == 201)
+              this.$router.push("/room/" + res.data.roomId);
           },
           (error) => {
             console.log("createRoom error>> ", error);
