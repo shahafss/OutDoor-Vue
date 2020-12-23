@@ -2,20 +2,21 @@
   <validation-provider
     slim
     ref="provider"
-    name="title"
-    rules="required|minLength:6|maxLength:40"
+    :name="name"
+    :rules="rules"
     v-slot="{ errors, valid }"
   >
     <v-text-field
       class="od-input"
       outlined
       clearable
-      :counter="40"
+      :type="type"
+      :counter="max"
       :success="valid"
       :error-messages="errors"
       @keydown.enter="next(valid)"
-      v-model="title"
-      label="Title"
+      v-model="inputVal"
+      :label="name"
     ></v-text-field>
     <v-btn
       :disabled="!valid"
@@ -31,17 +32,25 @@
 import { ValidationProvider } from "vee-validate";
 
 export default {
+  props: ["name", "type", "max", "min", "required"],
   data() {
     return {
-      title: "",
+      inputVal: "",
     };
   },
   components: {
     ValidationProvider,
   },
   watch: {
-    title(title) {
-      this.$emit("change", title);
+    inputVal(val) {
+      this.$emit("change", val);
+    },
+  },
+  computed: {
+    rules() {
+      return `required${this.min ? "|minLength:" + this.min : ""}${
+        this.max ? "|maxLength:" + this.max : ""
+      }`;
     },
   },
   methods: {

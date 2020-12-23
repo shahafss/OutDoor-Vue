@@ -25,7 +25,12 @@
                     class="form-input"
                     @change="setRoomProp($event)"
                     @next="next()"
-                    :is="steps[tab]"
+                    :is="item.component"
+                    :type="item.type"
+                    :required="item.required"
+                    :min="item.min"
+                    :max="item.max"
+                    :name="item.tab"
                   ></component>
                 </keep-alive>
               </v-form>
@@ -52,9 +57,7 @@ import ODNavbar from "../../ODNavbar";
 import { ValidationObserver } from "vee-validate";
 
 import AdressAutocomplete from "../AdressAutocomplete";
-import ODTitle from "./ODTitle";
-import ODDescription from "./ODDescription";
-import ODParticipants from "./ODParticipants";
+import NewRoomInput from "./NewRoomInput";
 import ODDate from "./ODDate";
 import ODCategory from "./ODCategory";
 
@@ -73,32 +76,41 @@ export default {
         category: null,
         address: "",
       },
-      steps: [
-        ODTitle,
-        ODDescription,
-        ODParticipants,
-        ODDate,
-        ODCategory,
-        AdressAutocomplete,
-      ],
       tabItems: [
-        { tab: "Title" },
-        { tab: "Description" },
-        { tab: "Participants" },
-        { tab: "Date" },
-        { tab: "Category" },
-        { tab: "Address" },
+        {
+          tab: "Title",
+          component: NewRoomInput,
+          type: "text",
+          required: true,
+          min: 6,
+          max: 40,
+        },
+        {
+          tab: "Description",
+          component: NewRoomInput,
+          type: "text",
+          required: true,
+          min: 10,
+          max: 150,
+        },
+        {
+          tab: "Participants",
+          component: NewRoomInput,
+          type: "number",
+          required: true,
+        },
+        { tab: "Date", component: ODDate },
+        { tab: "Category", component: ODCategory },
+        { tab: "Address", component: AdressAutocomplete },
       ],
     };
   },
   components: {
+    NewRoomInput,
     ODNavbar,
-    AdressAutocomplete,
-    ODTitle,
-    ODDescription,
-    ODParticipants,
     ODDate,
     ODCategory,
+    AdressAutocomplete,
     ValidationObserver,
   },
   methods: {
