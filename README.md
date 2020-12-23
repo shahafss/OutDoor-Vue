@@ -1,4 +1,4 @@
-OutDoor is live! - [**OutDoor**](https://outdoor-vue.web.app/)
+**OutDoor is live!** - [**OutDoor**](https://outdoor-vue.web.app/)
 
 ## Under Development
 This is a project I began building through the early covid-19 quarantine time and still maintaining today.
