@@ -57,14 +57,18 @@
 
             <v-list v-if="isAdmin">
               <v-list-item link>
-                <RoomViewModal
+                <RoomEditModal
                   v-if="isAdmin"
                   @roomSaved="$emit('roomSaved', $event)"
                   :room="room"
-                ></RoomViewModal>
+                ></RoomEditModal>
               </v-list-item>
-              <v-list-item @click="$emit('roomDeleted')" link>
-                Delete
+              <v-list-item link>
+                <RoomDeleteModal
+                  v-if="isAdmin"
+                  @roomDeleted="$emit('roomDeleted')"
+                >
+                </RoomDeleteModal>
               </v-list-item>
             </v-list>
             <v-list v-else>
@@ -93,7 +97,8 @@
 </template>
 
 <script>
-import RoomViewModal from "../components/rooms/RoomViewModal";
+import RoomEditModal from "./rooms/modals/RoomEditModal";
+import RoomDeleteModal from "./rooms/modals/RoomDeleteModal";
 import NavDrawer from "../components/NavDrawer";
 export default {
   props: ["main", "room"],
@@ -103,8 +108,9 @@ export default {
     };
   },
   components: {
-    RoomViewModal,
     NavDrawer,
+    RoomEditModal,
+    RoomDeleteModal,
   },
   computed: {
     title() {
@@ -113,11 +119,11 @@ export default {
       return this.room ? this.room.title : "OutDoor";
     },
     participantsStr() {
-      if (!this.room) return;
+      if (!this.room.joinedUsers) return;
       return `${this.room.joinedUsers.length}/${this.room.participants}`;
     },
     isFull() {
-      if (!this.room) return;
+      if (!this.room.joinedUsers) return;
       return this.room.participants == this.room.joinedUsers.length;
     },
     isAdmin() {
@@ -126,7 +132,7 @@ export default {
     },
 
     isJoinedUser() {
-      if (!this.room || !this.$store.getters.getUser) return;
+      if (!this.room.joinedUsers || !this.$store.getters.getUser) return;
       return this.room.joinedUsers.includes(this.$store.getters.getUser.id);
     },
   },

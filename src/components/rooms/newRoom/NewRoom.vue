@@ -4,58 +4,60 @@
       <h1 style="textAlign:center;">New Activity</h1>
 
       <div>
-        <v-tabs :vertical="isMobile ? true : false" v-model="tab" class="tabs">
+        <v-tabs :vertical="isMobile" v-model="tab" class="tabs">
           <v-tab v-for="item in tabItems" :key="item.tab">
             {{ item.tab }}
           </v-tab>
         </v-tabs>
       </div>
 
-      <v-tabs-items class="tabs-content" v-model="tab">
-        <v-tab-item v-for="item in tabItems" :key="item.tab">
-          <div class="tab-content" @keydown.enter="tab++">
-            <keep-alive>
-              <component
-                @change="setRoomProp($event)"
-                :is="steps[tab]"
-              ></component>
-            </keep-alive>
-          </div>
-        </v-tab-item>
-      </v-tabs-items>
-
-      <div class="buttons">
+      <ValidationObserver
+        class="observer"
+        ref="observer"
+        v-slot="{ invalid, validated }"
+      >
+        <v-tabs-items class="tabs-content" v-model="tab">
+          <v-tab-item v-for="item in tabItems" :key="item.tab">
+            <div class="tab-content">
+              <v-form @submit.prevent>
+                <keep-alive>
+                  <component
+                    class="form-input"
+                    @change="setRoomProp($event)"
+                    @next="next()"
+                    :is="item.component"
+                    :type="item.type"
+                    :required="item.required"
+                    :min="item.min"
+                    :max="item.max"
+                    :name="item.tab"
+                  ></component>
+                </keep-alive>
+              </v-form>
+            </div>
+          </v-tab-item>
+        </v-tabs-items>
         <v-btn
           v-if="tab == 5"
           @click="createRoom(newRoom)"
           outlined
           rounded
           color="indigo"
+          :disabled="invalid || !validated"
         >
           Create
         </v-btn>
-        <v-btn
-          class="btn-next"
-          v-if="tab != 5"
-          @click="tab <= 4 ? tab++ : (tab = 0)"
-          outlined
-          rounded
-          color="indigo"
-        >
-          Next
-        </v-btn>
-      </div>
+      </ValidationObserver>
     </div>
   </ODNavbar>
 </template>
 
 <script>
 import ODNavbar from "../../ODNavbar";
+import { ValidationObserver } from "vee-validate";
 
 import AdressAutocomplete from "../AdressAutocomplete";
-import ODTitle from "./ODTitle";
-import ODDescription from "./ODDescription";
-import ODParticipants from "./ODParticipants";
+import NewRoomInput from "./NewRoomInput";
 import ODDate from "./ODDate";
 import ODCategory from "./ODCategory";
 
@@ -74,32 +76,42 @@ export default {
         category: null,
         address: "",
       },
-      steps: [
-        ODTitle,
-        ODDescription,
-        ODParticipants,
-        ODDate,
-        ODCategory,
-        AdressAutocomplete,
-      ],
       tabItems: [
-        { tab: "Title" },
-        { tab: "Description" },
-        { tab: "Participants" },
-        { tab: "Date" },
-        { tab: "Category" },
-        { tab: "Address" },
+        {
+          tab: "Title",
+          component: NewRoomInput,
+          type: "text",
+          required: true,
+          min: 6,
+          max: 40,
+        },
+        {
+          tab: "Description",
+          component: NewRoomInput,
+          type: "text",
+          required: true,
+          min: 10,
+          max: 150,
+        },
+        {
+          tab: "Participants",
+          component: NewRoomInput,
+          type: "number",
+          required: true,
+        },
+        { tab: "Date", component: ODDate },
+        { tab: "Category", component: ODCategory },
+        { tab: "Address", component: AdressAutocomplete },
       ],
     };
   },
   components: {
+    NewRoomInput,
     ODNavbar,
-    AdressAutocomplete,
-    ODTitle,
-    ODDescription,
-    ODParticipants,
     ODDate,
     ODCategory,
+    AdressAutocomplete,
+    ValidationObserver,
   },
   methods: {
     setRoomProp(change) {
@@ -124,6 +136,7 @@ export default {
           break;
       }
     },
+
     createRoom(newRoom) {
       const activityDate = new Date(newRoom.date).toLocaleDateString("en-GB");
       this.$store
@@ -148,7 +161,8 @@ export default {
         })
         .then(
           (res) => {
-            this.$router.push("/room/" + res.data);
+            if (res.status == 201)
+              this.$router.push("/room/" + res.data.roomId);
           },
           (error) => {
             console.log("createRoom error>> ", error);
@@ -160,11 +174,11 @@ export default {
         ? address.formatted_address
         : this.getAddress.addressString;
     },
+    next() {
+      this.tab <= 4 ? this.tab++ : (this.tab = 0);
+    },
   },
   computed: {
-    rooms() {
-      return this.$store.getters.getRooms;
-    },
     getAddress() {
       return this.currentRoom ? this.currentRoom.address : false;
     },
@@ -180,26 +194,33 @@ export default {
   display: flex;
   flex-direction: column;
 
+  .v-tab {
+    pointer-events: none;
+  }
+
   .tabs {
     display: flex;
     justify-content: center;
   }
-
-  .tabs-content {
-    align-self: center;
-    margin-top: 3rem;
-
-    .tab-content {
-      display: flex;
-      align-items: center;
-      width: 20rem;
-      height: 8rem;
-    }
-  }
-
-  .buttons {
+  .observer {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+
+    .tabs-content {
+      margin-top: 3rem;
+
+      .form-input {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+      }
+
+      .tab-content {
+        width: 20rem;
+      }
+    }
   }
 }
 </style>

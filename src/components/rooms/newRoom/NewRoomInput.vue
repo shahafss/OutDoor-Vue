@@ -2,26 +2,28 @@
   <validation-provider
     slim
     ref="provider"
-    name="category"
-    rules="required"
+    :name="name"
+    :rules="rules"
     v-slot="{ errors, valid }"
   >
-    <v-select
+    <v-text-field
       class="od-input"
-      v-model="category"
+      outlined
+      clearable
+      :type="type"
+      :counter="max"
       :success="valid"
-      :items="categoryItems"
       :error-messages="errors"
       @keydown.enter="next(valid)"
-      label="Category"
-      outlined
-    ></v-select>
+      v-model="inputVal"
+      :label="name"
+    ></v-text-field>
     <v-btn
       :disabled="!valid"
       outlined
       rounded
       color="indigo"
-      @click="$emit('next')"
+      @click.prevent="next(valid)"
       >Next</v-btn
     >
   </validation-provider>
@@ -30,18 +32,25 @@
 import { ValidationProvider } from "vee-validate";
 
 export default {
+  props: ["name", "type", "max", "min", "required"],
   data() {
     return {
-      category: null,
-      categoryItems: ["Sport", "Study", "Hangout", "Protest"],
+      inputVal: "",
     };
   },
   components: {
     ValidationProvider,
   },
   watch: {
-    category(category) {
-      this.$emit("change", category);
+    inputVal(val) {
+      this.$emit("change", val);
+    },
+  },
+  computed: {
+    rules() {
+      return `required${this.min ? "|minLength:" + this.min : ""}${
+        this.max ? "|maxLength:" + this.max : ""
+      }`;
     },
   },
   methods: {

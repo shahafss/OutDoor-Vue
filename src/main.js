@@ -7,6 +7,7 @@ import router from "./router";
 import * as VueGoogleMaps from "vue2-google-maps";
 import VueGooglePlaces from "vue-google-places";
 import Vuetify from "vuetify";
+import "./vee-validate";
 
 Vue.use(VueRouter);
 Vue.use(Vuetify);

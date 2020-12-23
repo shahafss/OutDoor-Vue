@@ -3,7 +3,7 @@ import axios from "axios";
 
 const state = {
   rooms: [],
-  currentRoom: {},
+  room: {},
 };
 
 const mutations = {
@@ -17,8 +17,8 @@ const mutations = {
   FETCH_ROOMS(state, rooms) {
     state.rooms = rooms;
   },
-  FETCH_ROOM(state, currentRoom) {
-    state.currentRoom = currentRoom;
+  FETCH_ROOM(state, room) {
+    state.room = room;
   },
   UPDATE_ROOM(state, roomData) {
     if (roomData.roomIndex >= 0) {
@@ -66,6 +66,7 @@ const actions = {
           roomData.room.id = change.doc.id;
 
           commit("UPDATE_ROOM", roomData);
+          commit("FETCH_ROOM", roomData.room);
         }
 
         if (change.type === "removed") {
@@ -76,20 +77,22 @@ const actions = {
   },
 
   fetchRooms: ({ commit }) => {
-    axios.get(`${process.env.VUE_APP_API_URL}/rooms`).then((res) => {
+    axios.get(`${process.env.VUE_APP_API_LOCAL_URL}/rooms`).then((res) => {
       commit("FETCH_ROOMS", res.data.rooms);
     });
   },
 
   fetchRoom: ({ commit }, roomId) => {
-    axios.get(`${process.env.VUE_APP_API_URL}/rooms/${roomId}`).then((res) => {
-      commit("FETCH_ROOM", res.data);
-    });
+    axios
+      .get(`${process.env.VUE_APP_API_LOCAL_URL}/rooms/${roomId}`)
+      .then((res) => {
+        commit("FETCH_ROOM", res.data.room);
+      });
   },
 
   addRoom: ({ commit }, room) => {
     return new Promise((resolve, reject) => {
-      axios.post(`${process.env.VUE_APP_API_URL}/create`, room).then(
+      axios.post(`${process.env.VUE_APP_API_LOCAL_URL}/create`, room).then(
         (res) => {
           commit("ADD_ROOM", room);
           resolve(res);
@@ -102,22 +105,24 @@ const actions = {
   },
   deleteRoom: ({ commit }, roomId) => {
     return new Promise((resolve, reject) => {
-      axios.delete(`${process.env.VUE_APP_API_URL}/delete/${roomId}`).then(
-        (res) => {
-          commit("DELETE_ROOM", roomId);
-          resolve(res);
-        },
-        (error) => {
-          reject(error);
-        }
-      );
+      axios
+        .delete(`${process.env.VUE_APP_API_LOCAL_URL}/delete/${roomId}`)
+        .then(
+          (res) => {
+            commit("DELETE_ROOM", roomId);
+            resolve(res);
+          },
+          (error) => {
+            reject(error);
+          }
+        );
     });
   },
   updateRoom: (context, updatedRoom) => {
     return new Promise((resolve, reject) => {
       axios
         .put(
-          `${process.env.VUE_APP_API_URL}/update/${updatedRoom.id}`,
+          `${process.env.VUE_APP_API_LOCAL_URL}/update/${updatedRoom.id}`,
           updatedRoom
         )
         .then((res) => {
@@ -134,7 +139,7 @@ const actions = {
     if (currentRoom.participants > currentRoom.joinedUsers.length) {
       currentRoom.joinedUsers.push(joinData.userId);
       axios.put(
-        `${process.env.VUE_APP_API_URL}/update/${joinData.roomId}`,
+        `${process.env.VUE_APP_API_LOCAL_URL}/update/${joinData.roomId}`,
         currentRoom
       );
     }
@@ -145,7 +150,7 @@ const actions = {
     currentRoom.joinedUsers.splice(index, 1);
 
     axios.put(
-      `${process.env.VUE_APP_API_URL}/update/${leaveData.roomId}`,
+      `${process.env.VUE_APP_API_LOCAL_URL}/update/${leaveData.roomId}`,
       currentRoom
     );
   },
@@ -158,7 +163,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       axios
         .put(
-          `${process.env.VUE_APP_API_URL}/update/${messageData.roomId}`,
+          `${process.env.VUE_APP_API_LOCAL_URL}/update/${messageData.roomId}`,
           currentRoom
         )
         .then((res) => {
@@ -175,8 +180,8 @@ const getters = {
   getRooms: (state) => {
     return state.rooms;
   },
-  getCurrentRoom: (state) => {
-    return state.currentRoom;
+  getRoom: (state) => {
+    return state.room;
   },
 };
 
