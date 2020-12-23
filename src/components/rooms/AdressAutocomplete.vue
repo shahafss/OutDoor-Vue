@@ -1,22 +1,23 @@
 <template>
-  <validation-provider
-    slim
-    ref="provider"
-    name="address"
-    rules="required"
-    v-slot="{ errors }"
+  <VueGooglePlaces
+    :api-key="googleAPI"
+    types="address"
+    country="il"
+    aria-placeholder=""
+    style="width:100%;"
+    @placechanged="onAddressChanged($event)"
   >
-    <VueGooglePlaces
-      :api-key="googleAPI"
-      types="address"
-      country="il"
-      aria-placeholder=""
-      style="width:100%;"
-      @placechanged="onAddressChanged($event)"
+    <validation-provider
+      rules="required"
+      slim
+      ref="provider"
+      name="address"
+      v-slot="{ errors, valid }"
     >
       <v-text-field
-        autofocus
-        :value="address"
+        class="od-input"
+        :value="tempAddress"
+        :success="valid"
         placeholder=""
         label="Address"
         type="text"
@@ -25,18 +26,19 @@
         :error-messages="errors"
         @blur="$emit('err', { address: errors })"
       ></v-text-field>
-    </VueGooglePlaces>
-  </validation-provider>
+    </validation-provider>
+  </VueGooglePlaces>
 </template>
 
 <script>
 import { ValidationProvider } from "vee-validate";
 
 export default {
-  props: ["address", "disabled", "center"],
+  props: ["address"],
   data() {
     return {
       googleAPI: process.env.VUE_APP_GMAPS,
+      tempAddress: "",
     };
   },
   components: {
@@ -44,6 +46,7 @@ export default {
   },
   methods: {
     onAddressChanged(addressData) {
+      this.tempAddress = addressData.formatted_address;
       this.$emit("change", addressData);
     },
   },
@@ -51,7 +54,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.center {
-  text-align: center;
+.od-input {
+  width: 100%;
 }
 </style>

@@ -4,7 +4,7 @@
       <h1 style="textAlign:center;">New Activity</h1>
 
       <div>
-        <v-tabs :vertical="isMobile ? true : false" v-model="tab" class="tabs">
+        <v-tabs :vertical="isMobile" v-model="tab" class="tabs">
           <v-tab v-for="item in tabItems" :key="item.tab">
             {{ item.tab }}
           </v-tab>
@@ -14,43 +14,34 @@
       <ValidationObserver
         class="observer"
         ref="observer"
-        v-slot="{ handleSubmit }"
+        v-slot="{ invalid, validated }"
       >
         <v-tabs-items class="tabs-content" v-model="tab">
           <v-tab-item v-for="item in tabItems" :key="item.tab">
-            <div class="tab-content" @keydown.enter="tab++">
-              <keep-alive>
-                <component
-                  @change="setRoomProp($event)"
-                  @err="handleError($event)"
-                  :is="steps[tab]"
-                ></component>
-              </keep-alive>
+            <div class="tab-content">
+              <v-form @submit.prevent>
+                <keep-alive>
+                  <component
+                    class="form-input"
+                    @change="setRoomProp($event)"
+                    @next="next()"
+                    :is="steps[tab]"
+                  ></component>
+                </keep-alive>
+              </v-form>
             </div>
           </v-tab-item>
         </v-tabs-items>
-        <div class="buttons">
-          <v-btn
-            v-if="tab == 5"
-            @click.prevent="handleSubmit(createRoom(newRoom))"
-            outlined
-            rounded
-            color="indigo"
-            :disabled="!isValid"
-          >
-            Create
-          </v-btn>
-          <v-btn
-            class="btn-next"
-            v-if="tab != 5"
-            @click="next()"
-            outlined
-            rounded
-            color="indigo"
-          >
-            Next
-          </v-btn>
-        </div>
+        <v-btn
+          v-if="tab == 5"
+          @click="createRoom(newRoom)"
+          outlined
+          rounded
+          color="indigo"
+          :disabled="invalid || !validated"
+        >
+          Create
+        </v-btn>
       </ValidationObserver>
     </div>
   </ODNavbar>
@@ -73,14 +64,6 @@ export default {
   },
   data() {
     return {
-      inputErrors: {
-        title: [],
-        description: [],
-        participants: [],
-        date: [],
-        category: [],
-        address: [],
-      },
       tab: null,
       newRoom: {
         title: "",
@@ -119,9 +102,6 @@ export default {
     ValidationObserver,
   },
   methods: {
-    handleError(errors) {
-      this.inputErrors = { ...this.inputErrors, ...errors };
-    },
     setRoomProp(change) {
       switch (this.tab) {
         case 0:
@@ -145,79 +125,53 @@ export default {
       }
     },
 
-    next() {
-      this.tab <= 4 ? this.tab++ : (this.tab = 0);
-    },
     createRoom(newRoom) {
-      this.$refs.observer.validateWithInfo().then((succ) => {
-        console.log("succ", succ);
-        if (succ) {
-          const activityDate = new Date(newRoom.date).toLocaleDateString(
-            "en-GB"
-          );
-          this.$store
-            .dispatch("addRoom", {
-              title: newRoom.title,
-              category: newRoom.category,
-              date: activityDate,
-              description: newRoom.description,
-              participants: newRoom.participants,
-              messages: [],
-              address: {
-                addressString: this.getAddressString(newRoom.address),
-                lat: newRoom.address
-                  ? newRoom.address.latitude
-                  : this.getAddress.lat,
-                lng: newRoom.address
-                  ? newRoom.address.longitude
-                  : this.getAddress.lng,
-              },
-              admin: this.$store.state.auth.user.id,
-              joinedUsers: [this.$store.state.auth.user.id],
-            })
-            .then(
-              (res) => {
-                if (res.status == 201)
-                  this.$router.push("/room/" + res.data.roomId);
-              },
-              (error) => {
-                console.log("createRoom error>> ", error);
-              }
-            );
-        }
-      });
+      const activityDate = new Date(newRoom.date).toLocaleDateString("en-GB");
+      this.$store
+        .dispatch("addRoom", {
+          title: newRoom.title,
+          category: newRoom.category,
+          date: activityDate,
+          description: newRoom.description,
+          participants: newRoom.participants,
+          messages: [],
+          address: {
+            addressString: this.getAddressString(newRoom.address),
+            lat: newRoom.address
+              ? newRoom.address.latitude
+              : this.getAddress.lat,
+            lng: newRoom.address
+              ? newRoom.address.longitude
+              : this.getAddress.lng,
+          },
+          admin: this.$store.state.auth.user.id,
+          joinedUsers: [this.$store.state.auth.user.id],
+        })
+        .then(
+          (res) => {
+            if (res.status == 201)
+              this.$router.push("/room/" + res.data.roomId);
+          },
+          (error) => {
+            console.log("createRoom error>> ", error);
+          }
+        );
     },
     getAddressString(address) {
       return address
         ? address.formatted_address
         : this.getAddress.addressString;
     },
-    validate() {
-      this.$refs.observer.validateWithInfo().then((succ) => {
-        console.log("succ", succ);
-      });
+    next() {
+      this.tab <= 4 ? this.tab++ : (this.tab = 0);
     },
   },
   computed: {
-    rooms() {
-      return this.$store.getters.getRooms;
-    },
     getAddress() {
       return this.currentRoom ? this.currentRoom.address : false;
     },
     isMobile() {
       return this.$vuetify.breakpoint.width <= 700 ? true : false;
-    },
-    isValid() {
-      this.validate();
-      return !this.inputErrors.title.length &&
-        !this.inputErrors.description.length &&
-        !this.inputErrors.participants.length &&
-        !this.inputErrors.date.length &&
-        !this.inputErrors.category.length &&
-        !this.inputErrors.address.length
-        ? true
-        : false;
     },
   },
 };
@@ -228,31 +182,32 @@ export default {
   display: flex;
   flex-direction: column;
 
-  // .v-tab {
-  //   pointer-events: none;
-  // }
+  .v-tab {
+    pointer-events: none;
+  }
 
   .tabs {
     display: flex;
     justify-content: center;
   }
   .observer {
-    align-self: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
     .tabs-content {
       margin-top: 3rem;
 
-      .tab-content {
+      .form-input {
         display: flex;
+        flex-direction: column;
         align-items: center;
-        width: 20rem;
-        height: 8rem;
+        width: 100%;
       }
-    }
 
-    .buttons {
-      display: flex;
-      justify-content: center;
+      .tab-content {
+        width: 20rem;
+      }
     }
   }
 }

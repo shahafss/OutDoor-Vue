@@ -4,18 +4,27 @@
     ref="provider"
     name="title"
     rules="required|minLength:6|maxLength:40"
-    v-slot="{ errors }"
+    v-slot="{ errors, valid }"
   >
     <v-text-field
-      autofocus
+      class="od-input"
       outlined
       clearable
       :counter="40"
+      :success="valid"
       :error-messages="errors"
-      @blur="$emit('err', { title: errors })"
+      @keydown.enter="next(valid)"
       v-model="title"
       label="Title"
     ></v-text-field>
+    <v-btn
+      :disabled="!valid"
+      outlined
+      rounded
+      color="indigo"
+      @click.prevent="next(valid)"
+      >Next</v-btn
+    >
   </validation-provider>
 </template>
 <script>
@@ -35,5 +44,16 @@ export default {
       this.$emit("change", title);
     },
   },
+  methods: {
+    next(valid) {
+      if (valid) this.$emit("next");
+    },
+  },
 };
 </script>
+
+<style lang="scss" scoped>
+.od-input {
+  width: 100%;
+}
+</style>

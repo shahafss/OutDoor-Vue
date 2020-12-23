@@ -4,17 +4,26 @@
     ref="provider"
     name="category"
     rules="required"
-    v-slot="{ errors }"
+    v-slot="{ errors, valid }"
   >
     <v-select
-      autofocus
+      class="od-input"
       v-model="category"
+      :success="valid"
       :items="categoryItems"
+      :error-messages="errors"
+      @keydown.enter="next(valid)"
       label="Category"
       outlined
-      :error-messages="errors"
-      @blur="$emit('err', { category: errors })"
     ></v-select>
+    <v-btn
+      :disabled="!valid"
+      outlined
+      rounded
+      color="indigo"
+      @click="$emit('next')"
+      >Next</v-btn
+    >
   </validation-provider>
 </template>
 <script>
@@ -35,5 +44,16 @@ export default {
       this.$emit("change", category);
     },
   },
+  methods: {
+    next(valid) {
+      if (valid) this.$emit("next");
+    },
+  },
 };
 </script>
+
+<style lang="scss" scoped>
+.od-input {
+  width: 100%;
+}
+</style>

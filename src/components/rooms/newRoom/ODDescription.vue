@@ -4,18 +4,27 @@
     ref="provider"
     name="description"
     rules="minLength:10|maxLength:150|required"
-    v-slot="{ errors }"
+    v-slot="{ errors, valid }"
   >
     <v-text-field
-      autofocus
+      class="od-input"
       v-model="description"
       :error-messages="errors"
-      @blur="$emit('err', { description: errors })"
+      :success="valid"
+      :counter="150"
+      @keydown.enter="next(valid)"
       outlined
       clearable
       label="Description"
-      :counter="150"
     ></v-text-field>
+    <v-btn
+      :disabled="!valid"
+      outlined
+      rounded
+      color="indigo"
+      @click="next(valid)"
+      >Next</v-btn
+    >
   </validation-provider>
 </template>
 <script>
@@ -35,5 +44,15 @@ export default {
       this.$emit("change", description);
     },
   },
+  methods: {
+    next(valid) {
+      if (valid) this.$emit("next");
+    },
+  },
 };
 </script>
+<style lang="scss" scoped>
+.od-input {
+  width: 100%;
+}
+</style>
