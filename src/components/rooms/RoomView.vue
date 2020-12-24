@@ -15,22 +15,23 @@
         >
           {{ room.description }}
         </p>
-
-        <v-btn
-          v-if="desOverflown"
-          @click="isDesExpanded = !isDesExpanded"
-          class="ma-2"
-          outlined
-          color="indigo"
-        >
-          {{ descBtnText }}
-          <v-icon v-if="isDesExpanded" right dark>
-            mdi-chevron-up
-          </v-icon>
-          <v-icon v-else right dark>
-            mdi-chevron-down
-          </v-icon>
-        </v-btn>
+        <transition name="fade">
+          <v-btn
+            v-if="desOverflown"
+            @click="isDesExpanded = !isDesExpanded"
+            class="ma-2"
+            outlined
+            color="indigo"
+          >
+            {{ descBtnText }}
+            <v-icon v-if="isDesExpanded" right dark>
+              mdi-chevron-up
+            </v-icon>
+            <v-icon v-else right dark>
+              mdi-chevron-down
+            </v-icon>
+          </v-btn>
+        </transition>
         <RoomViewChat
           :joinedUsers="joinedUsers"
           :currentRoom="room"
