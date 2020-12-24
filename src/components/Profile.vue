@@ -1,20 +1,18 @@
 <template>
   <ODNavbar :main="true">
     <v-card class="card">
-      <div class="profile-img"></div>
-      <div>
+      <img src="https://picsum.photos/300" class="profile-img" />
+      <div v-if="user">
         <h1>{{ name }} ({{ user.username }})</h1>
         <div class="info-container">
           <h2 :style="{ marginTop: '2rem' }">Info</h2>
-          <!-- <hr /> -->
+          <hr />
           <v-card-title
             class="card-title"
             :style="{ justifyContent: 'center' }"
             >{{ user.email }}</v-card-title
           >
         </div>
-        {{ user }}
-        <hr />
         <v-btn depressed color="error" @click="onLogout">
           Logout
         </v-btn>
@@ -38,9 +36,6 @@ export default {
 
       return this.$store.getters.getUser;
     },
-    // userName() {
-    //   if (!this) return !this.user ? false : this.user.username;
-    // },
     name() {
       return !this.user
         ? false
@@ -62,6 +57,7 @@ export default {
 
 <style lang="scss" scoped>
 .card {
+  padding: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -70,7 +66,7 @@ export default {
   .profile-img {
     width: 10rem;
     height: 10rem;
-    border: 1px solid black;
+    border: 2px solid #8eb8bdcc;
     border-radius: 50% !important;
     background: white;
     z-index: 10;
@@ -78,7 +74,6 @@ export default {
 
   .card-title {
     justify-content: center;
-    margin-top: 1rem;
   }
 }
 </style>
