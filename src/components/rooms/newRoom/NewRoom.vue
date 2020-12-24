@@ -22,6 +22,7 @@
               <v-form @submit.prevent>
                 <keep-alive>
                   <component
+                    ref="inputcomp"
                     class="form-input"
                     @change="setRoomProp($event)"
                     @next="next()"
@@ -31,6 +32,7 @@
                     :min="item.min"
                     :max="item.max"
                     :name="item.tab"
+                    :autofocus="true"
                   ></component>
                 </keep-alive>
               </v-form>
@@ -58,12 +60,12 @@ import { ValidationObserver } from "vee-validate";
 
 import AdressAutocomplete from "../AdressAutocomplete";
 import NewRoomInput from "./NewRoomInput";
-import ODDate from "./ODDate";
 import ODCategory from "./ODCategory";
 
 export default {
   created() {
     this.$store.dispatch("fetchUsers");
+    console.log("refs", this.$refs);
   },
   data() {
     return {
@@ -99,7 +101,12 @@ export default {
           type: "number",
           required: true,
         },
-        { tab: "Date", component: ODDate },
+        {
+          tab: "Date",
+          component: NewRoomInput,
+          type: "date",
+          required: true,
+        },
         { tab: "Category", component: ODCategory },
         { tab: "Address", component: AdressAutocomplete },
       ],
@@ -108,7 +115,6 @@ export default {
   components: {
     NewRoomInput,
     ODNavbar,
-    ODDate,
     ODCategory,
     AdressAutocomplete,
     ValidationObserver,

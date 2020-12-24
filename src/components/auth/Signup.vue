@@ -1,6 +1,5 @@
 <template>
   <v-container :style="{ height: '100vh', overflowY: 'auto', display: 'flex' }">
-    <!-- <div class="cont" :style="{ height: '100vh', overflowY: 'auto' }"> -->
     <div class="signup-form">
       <h1>Sign-Up!</h1>
       <form @submit.prevent="onSubmit">
@@ -59,7 +58,6 @@
         >
       </form>
     </div>
-    <!-- </div> -->
   </v-container>
 </template>
 

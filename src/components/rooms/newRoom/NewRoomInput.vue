@@ -7,6 +7,7 @@
     v-slot="{ errors, valid }"
   >
     <v-text-field
+      ref="intputfield"
       class="od-input"
       outlined
       clearable
@@ -33,6 +34,11 @@ import { ValidationProvider } from "vee-validate";
 
 export default {
   props: ["name", "type", "max", "min", "required"],
+  mounted() {
+    setTimeout(() => {
+      this.$refs.intputfield.focus();
+    }, 500);
+  },
   data() {
     return {
       inputVal: "",

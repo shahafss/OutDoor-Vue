@@ -23,13 +23,15 @@ export default {
 
 <style lang="scss">
 body,
-html {
+html,
+.v-application {
   overflow: hidden;
   padding: 0;
   margin: 0;
   width: 100%;
   min-height: 100vh;
   height: 100%;
+  font-family: sans-serif;
 }
 
 a {
