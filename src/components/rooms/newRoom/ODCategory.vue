@@ -7,6 +7,7 @@
     v-slot="{ errors, valid }"
   >
     <v-select
+      ref="intputfield"
       class="od-input"
       v-model="category"
       :success="valid"
@@ -30,6 +31,11 @@
 import { ValidationProvider } from "vee-validate";
 
 export default {
+  mounted() {
+    setTimeout(() => {
+      this.$refs.intputfield.focus();
+    }, 500);
+  },
   data() {
     return {
       category: null,

@@ -15,6 +15,7 @@
       v-slot="{ errors, valid }"
     >
       <v-text-field
+        ref="intputfield"
         class="od-input"
         :value="tempAddress"
         :success="valid"
@@ -34,7 +35,14 @@
 import { ValidationProvider } from "vee-validate";
 
 export default {
-  props: ["address"],
+  mounted() {
+    if (this.autofocus) {
+      setTimeout(() => {
+        this.$refs.intputfield.focus();
+      }, 500);
+    }
+  },
+  props: ["address", "autofocus"],
   data() {
     return {
       googleAPI: process.env.VUE_APP_GMAPS,
