@@ -39,24 +39,21 @@
         <h4 v-if="room.address" style=" textAlign: center; marginTop: 2rem">
           {{ room.address.addressString }}
         </h4>
-        <div class="activity-map">
-          Google Map
-          <!-- <gmap-map
-            v-if="room.address"
-            class="activity-map"
-            :center="{
-              lat: room.address.lat,
-              lng: room.address.lng,
-            }"
-            :zoom="16"
-          >
-            <GmapMarker
-              :position="{ lat: room.address.lat, lng: room.address.lng }"
-              :clickable="true"
-              :draggable="true"
-            />
-          </gmap-map> -->
-        </div>
+        <gmap-map
+          v-if="room.address"
+          class="activity-map"
+          :center="{
+            lat: room.address.lat,
+            lng: room.address.lng,
+          }"
+          :zoom="16"
+        >
+          <GmapMarker
+            :position="{ lat: room.address.lat, lng: room.address.lng }"
+            :clickable="true"
+            :draggable="true"
+          />
+        </gmap-map>
       </div>
       <div v-else>
         <h1>Loading..</h1>
