@@ -7,7 +7,7 @@
       @roomDeleted="deleteRoom()"
       :room="room"
     >
-      <div class="view-container" v-if="room">
+      <div class="view-container" v-if="room.title">
         <p
           class="description"
           :class="{ expanded: isDesExpanded }"
@@ -17,7 +17,7 @@
         </p>
 
         <v-btn
-          v-show="desOverflown"
+          v-if="desOverflown"
           @click="isDesExpanded = !isDesExpanded"
           class="ma-2"
           outlined
@@ -39,27 +39,24 @@
         <h4 v-if="room.address" style=" textAlign: center; marginTop: 2rem">
           {{ room.address.addressString }}
         </h4>
-        <div class="activity-map">
-          Google Map
-          <!-- <gmap-map
-            v-if="room.address"
-            class="activity-map"
-            :center="{
-              lat: room.address.lat,
-              lng: room.address.lng,
-            }"
-            :zoom="16"
-          >
-            <GmapMarker
-              :position="{ lat: room.address.lat, lng: room.address.lng }"
-              :clickable="true"
-              :draggable="true"
-            />
-          </gmap-map> -->
-        </div>
+        <gmap-map
+          v-if="room.address"
+          class="activity-map"
+          :center="{
+            lat: room.address.lat,
+            lng: room.address.lng,
+          }"
+          :zoom="16"
+        >
+          <GmapMarker
+            :position="{ lat: room.address.lat, lng: room.address.lng }"
+            :clickable="true"
+            :draggable="true"
+          />
+        </gmap-map>
       </div>
       <div v-else>
-        <h1>Loading..</h1>
+        <h3 style="textAlign: center;">Loading..</h3>
       </div>
     </ODNavbar>
   </v-container>
@@ -83,7 +80,12 @@ export default {
   },
   mounted() {
     this.$store.dispatch("fetchRoom", this.roomId);
-    this.checkIfOverflown(this.$refs.description);
+    setTimeout(() => {
+      this.checkIfOverflown(this.$refs.description);
+    }, 1000);
+  },
+  destroyed() {
+    this.$store.dispatch("clearCurrentRoom");
   },
   components: {
     RoomViewChat,
@@ -187,7 +189,7 @@ export default {
 
       &.expanded {
         height: fit-content;
-        max-height: 1000px;
+        max-height: 2000px;
       }
     }
 

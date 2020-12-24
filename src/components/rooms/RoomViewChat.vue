@@ -39,9 +39,15 @@
 
     <div class="joined-users">
       <transition-group name="list">
-        <div v-for="user in joinedUsers" :key="user.id" class="joined-user">
+        <router-link
+          to="/profile"
+          v-for="user in joinedUsers"
+          :key="user.id"
+          tag="div"
+          class="joined-user"
+        >
           {{ user.username }}
-        </div>
+        </router-link>
       </transition-group>
     </div>
   </div>

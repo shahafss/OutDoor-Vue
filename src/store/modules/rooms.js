@@ -26,6 +26,9 @@ const mutations = {
       state.rooms.splice(roomData.roomIndex, 0, roomData.room);
     }
   },
+  CLEAR_CURRENT_ROOM(state) {
+    state.room = {};
+  },
 };
 
 const actions = {
@@ -88,6 +91,10 @@ const actions = {
       .then((res) => {
         commit("FETCH_ROOM", res.data.room);
       });
+  },
+
+  clearCurrentRoom: ({ commit }) => {
+    commit("CLEAR_CURRENT_ROOM");
   },
 
   addRoom: ({ commit }, room) => {

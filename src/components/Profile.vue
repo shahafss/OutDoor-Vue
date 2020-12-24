@@ -1,13 +1,25 @@
 <template>
   <ODNavbar :main="true">
-    <div class="container-fluid">
-      <h1>{{ name }} ({{ userName }})</h1>
-      <h2>{{ email }}</h2>
-      <hr />
-      <v-btn depressed color="error" @click="onLogout">
-        Logout
-      </v-btn>
-    </div>
+    <v-card class="card">
+      <div class="profile-img"></div>
+      <div>
+        <h1>{{ name }} ({{ user.username }})</h1>
+        <div class="info-container">
+          <h2 :style="{ marginTop: '2rem' }">Info</h2>
+          <!-- <hr /> -->
+          <v-card-title
+            class="card-title"
+            :style="{ justifyContent: 'center' }"
+            >{{ user.email }}</v-card-title
+          >
+        </div>
+        {{ user }}
+        <hr />
+        <v-btn depressed color="error" @click="onLogout">
+          Logout
+        </v-btn>
+      </div>
+    </v-card>
   </ODNavbar>
 </template>
 
@@ -22,11 +34,13 @@ export default {
   },
   computed: {
     user() {
-      return !this.$store.getters.getUser ? false : this.$store.getters.getUser;
+      if (!this.$store.getters.getUser) return;
+
+      return this.$store.getters.getUser;
     },
-    userName() {
-      return !this.user ? false : this.user.username;
-    },
+    // userName() {
+    //   if (!this) return !this.user ? false : this.user.username;
+    // },
     name() {
       return !this.user
         ? false
@@ -46,4 +60,25 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+
+  .profile-img {
+    width: 10rem;
+    height: 10rem;
+    border: 1px solid black;
+    border-radius: 50% !important;
+    background: white;
+    z-index: 10;
+  }
+
+  .card-title {
+    justify-content: center;
+    margin-top: 1rem;
+  }
+}
+</style>
