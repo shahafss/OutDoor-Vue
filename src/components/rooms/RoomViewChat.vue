@@ -40,8 +40,8 @@
     <div class="joined-users">
       <transition-group name="list">
         <router-link
-          to="/profile"
           v-for="user in joinedUsers"
+          :to="'/profile/' + user.id"
           :key="user.id"
           tag="div"
           class="joined-user"

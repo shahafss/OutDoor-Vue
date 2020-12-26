@@ -13,7 +13,7 @@
             >{{ user.email }}</v-card-title
           >
         </div>
-        <v-btn depressed color="error" @click="onLogout">
+        <v-btn v-if="!userId" depressed color="error" @click="onLogout">
           Logout
         </v-btn>
       </div>
@@ -24,6 +24,11 @@
 <script>
 import ODNavbar from "./ODNavbar";
 export default {
+  data() {
+    return {
+      userId: this.$route.params.id,
+    };
+  },
   created() {
     this.$store.dispatch("fetchUsers");
   },
@@ -32,9 +37,12 @@ export default {
   },
   computed: {
     user() {
-      if (!this.$store.getters.getUser) return;
-
-      return this.$store.getters.getUser;
+      if (!this.userId) {
+        return this.$store.getters.getUser;
+      } else {
+        if (!this.$store.getters.getUser) return;
+        return this.$store.getters.getUserById(this.userId);
+      }
     },
     name() {
       return !this.user

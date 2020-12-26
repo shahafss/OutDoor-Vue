@@ -1,6 +1,5 @@
 import axios from "../../axios-auth";
 import globalAxios from "axios";
-
 import router from "../../router";
 
 const state = {
@@ -159,7 +158,7 @@ const getters = {
   getUser(state) {
     return state.user;
   },
-  getUserById(id) {
+  getUserById: (state) => (id) => {
     return state.allUsers[id];
   },
   isAuthenticated(state) {

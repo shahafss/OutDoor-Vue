@@ -90,7 +90,14 @@ export default {
 .fade-leave-active {
   transition: opacity 0.3s;
 }
+.fade-leave-active {
+  position: absolute;
+}
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
+}
+
+.fade-move {
+  transition: transform 1s ease;
 }
 </style>

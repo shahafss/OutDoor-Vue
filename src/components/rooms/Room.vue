@@ -6,6 +6,7 @@
       :to="'/room/' + room.id"
       minHeight="200px"
       maxHeight="200px"
+      maxWidth="300px"
       :class="{ disabled: isFull && !isJoinedUser }"
     >
       <v-badge avatar :color="icon.color" :icon="icon.icon" overlap>

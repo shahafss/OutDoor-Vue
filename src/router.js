@@ -11,9 +11,10 @@ import NewRoom from "./components/rooms/newRoom/NewRoom.vue";
 import store from "./store/store";
 
 export const routes = [
-  { path: "/", component: Home },
+  { path: "/", name: "home", component: Home },
   {
     path: "/login",
+    name: "login",
     component: Login,
     beforeEnter(to, from, next) {
       if (!store.state.auth.idToken) {
@@ -23,9 +24,10 @@ export const routes = [
       }
     },
   },
-  { path: "/signup", component: Signup },
+  { path: "/signup", name: "signup", component: Signup },
   {
     path: "/rooms",
+    name: "rooms",
     component: Rooms,
     beforeEnter(to, from, next) {
       setTimeout(() => {
@@ -38,7 +40,22 @@ export const routes = [
     },
   },
   {
-    path: "/profile",
+    path: "/profile/:id",
+    name: "profile",
+    component: Profile,
+    beforeEnter(to, from, next) {
+      setTimeout(() => {
+        if (store.state.auth.idToken) {
+          next();
+        } else {
+          next("/login");
+        }
+      }, 10);
+    },
+  },
+  {
+    path: "/profile/",
+    name: "userprofile",
     component: Profile,
     beforeEnter(to, from, next) {
       setTimeout(() => {
@@ -52,8 +69,8 @@ export const routes = [
   },
   {
     path: "/room/:id",
-    component: RoomView,
     name: "room",
+    component: RoomView,
     beforeEnter(to, from, next) {
       setTimeout(() => {
         if (store.state.auth.idToken) {
@@ -64,7 +81,7 @@ export const routes = [
       }, 10);
     },
   },
-  { path: "/new-room", component: NewRoom },
+  { path: "/new-room", name: "newroom", component: NewRoom },
 ];
 
 export default new VueRouter({ mode: "history", routes });
