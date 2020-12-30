@@ -47,6 +47,8 @@ const actions = {
                 title: change.doc.data().title,
                 category: change.doc.data().category,
                 date: change.doc.data().date,
+                startTime: change.doc.data().startTime,
+                endTime: change.doc.data().endTime,
                 description: change.doc.data().description,
                 participants: change.doc.data().participants,
                 address: change.doc.data().address,

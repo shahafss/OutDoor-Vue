@@ -13,7 +13,6 @@
       clearable
       :type="type"
       :counter="max"
-      :success="valid"
       :error-messages="errors"
       @keydown.enter="next(valid)"
       v-model="inputVal"

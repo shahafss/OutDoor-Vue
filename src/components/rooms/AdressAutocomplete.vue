@@ -12,13 +12,12 @@
       slim
       ref="provider"
       name="address"
-      v-slot="{ errors, valid }"
+      v-slot="{ errors }"
     >
       <v-text-field
         ref="intputfield"
         class="od-input"
         :value="tempAddress"
-        :success="valid"
         placeholder=""
         label="Address"
         type="text"

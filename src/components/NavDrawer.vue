@@ -7,7 +7,7 @@
         </v-list-item-avatar>
       </v-list-item>
 
-      <router-link v-if="user" :to="'/profile/' + user.id" tag="v-list-item">
+      <router-link v-if="user" to="/profile" tag="v-list-item">
         <v-list-item-content>
           <v-list-item-title class="title">
             {{ user.firstName }} {{ user.lastName }}

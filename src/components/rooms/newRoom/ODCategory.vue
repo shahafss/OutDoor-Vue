@@ -10,7 +10,6 @@
       ref="intputfield"
       class="od-input"
       v-model="category"
-      :success="valid"
       :items="categoryItems"
       :error-messages="errors"
       @keydown.enter="next(valid)"

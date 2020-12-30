@@ -1,6 +1,6 @@
 <template>
   <ODNavbar :main="true">
-    <div class="container">
+    <div>
       <h1 style="textAlign:center;">New Activity</h1>
 
       <div>
@@ -40,7 +40,7 @@
           </v-tab-item>
         </v-tabs-items>
         <v-btn
-          v-if="tab == 5"
+          v-if="tab == 6"
           @click="createRoom(newRoom)"
           outlined
           rounded
@@ -61,11 +61,11 @@ import { ValidationObserver } from "vee-validate";
 import AdressAutocomplete from "../AdressAutocomplete";
 import NewRoomInput from "./NewRoomInput";
 import ODCategory from "./ODCategory";
+import ODTime from "./ODTime";
 
 export default {
   created() {
     this.$store.dispatch("fetchUsers");
-    console.log("refs", this.$refs);
   },
   data() {
     return {
@@ -75,6 +75,10 @@ export default {
         description: "",
         participants: null,
         date: "",
+        time: {
+          start: { hour: "", minute: "" },
+          end: { hour: "", minute: "" },
+        },
         category: null,
         address: "",
       },
@@ -107,6 +111,10 @@ export default {
           type: "date",
           required: true,
         },
+        {
+          tab: "Time",
+          component: ODTime,
+        },
         { tab: "Category", component: ODCategory },
         { tab: "Address", component: AdressAutocomplete },
       ],
@@ -116,6 +124,7 @@ export default {
     NewRoomInput,
     ODNavbar,
     ODCategory,
+    ODTime,
     AdressAutocomplete,
     ValidationObserver,
   },
@@ -135,21 +144,30 @@ export default {
           this.newRoom.date = change;
           break;
         case 4:
-          this.newRoom.category = change;
+          this.newRoom.time.start.hour = change.start.hour;
+          this.newRoom.time.start.minute = change.start.minute;
+          this.newRoom.time.end.hour = change.end.hour;
+          this.newRoom.time.end.minute = change.end.minute;
           break;
         case 5:
+          this.newRoom.category = change;
+          break;
+        case 6:
           this.newRoom.address = change;
           break;
       }
     },
 
     createRoom(newRoom) {
-      const activityDate = new Date(newRoom.date).toLocaleDateString("en-GB");
+      const activityDate = new Date(newRoom.date);
+
       this.$store
         .dispatch("addRoom", {
           title: newRoom.title,
           category: newRoom.category,
           date: activityDate,
+          startTime: `${newRoom.time.start.hour}:${newRoom.time.start.minute}`,
+          endTime: `${newRoom.time.end.hour}:${newRoom.time.end.minute}`,
           description: newRoom.description,
           participants: newRoom.participants,
           messages: [],
@@ -181,7 +199,7 @@ export default {
         : this.getAddress.addressString;
     },
     next() {
-      this.tab <= 4 ? this.tab++ : (this.tab = 0);
+      this.tab <= 5 ? this.tab++ : (this.tab = 0);
     },
   },
   computed: {

@@ -1,6 +1,7 @@
 <template>
   <v-card :style="{ height: '100%', 'border-radius': 0 }">
     <v-app-bar
+      elevation="5"
       color="#fcb69f"
       dark
       :prominent="!main"
@@ -88,10 +89,13 @@
       :style="{
         maxHeight: `${main ? '90' : '80'}vh`,
         height: '100%',
+        width: '100%',
         overflowY: 'auto',
       }"
     >
-      <v-container style="height: 100%;"><slot></slot></v-container>
+      <v-container fluid style="height: 100vh; width: 100vw;">
+        <slot></slot>
+      </v-container>
     </v-sheet>
   </v-card>
 </template>

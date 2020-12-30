@@ -6,6 +6,7 @@
     <div class="filters">
       <div v-for="filter in filters" :key="filter.category" class="filter">
         <v-checkbox
+          class="filter-checkbox"
           :label="filter.category"
           :color="filter.color"
           :value="filter.category"
@@ -53,19 +54,11 @@ export default {
     }
   }
 
-  .filters {
-    border: 1px solid black;
-    border-right: 0;
-    border-radius: 4px;
-    padding: 10px;
-    background-color: white;
-  }
-
   .filters-drawer {
     cursor: pointer;
     padding: 5px 10px;
     align-self: center;
-    background-color: red;
+    background-color: #ff0000;
     color: white;
     border: 1px solid black;
     border-radius: 8px;
@@ -77,6 +70,18 @@ export default {
   }
   .filters-drawer:hover {
     opacity: 1;
+  }
+  .filters {
+    border: 1px solid #000000;
+    border-right: 0;
+    border-radius: 4px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    padding: 10px;
+    background-color: #ffffff;
+    .filter-checkbox {
+      margin: 10px 0;
+    }
   }
 }
 </style>

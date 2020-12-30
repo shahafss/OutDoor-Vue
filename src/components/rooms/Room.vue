@@ -6,7 +6,7 @@
       :to="'/room/' + room.id"
       minHeight="200px"
       maxHeight="200px"
-      maxWidth="300px"
+      maxWidth="360px"
       :class="{ disabled: isFull && !isJoinedUser }"
     >
       <v-badge avatar :color="icon.color" :icon="icon.icon" overlap>
@@ -20,7 +20,7 @@
                   {{ room.category }}
                 </div>
                 <div class="overline mb-4">
-                  {{ room.date }}
+                  {{ date }}
                 </div>
               </div>
               <v-list-item-title class="headline mb-1">
@@ -75,6 +75,9 @@ export default {
       return this.$store.getters.getUser
         ? this.room.joinedUsers.includes(this.$store.getters.getUser.id)
         : false;
+    },
+    date() {
+      return new Date(this.room.date).toLocaleDateString("eng-GB");
     },
     category() {
       return this.room.category;

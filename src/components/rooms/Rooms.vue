@@ -42,12 +42,11 @@ export default {
     getRooms() {
       const rooms = this.$store.getters.getRooms;
 
-      return (this.filters.length
+      return this.filters.length
         ? rooms.filter((room) => this.filters.includes(room.category))
-        : rooms
-      ).sort((a, b) => {
-        return new Date(a.date) - new Date(b.date);
-      });
+        : rooms.sort((a, b) => {
+            return new Date(a.date) - new Date(b.date);
+          });
     },
   },
 };
