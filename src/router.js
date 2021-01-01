@@ -7,6 +7,7 @@ import Home from "./components/Home.vue";
 import Profile from "./components/Profile.vue";
 import RoomView from "./components/rooms/RoomView.vue";
 import NewRoom from "./components/rooms/newRoom/NewRoom.vue";
+import ODNotFound from "./components/404/ODNotFound.vue";
 
 import store from "./store/store";
 
@@ -82,6 +83,7 @@ export const routes = [
     },
   },
   { path: "/new-room", name: "newroom", component: NewRoom },
+  { path: "*", name: "notfound", component: ODNotFound },
 ];
 
 export default new VueRouter({ mode: "history", routes });
