@@ -1,12 +1,9 @@
 <template>
   <div>
     <v-card
-      class="mx-auto"
+      class="room-container"
       outlined
       :to="'/room/' + room.id"
-      minHeight="200px"
-      maxHeight="200px"
-      maxWidth="360px"
       :class="{ disabled: isFull && !isJoinedUser }"
     >
       <v-badge avatar :color="icon.color" :icon="icon.icon" overlap>
@@ -33,6 +30,9 @@
                 >Participants: {{ room.joinedUsers.length }}/{{
                   room.participants
                 }}</v-list-item-subtitle
+              >
+              <v-list-item-subtitle
+                >active: {{ room.active }}</v-list-item-subtitle
               >
             </v-list-item-content>
           </v-list-item>
@@ -67,7 +67,16 @@ export default {
       ],
     };
   },
+  mounted() {
+    if (this.room.active && !this.isActive) {
+      this.room.active = false;
+      this.$store.dispatch("updateRoom", this.room);
+    }
+  },
   computed: {
+    isActive() {
+      return new Date(this.room.date) > new Date();
+    },
     isFull() {
       return this.room.participants == this.room.joinedUsers.length;
     },
@@ -90,6 +99,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.room-container {
+  box-shadow: 0px 3px 5px -1px rgba(0, 0, 0, 0.2) !important;
+  min-height: 200px;
+  max-height: 200px;
+  max-width: 400px;
+}
 .v-badge {
   display: block;
   position: unset;

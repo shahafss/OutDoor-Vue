@@ -55,6 +55,7 @@ const actions = {
                 joinedUsers: change.doc.data().joinedUsers,
                 messages: change.doc.data().messages,
                 admin: change.doc.data().admin,
+                active: change.doc.data().active,
               });
             }
           }

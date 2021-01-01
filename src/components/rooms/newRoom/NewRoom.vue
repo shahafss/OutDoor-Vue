@@ -61,6 +61,7 @@ import { ValidationObserver } from "vee-validate";
 import AdressAutocomplete from "../AdressAutocomplete";
 import NewRoomInput from "./NewRoomInput";
 import ODCategory from "./ODCategory";
+import ODDate from "./ODDate";
 import ODTime from "./ODTime";
 
 export default {
@@ -107,8 +108,7 @@ export default {
         },
         {
           tab: "Date",
-          component: NewRoomInput,
-          type: "date",
+          component: ODDate,
           required: true,
         },
         {
@@ -124,6 +124,7 @@ export default {
     NewRoomInput,
     ODNavbar,
     ODCategory,
+    ODDate,
     ODTime,
     AdressAutocomplete,
     ValidationObserver,
@@ -182,6 +183,7 @@ export default {
           },
           admin: this.$store.state.auth.user.id,
           joinedUsers: [this.$store.state.auth.user.id],
+          active: true,
         })
         .then(
           (res) => {
@@ -232,7 +234,7 @@ export default {
     align-items: center;
 
     .tabs-content {
-      margin-top: 3rem;
+      margin-top: 2rem;
 
       .form-input {
         display: flex;
