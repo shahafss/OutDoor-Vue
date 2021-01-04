@@ -77,8 +77,8 @@ export default {
         participants: null,
         date: "",
         time: {
-          start: { hour: "", minute: "" },
-          end: { hour: "", minute: "" },
+          start: { hour: "", minute: "", ampm: "" },
+          end: { hour: "", minute: "", ampm: "" },
         },
         category: null,
         address: "",
@@ -149,6 +149,8 @@ export default {
           this.newRoom.time.start.minute = change.start.minute;
           this.newRoom.time.end.hour = change.end.hour;
           this.newRoom.time.end.minute = change.end.minute;
+          this.newRoom.time.start.ampm = change.start.ampm;
+          this.newRoom.time.end.ampm = change.end.ampm;
           break;
         case 5:
           this.newRoom.category = change;
@@ -167,8 +169,8 @@ export default {
           title: newRoom.title,
           category: newRoom.category,
           date: activityDate,
-          startTime: `${newRoom.time.start.hour}:${newRoom.time.start.minute}`,
-          endTime: `${newRoom.time.end.hour}:${newRoom.time.end.minute}`,
+          startTime: `${newRoom.time.start.hour}:${newRoom.time.start.minute} ${newRoom.time.start.ampm}`,
+          endTime: `${newRoom.time.end.hour}:${newRoom.time.end.minute} ${newRoom.time.end.ampm}`,
           description: newRoom.description,
           participants: newRoom.participants,
           messages: [],
@@ -221,7 +223,7 @@ export default {
   flex-direction: column;
 
   .v-tab {
-    pointer-events: none;
+    // pointer-events: none;
   }
 
   .tabs {

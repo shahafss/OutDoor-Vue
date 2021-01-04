@@ -49,6 +49,24 @@
         </v-card>
       </AppFade>
     </div>
+    <div>
+      <v-btn-toggle
+        v-model="selectedAmpm"
+        mandatory
+        rounded
+        group
+        color="blue lighten"
+        style="margin-left: 1rem;"
+      >
+        <v-btn color="blue" value="am">
+          AM
+        </v-btn>
+
+        <v-btn color="blue" value="pm">
+          PM
+        </v-btn>
+      </v-btn-toggle>
+    </div>
   </div>
 </template>
 
@@ -60,9 +78,11 @@ export default {
       time: {
         hour: "",
         minute: "",
+        ampm: "",
       },
       selectedHour: "",
       selectedMinute: "",
+      selectedAmpm: "",
       showHourPicker: false,
       showMinutePicker: false,
       hours: [
@@ -88,6 +108,7 @@ export default {
   created() {
     this.selectedHour = "01";
     this.selectedMinute = "00";
+    this.selectedAmpm = "am";
   },
   watch: {
     selectedHour(val) {
@@ -96,6 +117,10 @@ export default {
     },
     selectedMinute(val) {
       this.time.minute = val;
+      this.$emit("timeSelect", this.time);
+    },
+    selectedAmpm(val) {
+      this.time.ampm = val;
       this.$emit("timeSelect", this.time);
     },
   },
@@ -164,6 +189,9 @@ export default {
         background-color: #cccc;
       }
     }
+  }
+  .v-btn {
+    margin: 0 !important;
   }
 }
 ::-webkit-scrollbar {

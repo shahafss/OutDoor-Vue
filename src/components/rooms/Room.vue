@@ -34,6 +34,12 @@
               <v-list-item-subtitle
                 >active: {{ room.active }}</v-list-item-subtitle
               >
+              <v-list-item-subtitle
+                >progress: {{ inProgress }}</v-list-item-subtitle
+              >
+              <v-list-item-subtitle
+                >starts: {{ room.startTime }}</v-list-item-subtitle
+              >
             </v-list-item-content>
           </v-list-item>
         </div>
@@ -75,8 +81,46 @@ export default {
   },
   computed: {
     isActive() {
-      return new Date(this.room.date) > new Date();
+      const nowDate = new Date();
+      const roomDate = new Date(this.room.date);
+      if (roomDate > nowDate) {
+        return true;
+      }
+      if (this.isToday(roomDate) && this.inProgress) {
+        const nowTime = Date.parse(
+          "01/01/2011 " + new Date().toLocaleTimeString()
+        );
+
+        const endTime = Date.parse(
+          "01/01/2011 " +
+            new Date("01/01/2021 " + this.room.endTime).toLocaleTimeString()
+        );
+
+        if (nowTime < endTime) {
+          return true;
+        }
+      }
+      return false;
     },
+
+    inProgress() {
+      const nowTime = Date.parse(
+        "01/01/2011 " + new Date().toLocaleTimeString()
+      );
+
+      const startTime = Date.parse(
+        "01/01/2011 " +
+          new Date("01/01/2021 " + this.room.startTime).toLocaleTimeString()
+      );
+
+      const endTime = Date.parse(
+        "01/01/2011 " +
+          new Date("01/01/2021 " + this.room.endTime).toLocaleTimeString()
+      );
+
+      return nowTime > startTime && nowTime < endTime;
+    },
+
     isFull() {
       return this.room.participants == this.room.joinedUsers.length;
     },
@@ -93,6 +137,22 @@ export default {
     },
     icon() {
       return this.icons.find((icon) => icon.category == this.room.category);
+    },
+  },
+  methods: {
+    getDateTime(time) {
+      return Date.parse(
+        "01/01/2011 " +
+          new Date(`01/01/2021 ${time ? time : ""}`).toLocaleTimeString()
+      );
+    },
+    isToday(date) {
+      const today = new Date();
+      return (
+        date.getDate() == today.getDate() &&
+        date.getMonth() == today.getMonth() &&
+        date.getFullYear() == today.getFullYear()
+      );
     },
   },
 };

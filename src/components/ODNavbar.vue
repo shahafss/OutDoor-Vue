@@ -93,7 +93,7 @@
         overflowY: 'auto',
       }"
     >
-      <v-container fluid style="height: 100vh; width: 100vw;">
+      <v-container fluid style="width: 100vw;">
         <slot></slot>
       </v-container>
     </v-sheet>

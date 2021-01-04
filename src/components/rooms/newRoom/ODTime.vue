@@ -25,15 +25,14 @@ export default {
         start: {
           hour: "",
           minute: "",
+          amppm: "",
         },
         end: {
           hour: "",
           minute: "",
+          amppm: "",
         },
       },
-      selectedMinute: "",
-      showHours: false,
-      showMinutes: false,
     };
   },
   components: {
@@ -43,11 +42,13 @@ export default {
     setStart(time) {
       this.time.start.hour = time.hour;
       this.time.start.minute = time.minute;
+      this.time.start.ampm = time.ampm;
       this.$emit("change", this.time);
     },
     setEnd(time) {
       this.time.end.hour = time.hour;
       this.time.end.minute = time.minute;
+      this.time.end.ampm = time.ampm;
       this.$emit("change", this.time);
     },
   },
