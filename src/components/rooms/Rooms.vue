@@ -7,7 +7,7 @@
       <RoomsFilters @filterChange="filters = $event"></RoomsFilters>
       <transition-group role="section" class="rooms-container" name="fade">
         <room
-          v-for="room in getRooms"
+          v-for="room in rooms"
           :key="room.id"
           :room="room"
           class="room"
@@ -19,7 +19,7 @@
 
 <script>
 import Room from "./Room";
-import ODNavbar from "../ODNavbar";
+import ODNavbar from "../nav/ODNavbar";
 import RoomsFilters from "./RoomsFilters";
 
 export default {
@@ -39,7 +39,7 @@ export default {
     this.$store.dispatch("fetchRooms");
   },
   computed: {
-    getRooms() {
+    rooms() {
       const rooms = this.$store.getters.getRooms.filter((room) => room.active);
 
       return this.filters.length

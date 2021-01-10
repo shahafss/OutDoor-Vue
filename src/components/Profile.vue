@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import ODNavbar from "./ODNavbar";
+import ODNavbar from "./nav/ODNavbar";
 export default {
   data() {
     return {

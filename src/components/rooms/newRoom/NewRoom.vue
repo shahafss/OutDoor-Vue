@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import ODNavbar from "../../ODNavbar";
+import ODNavbar from "../../nav/ODNavbar";
 import { ValidationObserver } from "vee-validate";
 
 import AdressAutocomplete from "../AdressAutocomplete";

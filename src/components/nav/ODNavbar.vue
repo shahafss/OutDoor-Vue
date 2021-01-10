@@ -99,9 +99,9 @@
 </template>
 
 <script>
-import RoomEditModal from "./rooms/modals/RoomEditModal";
-import RoomDeleteModal from "./rooms/modals/RoomDeleteModal";
-import NavDrawer from "../components/NavDrawer";
+import RoomEditModal from "../rooms/modals/RoomEditModal";
+import RoomDeleteModal from "../rooms/modals/RoomDeleteModal";
+import NavDrawer from "./NavDrawer";
 export default {
   props: ["main", "room"],
   data() {

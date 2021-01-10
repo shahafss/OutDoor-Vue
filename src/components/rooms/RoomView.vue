@@ -65,7 +65,7 @@
 
 <script>
 import RoomViewChat from "./RoomViewChat";
-import ODNavbar from "../ODNavbar";
+import ODNavbar from "../nav/ODNavbar";
 
 export default {
   data() {
