@@ -82,7 +82,20 @@ export const routes = [
       }, 10);
     },
   },
-  { path: "/new-room", name: "newroom", component: NewRoom },
+  {
+    path: "/new-room",
+    name: "newroom",
+    component: NewRoom,
+    beforeEnter(to, from, next) {
+      setTimeout(() => {
+        if (store.state.auth.idToken) {
+          next();
+        } else {
+          next("/login");
+        }
+      }, 10);
+    },
+  },
   { path: "*", name: "notfound", component: ODNotFound },
 ];
 

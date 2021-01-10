@@ -1,6 +1,7 @@
 <template>
   <v-card :style="{ height: '100%', 'border-radius': 0 }">
     <v-app-bar
+      height="80"
       elevation="5"
       color="#fcb69f"
       dark

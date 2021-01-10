@@ -25,7 +25,6 @@ export default {
 body,
 html,
 .v-application {
-  overflow: hidden;
   padding: 0;
   margin: 0;
   width: 100%;
