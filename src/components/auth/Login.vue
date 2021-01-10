@@ -1,8 +1,8 @@
 <template>
   <div id="login">
-    <div class="login-form">
+    <v-card class="login-form">
       <h1>Login</h1>
-      <form @submit.prevent="onSubmit">
+      <v-form @submit.prevent="onSubmit">
         <div class="input">
           <v-text-field
             type="email"
@@ -26,8 +26,8 @@
         <v-btn type="submit" outlined rounded color="indigo">
           Submit
         </v-btn>
-      </form>
-    </div>
+      </v-form>
+    </v-card>
   </div>
 </template>
 

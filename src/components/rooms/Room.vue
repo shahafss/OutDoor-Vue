@@ -13,10 +13,10 @@
           <v-list-item three-line>
             <v-list-item-content>
               <div class="overline-container">
-                <div class="overline mb-4">
+                <div class="overline mb-2">
                   {{ room.category }}
                 </div>
-                <div class="overline mb-4">
+                <div class="overline mb-2">
                   {{ date }}
                 </div>
               </div>
@@ -87,16 +87,12 @@ export default {
         return true;
       }
       if (this.isToday(roomDate) && this.inProgress) {
-        const nowTime = Date.parse(
-          "01/01/2011 " + new Date().toLocaleTimeString()
-        );
-
         const endTime = Date.parse(
           "01/01/2011 " +
             new Date("01/01/2021 " + this.room.endTime).toLocaleTimeString()
         );
 
-        if (nowTime < endTime) {
+        if (this.nowTime < endTime) {
           return true;
         }
       }
@@ -104,9 +100,7 @@ export default {
     },
 
     inProgress() {
-      const nowTime = Date.parse(
-        "01/01/2011 " + new Date().toLocaleTimeString()
-      );
+      if (!this.isToday(new Date(this.room.date))) return false;
 
       const startTime = Date.parse(
         "01/01/2011 " +
@@ -118,34 +112,36 @@ export default {
           new Date("01/01/2021 " + this.room.endTime).toLocaleTimeString()
       );
 
-      return nowTime > startTime && nowTime < endTime;
+      return this.nowTime > startTime && this.nowTime < endTime;
     },
 
     isFull() {
       return this.room.participants == this.room.joinedUsers.length;
     },
+
     isJoinedUser() {
       return this.$store.getters.getUser
         ? this.room.joinedUsers.includes(this.$store.getters.getUser.id)
         : false;
     },
+
     date() {
       return new Date(this.room.date).toLocaleDateString("eng-GB");
     },
+
     category() {
       return this.room.category;
     },
+
+    nowTime() {
+      return Date.parse("01/01/2011 " + new Date().toLocaleTimeString());
+    },
+
     icon() {
       return this.icons.find((icon) => icon.category == this.room.category);
     },
   },
   methods: {
-    getDateTime(time) {
-      return Date.parse(
-        "01/01/2011 " +
-          new Date(`01/01/2021 ${time ? time : ""}`).toLocaleTimeString()
-      );
-    },
     isToday(date) {
       const today = new Date();
       return (
@@ -164,29 +160,30 @@ export default {
   min-height: 200px;
   max-height: 200px;
   max-width: 400px;
-}
-.v-badge {
-  display: block;
-  position: unset;
-  .full-label {
-    background-color: #bb8ac8;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #ccc;
-    font-size: 25px;
-    font-weight: 600;
-    opacity: 80%;
-    height: 4rem;
-    position: absolute;
-    top: 33%;
-    left: 0;
-    width: 100%;
-  }
 
-  .overline-container {
-    display: flex;
-    justify-content: space-between;
+  .v-badge {
+    display: block;
+    position: unset;
+    .full-label {
+      background-color: #bb8ac8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #ccc;
+      font-size: 25px;
+      font-weight: 600;
+      opacity: 80%;
+      height: 4rem;
+      position: absolute;
+      top: 33%;
+      left: 0;
+      width: 100%;
+    }
+
+    .overline-container {
+      display: flex;
+      justify-content: space-between;
+    }
   }
 }
 
