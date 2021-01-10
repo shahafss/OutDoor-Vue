@@ -1,7 +1,6 @@
 <template>
   <v-card :style="{ height: '100%', 'border-radius': 0 }">
     <v-app-bar
-      height="80"
       elevation="5"
       color="#fcb69f"
       dark
@@ -88,8 +87,6 @@
     ></NavDrawer>
     <v-sheet
       :style="{
-        maxHeight: `${main ? '90' : '80'}vh`,
-        height: '100%',
         width: '100%',
         overflowY: 'auto',
       }"

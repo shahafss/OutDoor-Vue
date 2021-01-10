@@ -239,6 +239,7 @@ export default {
       margin-top: 2rem;
 
       .form-input {
+        padding: 10px;
         display: flex;
         flex-direction: column;
         align-items: center;
