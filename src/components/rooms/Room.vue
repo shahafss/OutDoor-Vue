@@ -6,7 +6,7 @@
       :to="'/room/' + room.id"
       :class="{ disabled: isFull && !isJoinedUser }"
     >
-      <v-badge avatar :color="icon.color" :icon="icon.icon" overlap>
+      <v-badge bordered avatar overlap :color="icon.color" :icon="icon.icon">
         <div>
           <div v-if="isFull" class="full-label">Full</div>
 

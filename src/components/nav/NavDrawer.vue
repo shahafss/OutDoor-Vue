@@ -20,20 +20,22 @@
     <v-divider></v-divider>
 
     <v-list nav dense>
-      <router-link to="/rooms" tag="v-list-item">
+      <v-list-item to="/rooms">
         <v-list-item-icon>
           <v-icon>mdi-cube-scan</v-icon>
         </v-list-item-icon>
         <v-list-item-title>
           Rooms
         </v-list-item-title>
-      </router-link>
-      <v-list-item link>
+      </v-list-item>
+
+      <v-list-item to="/my-rooms" link>
         <v-list-item-icon>
           <v-icon>mdi-account-multiple</v-icon>
         </v-list-item-icon>
-        <v-list-item-title>Joined Rooms</v-list-item-title>
+        <v-list-item-title>My Rooms</v-list-item-title>
       </v-list-item>
+
       <v-list-item link>
         <v-list-item-icon>
           <v-icon>mdi-star</v-icon>
