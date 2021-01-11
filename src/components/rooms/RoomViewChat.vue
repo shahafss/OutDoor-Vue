@@ -80,7 +80,6 @@ export default {
   methods: {
     sendMessage(message) {
       if (message == "") return;
-      this.scrollToBottom();
 
       const date = new Date();
       const messageData = {
@@ -89,7 +88,11 @@ export default {
         timestamp: date.toLocaleTimeString(),
         roomId: this.currentRoom.id,
       };
-      this.$store.dispatch("postMessage", messageData);
+
+      this.$store.dispatch("postMessage", messageData).then(() => {
+        this.scrollToBottom();
+      });
+
       this.message = "";
     },
     getMessageTime(timestamp) {
@@ -105,6 +108,8 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+$white: #ffffff;
+
 .chat-container {
   margin-top: 2rem;
   display: flex;
@@ -127,7 +132,7 @@ export default {
       height: 100%;
       border: 1px solid green;
       border-radius: 4px;
-      background-color: #ffffff;
+      background-color: $white;
       padding: 10px;
       overflow: auto;
 
@@ -142,7 +147,7 @@ export default {
           margin: 2px 0;
           border: 1px solid rgba(128, 128, 128, 0.288);
           border-radius: 4px;
-          background-color: #fff;
+          background-color: $white;
 
           .msg-time {
             width: 100%;
@@ -174,7 +179,7 @@ export default {
     border-radius: 4px;
     margin-left: 0.6rem;
     box-shadow: 0 2px 3px #1a191971;
-    background-color: #ffffff;
+    background-color: $white;
 
     .joined-user {
       margin-top: 0px;
