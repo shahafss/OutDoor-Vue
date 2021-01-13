@@ -47,7 +47,7 @@
 </template>
 <script>
 export default {
-  props: ["shown"],
+  props: { shown: Boolean },
   data() {
     return {};
   },

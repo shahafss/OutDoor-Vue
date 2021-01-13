@@ -53,7 +53,7 @@
 <script>
 import AdressAutocomplete from "../AdressAutocomplete";
 export default {
-  props: ["room"],
+  props: { room: Object },
   data() {
     return {
       title: this.room.title,

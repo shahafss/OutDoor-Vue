@@ -81,10 +81,10 @@
         </v-btn>
       </template>
     </v-app-bar>
-    <NavDrawer
+    <TheNavDrawer
       @drawerDismiss="drawerShown = $event"
       :shown="drawerShown"
-    ></NavDrawer>
+    ></TheNavDrawer>
     <v-sheet
       :style="{
         width: '100%',
@@ -101,16 +101,16 @@
 <script>
 import RoomEditModal from "../rooms/modals/RoomEditModal";
 import RoomDeleteModal from "../rooms/modals/RoomDeleteModal";
-import NavDrawer from "./NavDrawer";
+import TheNavDrawer from "./TheNavDrawer";
 export default {
-  props: ["main", "room"],
+  props: { main: Boolean, room: Object },
   data() {
     return {
       drawerShown: false,
     };
   },
   components: {
-    NavDrawer,
+    TheNavDrawer,
     RoomEditModal,
     RoomDeleteModal,
   },

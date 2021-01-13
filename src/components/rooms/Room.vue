@@ -50,7 +50,7 @@
 
 <script>
 export default {
-  props: ["room"],
+  props: { room: Object },
   data() {
     return {
       icons: [

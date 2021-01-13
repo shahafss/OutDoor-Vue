@@ -55,7 +55,7 @@
 
 <script>
 export default {
-  props: ["joinedUsers", "currentRoom"],
+  props: { joinedUsers: Array, currentRoom: Object },
   data() {
     return {
       message: "",

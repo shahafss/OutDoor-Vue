@@ -32,7 +32,13 @@
 import { ValidationProvider } from "vee-validate";
 
 export default {
-  props: ["name", "type", "max", "min", "required"],
+  props: {
+    name: String,
+    type: String,
+    max: Number,
+    min: Number,
+    required: Boolean,
+  },
   mounted() {
     setTimeout(() => {
       this.$refs.intputfield.focus();
