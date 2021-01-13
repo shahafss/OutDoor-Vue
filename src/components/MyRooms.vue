@@ -11,7 +11,7 @@
 
     <v-tabs-items v-model="tab">
       <v-tab-item v-for="item in tabItems" :key="item.tab">
-        <transition-group role="section" class="rooms-container" name="fade">
+        <transition-group class="rooms-container" role="section" name="fade">
           <room
             v-for="room in tab === 0 ? createdRooms : joinedRooms"
             :key="room.id"
@@ -19,6 +19,12 @@
             class="room"
           ></room>
         </transition-group>
+        <h4 class="empty-msg" v-if="item.tab === 'Created' && !createdRooms">
+          You didn't create any room yet..
+        </h4>
+        <h4 class="empty-msg" v-if="item.tab === 'Joined' && !joinedRooms">
+          You didn't join any room yet..
+        </h4>
       </v-tab-item>
     </v-tabs-items>
   </ODNavBar>
@@ -75,7 +81,7 @@ export default {
 
 <style lang="scss" scoped>
 .v-tabs {
-  width: 30rem;
+  max-width: 30rem;
   border-radius: 25px;
   margin: auto;
 }
@@ -95,6 +101,10 @@ export default {
   }
 }
 
+.empty-msg {
+  text-align: center;
+}
+
 @media (max-width: 768px) {
   .rooms-container {
     grid-template-columns: 50% 50% !important;
@@ -109,16 +119,9 @@ export default {
 
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.3s;
-}
-.fade-leave-active {
-  position: absolute;
+  transition: opacity 0.1s;
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
-}
-
-.fade-move {
-  transition: transform 1s ease;
 }
 </style>
