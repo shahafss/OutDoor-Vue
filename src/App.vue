@@ -27,7 +27,7 @@ html,
 .v-application {
   padding: 0;
   margin: 0;
-  width: 100%;
+  min-width: 100vw;
   min-height: 100vh;
   height: 100%;
   font-family: sans-serif;

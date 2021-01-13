@@ -90,7 +90,12 @@
           class="text-center full-height"
           :style="{ height: 'calc(100vh - 64px)' }"
         >
-          <h2 class="display-2 font-weight-bold mb-3">UNDER DEVELOPMENT</h2>
+          <h2
+            :class="[$vuetify.breakpoint.smAndDown ? 'display-1' : 'display-2']"
+            class="font-weight-bold mb-3"
+          >
+            UNDER DEVELOPMENT
+          </h2>
 
           <v-responsive class="mx-auto mb-8" width="56">
             <v-divider class="mb-1"></v-divider>
@@ -99,6 +104,7 @@
           </v-responsive>
 
           <v-responsive
+            :style="{ maxHeight: '16rem' }"
             class="mx-auto title font-weight-light mb-8"
             max-width="720"
           >
@@ -160,7 +166,12 @@
         <div class="py-6"></div>
 
         <v-container class="text-center">
-          <h2 class="display-2 font-weight-bold mb-3">FEATURES</h2>
+          <h2
+            :class="[$vuetify.breakpoint.smAndDown ? 'display-1' : 'display-2']"
+            class="font-weight-bold mb-3"
+          >
+            FEATURES
+          </h2>
 
           <v-responsive class="mx-auto mb-12" width="56">
             <v-divider class="mb-1"></v-divider>
@@ -203,7 +214,8 @@
 
         <v-container>
           <h2
-            class="display-2 font-weight-bold mb-3 text-uppercase text-center"
+            :class="[$vuetify.breakpoint.smAndDown ? 'display-1' : 'display-2']"
+            class="font-weight-bold mb-3 text-uppercase text-center"
           >
             Activities
           </h2>
